@@ -1,0 +1,50 @@
+.ant-modal-body {
+  display: flex;
+  padding: 0;
+}
+.ant-form-item{
+  margin-bottom: 12px;
+}
+
+.field-list, .field-form {
+  display: flex;
+  padding: 20px 0;
+  flex-direction: row;
+}
+
+.field-list {
+  width: 200px;
+  max-height: 394px;
+  overflow: auto;
+  border-right: 1px solid #e6e6e6;
+  ul {
+    width: 100%;
+    li {
+      padding: 0 0 0 10px;
+      line-height: 40px;
+      border-bottom: 1px solid #e6e6e6;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+    li.active {
+      background-color: #e6e6e6;
+    }
+    li:hover {
+      background-color: #efefef;
+    }
+  }
+}
+
+.field-form {
+  flex: 1;
+  form {
+    width: 100%;
+  }
+  .ant-form-item{
+    label {
+      text-align: left;
+      padding: 7px 0 7px 50px;
+    }
+  }
+}

@@ -18,14 +18,23 @@ import {
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 import * as loginActions from '../actions/login';
+//import userLogin from '../reducers/login';
 
-class TestInput extends Component {
+class Login extends Component {
     onPress = ()=>{
         /*let { actions } = this.props;
         this.props.navigator.push({name: 'welcome'});*/
         //actions.test(this.props.num);
-        const alertMessage =  '登录失败';
-        Alert.alert('alert',alertMessage,[{text: 'OK', onPress: () => console.log('OK Pressed!')},]);
+        //let { loginActions } = this.props;
+        //e.preventDefault();
+        let {actions} = this.props;
+        //console.log('收到表单值：', this.props.form.getFieldsValue());
+        actions.userLogin('11', '11',()=>{
+            console.log('ok');
+            this.props.navigator.push({name: 'welcome'});
+        });
+        /*const alertMessage =  '登录失败';
+        Alert.alert('alert',alertMessage,[{text: 'OK', onPress: () => console.log('OK Pressed!')},]);*/
     }
     onOfflinePress = ()=>{
         let { actions } = this.props;
@@ -46,6 +55,9 @@ class TestInput extends Component {
                     numberOfLines={1}
                     underlineColorAndroid={'transparent'}
                     textAlign='center'
+                    onChange={this.handleUserChange}
+                    onFocus={this.handleUserFocus}
+                    onBlur={this.handleUserBlur}
                 />
                 <TextInput
                     style={styles.style_user_input}
@@ -54,6 +66,9 @@ class TestInput extends Component {
                     autoFocus={true}
                     underlineColorAndroid={'transparent'}
                     textAlign='center'
+                    onChange={this.handlePasswordChange}
+                    onFocus={this.handlePasswordFocus}
+                    onBlur={this.handlePasswordBlur}
                 />
                 <View
                     style={{height:1,backgroundColor:'#f4f4f4'}}
@@ -291,4 +306,4 @@ function mapDispatchToProps(dispatch){
 export default connect(
     mapStateToProps ,
     mapDispatchToProps
-)(TestInput);
+)(Login);

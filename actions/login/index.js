@@ -1,7 +1,7 @@
 /**
  * Created by wxk on 2016/5/25.
  */
-import fetch from 'isomorphic-fetch';
+//import fetchURL from 'fetch';
 import env from '../../helpers/env';
 import { toJSON, genAction, genFetchOptions } from '../../helpers/util';
 /*import request from 'superagent'
@@ -151,7 +151,7 @@ export function setPassWord(name, word) {
             })
         }
 
-        /*fetch(env.HTTP_USER_COR_ACC, options)
+        /*fetchUrl(env.HTTP_USER_COR_ACC, options)
             .then(function (response) {
                 if (response.status >= 400) {
                     throw new Error("Bad response from server")
@@ -200,7 +200,7 @@ export const userLogin = (username,userWord,callback) => {
         });
         console.log(options);
         fetch(env.HTTP_USER_LOGIN, options)
-            .then(toJSON)
+            .then(toJSON)//(response) => response.json()//
             .then(function (json){
                 console.log(json);
                 if (json.code === 200) {
@@ -209,7 +209,9 @@ export const userLogin = (username,userWord,callback) => {
                         type:'PLATFORM_DATA_USER_LOGIN_SUCCEED',
                         payload:json
                     });
+                    console.log('login ok');
                     callback();
+                    getuserprivilege();
                     /*if (process.env.__CLIENT__ === true) {
                         //cb.rest.AppContext.token = json.data.token;
                         //location.href = '/'
@@ -224,6 +226,9 @@ export const userLogin = (username,userWord,callback) => {
                     alert('服务器打了小瞌睡，请重试～')
                 }
             })
+            .catch((error) => {
+                console.error(error);
+            });
         /*$.ajax({
             type: 'POST',
             // url: 'ajaxService/mapOperate.ashx',
@@ -257,6 +262,7 @@ export const userLogin = (username,userWord,callback) => {
                 alert('用户信息错误！');
             }
         });*/
+
         /*if(process.env.NODE_ENV === 'development'){
             console.log(options);
 
@@ -270,5 +276,48 @@ export const userLogin = (username,userWord,callback) => {
 
         //console.log(options);
 
+    }
+}
+
+export const getuserprivilege = (callback) => {
+    /*let corp_id = user.corp_id,
+     username = user.username;*/
+    return (dispatch) => {
+        // 登陆中，做禁用登陆 Button 等操作
+        dispatch({
+            type: 'PLATFORM_DATA_USER_LOGIN',
+        });
+        let options;
+        console.log(env.HTTP_USER_LOGIN);
+
+        options = genFetchOptions('post', {
+            option: 'getuserprivilege',
+        });
+        console.log(options);
+        fetch(env.HTTP_USER_LOGIN, options)
+            .then(toJSON)//(response) => response.json()//
+            .then(function (json){
+                console.log(json);
+                if (json.code === 200) {
+                    //console.log(json.data)
+                    dispatch({
+                        type:'PLATFORM_DATA_USER_LOGIN_SUCCEED',
+                        payload:json
+                    });
+                    console.log('load ok');
+                    callback();
+                }
+                else {
+                    console.log(json)
+                    dispatch({
+                        type:'PLATFORM_DATA_USER_LOGIN_FAILURE',
+                        payload:json
+                    });
+                    alert('服务器打了小瞌睡，请重试～')
+                }
+            })
+            .catch((error) => {
+                console.error(error);
+            });
     }
 }

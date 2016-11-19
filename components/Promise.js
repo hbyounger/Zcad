@@ -60,33 +60,41 @@ class SQLiteDemo extends Component{
         this.setState(this.state);
     }
 
-    populateDatabase = (db)=>{
+    populateDatabase = (database)=>{
         var that = this;
         that.state.progress.push("Database integrity check");
         that.setState(that.state);
-        db
+        console.log(database);
+        database
             .executeSql('SELECT 1 FROM Version LIMIT 1')
             .then(() =>{
                 that.state.progress.push("Database is ready ... executing query ...");
                 that.setState(that.state);
-                db.transaction(that.queryEmployees).then(() => {
-                    that.state.progress.push("Processing completed");
-                    that.setState(that.state);
-                });
+                database
+                    .transaction(that.queryEmployees)
+                    .then(() => {
+                        that.state.progress.push("Processing completed");
+                        that.setState(that.state);
+                    });
             })
             .catch((error) =>{
                 console.log("Received error: ", error)
                 that.state.progress.push("Database not yet ready ... populating data");
                 that.setState(that.state);
-                db.transaction(that.populateDB).then(() =>{
-                    that.state.progress.push("Database populated ... executing query ...");
-                    that.setState(that.state);
-                    db.transaction(that.queryEmployees).then((result) => {
-                        console.log("Transaction is now finished");
-                        that.state.progress.push("Processing completed");
+                database
+                    .transaction(that.populateDB)
+                    .then(() =>{
+                        that.state.progress.push("Database populated ... executing query ...");
                         that.setState(that.state);
-                        that.closeDatabase()});
-                });
+                        database
+                            .transaction(that.queryEmployees)
+                            .then((result) => {
+                                console.log("Transaction is now finished");
+                                console.log(result);
+                                that.state.progress.push("Processing completed");
+                                that.setState(that.state);
+                                that.closeDatabase()});
+                    });
             });
     }
 
@@ -102,38 +110,50 @@ class SQLiteDemo extends Component{
         this.state.progress.push("Executing CREATE stmts");
         this.setState(this.state);
 
-        tx.executeSql('CREATE TABLE IF NOT EXISTS Version( '
-            + 'version_id INTEGER PRIMARY KEY NOT NULL); ').catch((error) => {  
-            that.errorCB(error) 
-        });
+        tx
+            .executeSql(
+                'CREATE TABLE IF NOT EXISTS Version( '
+                + 'version_id INTEGER PRIMARY KEY NOT NULL); ')
+            .catch((error) => {
+                that.errorCB(error)
+            });
 
-        tx.executeSql('CREATE TABLE IF NOT EXISTS Departments( '
-            + 'department_id INTEGER PRIMARY KEY NOT NULL, '
-            + 'name VARCHAR(30) ); ').catch((error) => {  
-            that.errorCB(error) 
-        });
+        tx
+            .executeSql(
+                'CREATE TABLE IF NOT EXISTS Departments( '
+                + 'department_id INTEGER PRIMARY KEY NOT NULL, '
+                + 'name VARCHAR(30) ); '
+            )
+            .catch((error) => {
+                that.errorCB(error)
+            });
 
-        tx.executeSql('CREATE TABLE IF NOT EXISTS Offices( '
-            + 'office_id INTEGER PRIMARY KEY NOT NULL, '
-            + 'name VARCHAR(20), '
-            + 'longtitude FLOAT, '
-            + 'latitude FLOAT ) ; ').catch((error) => {  
-            that.errorCB(error) 
-        });
+        tx
+            .executeSql('CREATE TABLE IF NOT EXISTS Offices( '
+                + 'office_id INTEGER PRIMARY KEY NOT NULL, '
+                + 'name VARCHAR(20), '
+                + 'longtitude FLOAT, '
+                + 'latitude FLOAT ) ; ')
+            .catch((error) => {
+                that.errorCB(error)
+            });
 
-        tx.executeSql('CREATE TABLE IF NOT EXISTS Employees( '
-            + 'employe_id INTEGER PRIMARY KEY NOT NULL, '
-            + 'name VARCHAR(55), '
-            + 'office INTEGER, '
-            + 'department INTEGER, '
-            + 'FOREIGN KEY ( office ) REFERENCES Offices ( office_id ) '
-            + 'FOREIGN KEY ( department ) REFERENCES Departments ( department_id ));').catch((error) => {  
-            that.errorCB(error) 
-        });
+        tx
+            .executeSql(
+                'CREATE TABLE IF NOT EXISTS Employees( '
+                + 'employe_id INTEGER PRIMARY KEY NOT NULL, '
+                + 'name VARCHAR(55), '
+                + 'office INTEGER, '
+                + 'department INTEGER, '
+                + 'FOREIGN KEY ( office ) REFERENCES Offices ( office_id ) '
+                + 'FOREIGN KEY ( department ) REFERENCES Departments ( department_id ));'
+            )
+            .catch((error) => {
+                that.errorCB(error)
+            });
 
         this.state.progress.push("Executing INSERT stmts");
         this.setState(this.state);
-
 
         tx.executeSql('INSERT INTO Departments (name) VALUES ("Client Services");');
         tx.executeSql('INSERT INTO Departments (name) VALUES ("Investor Services");');
@@ -160,41 +180,50 @@ class SQLiteDemo extends Component{
     queryEmployees = (tx)=>{
         var that = this;
         console.log("Executing employee query");
-        tx.executeSql('SELECT a.name, b.name as deptName FROM Employees a, Departments b WHERE a.department = b.department_id').then(([tx,results]) => {
-            that.state.progress.push("Query completed");
-            that.setState(that.state);
-            var len = results.rows.length;
-            for (let i = 0; i < len; i++) {
-                let row = results.rows.item(i);
-                that.state.progress.push(`Empl Name: ${row.name}, Dept Name: ${row.deptName}`);
-            }
-            that.setState(that.state);
-        }).catch((error) => { 
-            console.log(error);
-        });
+        tx
+            .executeSql('SELECT a.name, b.name as deptName FROM Employees a, Departments b WHERE a.department = b.department_id')
+            .then(([tx,results]) => {
+                that.state.progress.push("Query completed");
+                that.setState(that.state);
+                var len = results.rows.length;
+                for (let i = 0; i < len; i++) {
+                    let row = results.rows.item(i);
+                    that.state.progress.push(`Empl Name: ${row.name}, Dept Name: ${row.deptName}`);
+                }
+                that.setState(that.state);
+            })
+            .catch((error) => {
+                console.log(error);
+            });
     }
 
     loadAndQueryDB = ()=>{
         var that = this;
         that.state.progress.push("Plugin integrity check ...");
         that.setState(that.state);
-        SQLite.echoTest().then(() => {
-            that.state.progress.push("Integrity check passed ...");
-            that.setState(that.state);
-            that.state.progress.push("Opening database ...");
-            that.setState(that.state);
-            SQLite.openDatabase({name : "test5.db", createFromLocation : "~/db/andrew.db"}).then((DB) => {
-                db = DB;
-                that.state.progress.push("Database OPEN");
+        SQLite
+            .echoTest()
+            .then(() => {
+                that.state.progress.push("Integrity check passed ...");
                 that.setState(that.state);
-                that.populateDatabase(DB);
-            }).catch((error) => {
+                that.state.progress.push("Opening database ...");
+                that.setState(that.state);
+                SQLite.openDatabase({name : database_name, createFromLocation : "~/db/andrew.db"})//"test6.db"
+                    .then((DB) => {
+                        db = DB;
+                        that.state.progress.push("Database OPEN");
+                        that.setState(that.state);
+                        that.populateDatabase(DB);
+                    })
+                    .catch((error) => {
+                        console.log(error);
+                    });
+            })
+            .catch(error => {
                 console.log(error);
+                that.state.progress.push("echoTest failed - plugin not functional");
+                that.setState(that.state);
             });
-        }).catch(error => {
-            that.state.progress.push("echoTest failed - plugin not functional");
-            that.setState(that.state);
-        });
     }
 
     closeDatabase = ()=>{
@@ -203,12 +232,15 @@ class SQLiteDemo extends Component{
             console.log("Closing database ...");
             that.state.progress.push("Closing DB");
             that.setState(that.state);
-            db.close().then((status) => {
-                that.state.progress.push("Database CLOSED");
-                that.setState(that.state);
-            }).catch((error) => {
-                that.errorCB(error);
-            });
+            db.close()
+                .then((status) => {
+                    console.log(status);
+                    that.state.progress.push("Database CLOSED");
+                    that.setState(that.state);
+                })
+                .catch((error) => {
+                    that.errorCB(error);
+                });
         }
         else {
             that.state.progress.push("Database was not OPENED");
@@ -220,13 +252,15 @@ class SQLiteDemo extends Component{
         var that = this;
         that.state.progress = ["Deleting database"];
         that.setState(that.state);
-        SQLite.deleteDatabase(database_name).then(() => {
-            console.log("Database DELETED");
-            that.state.progress.push("Database DELETED");
-            that.setState(that.state);
-        }).catch((error) => {
-            that.errorCB(error);
-        });
+        SQLite.deleteDatabase(database_name)
+            .then(() => {
+                console.log("Database DELETED");
+                that.state.progress.push("Database DELETED");
+                that.setState(that.state);
+            })
+            .catch((error) => {
+                that.errorCB(error);
+            });
     }
 
     runDemo = ()=>{
@@ -244,7 +278,9 @@ class SQLiteDemo extends Component{
     }
 
     render(){
-        var ds = new ListView.DataSource({rowHasChanged: (row1, row2) => { row1 !== row2;}});
+        var ds = new ListView.DataSource({rowHasChanged: (row1, row2) => {
+            row1 !== row2;
+        }});
         return (<View style={styles.mainContainer}>
             <View style={styles.toolbar}>
                 <Text style={styles.toolbarButton} onPress={this.runDemo}>

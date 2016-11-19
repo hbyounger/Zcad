@@ -32,11 +32,11 @@ import * as projectActions from '../redux/project';
 class SQLiteDemo extends Component{
     constructor(props){
         super(props);
-        this.database_name = "Test1.db";
+        this.database_name = "Test123.db";
         this.database_version = "1.0";
         this.database_displayname = "SQLite Test Database";
-        this.database_size = 20000;
-        //this.db;
+        this.database_size = 2000;
+        this.db;
         this.state = {
             progress: [],
             dataSource: new ListView.DataSource({
@@ -61,8 +61,10 @@ class SQLiteDemo extends Component{
     }
 
     openCB = ()=>{
+        console.log("DB open")
         this.state.progress.push("Database OPEN");
         this.setState(this.state);
+        this.populateDatabase(this.db);
     }
 
     closeCB = ()=>{
@@ -81,6 +83,7 @@ class SQLiteDemo extends Component{
         this.setState(this.state);
         console.log('populateDatabase');
         console.log(db);
+        console.log(db.executeSql);
         if(db.executeSql){
             db.executeSql('SELECT 1 FROM Version LIMIT 1', [],
                 ()=>{
@@ -194,7 +197,7 @@ class SQLiteDemo extends Component{
         this.db = SQLite.openDatabase(this.database_name, this.database_version, this.database_displayname, this.database_size, this.openCB, this.errorCB);
         console.log('db');
         console.log(this.db);
-        this.populateDatabase(this.db);
+        
     }
 
     deleteDatabase = ()=>{

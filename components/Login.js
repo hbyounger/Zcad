@@ -36,14 +36,60 @@ class Login extends Component {
         /*const alertMessage =  '登录失败';
         Alert.alert('alert',alertMessage,[{text: 'OK', onPress: () => console.log('OK Pressed!')},]);*/
     }
+
     onOfflinePress = ()=>{
         let { actions } = this.props;
         this.props.navigator.push({name: 'welcome'});
         //actions.test(this.props.num);
     }
-
+    
+    handleUserChange = (e) => {
+        this.setState({
+            userName: e.target.value,
+        });
+    }
+    
+    handleUserBlur = (e) => {
+        //console.log(e);//e.target.value
+        //console.log(e.target);
+        //console.log(e.target.value);
+        let {logactions} = this.props;
+        logactions.SetUserName(e.target.value);
+        this.setState({
+            userFocus: e.target === document.activeElement,
+        });
+    };
+    handleUserFocus = (e) => {
+        this.setState({
+            userFocus: e.target === document.activeElement,
+        });
+    };
+    handlePasswordChange = (e) => {
+        this.setState({
+            wordValue: e.target.value,
+        });
+    };
+    handlePasswordFocus = (e) => {
+        this.setState({
+            wordFocus: e.target === document.activeElement,
+        });
+    };
+    handlePasswordBlur = (e) => {
+        let {logactions} = this.props;
+        console.log('handlePasswordBlur');
+        logactions.SetPassWord(this.state.userName, e.target.value);
+        this.setState({
+            wordFocus: e.target === document.activeElement,
+        });
+    };
     render() {
         //autoFocus={true}
+        /*onChange={this.handleUserChange}
+         onFocus={this.handleUserFocus}
+         onBlur={this.handleUserBlur}*/
+        /*onChange={this.handlePasswordChange}
+         onFocus={this.handlePasswordFocus}
+         onBlur={this.handlePasswordBlur}*/
         return (
             <View style={{backgroundColor:'#f4f4f4',flex:1}}>
                 <Image
@@ -55,9 +101,9 @@ class Login extends Component {
                     numberOfLines={1}
                     underlineColorAndroid={'transparent'}
                     textAlign='center'
-                    onChange={this.handleUserChange}
-                    onFocus={this.handleUserFocus}
-                    onBlur={this.handleUserBlur}
+                    onChange={this.handleServerChange}
+                    onFocus={this.handleServerFocus}
+                    onBlur={this.handleServerBlur}
                 />
                 <TextInput
                     style={styles.style_user_input}
@@ -66,9 +112,9 @@ class Login extends Component {
                     autoFocus={true}
                     underlineColorAndroid={'transparent'}
                     textAlign='center'
-                    onChange={this.handlePasswordChange}
-                    onFocus={this.handlePasswordFocus}
-                    onBlur={this.handlePasswordBlur}
+                    onChange={this.handleUserChange}
+                    onFocus={this.handleUserFocus}
+                    onBlur={this.handleUserBlur}
                 />
                 <View
                     style={{height:1,backgroundColor:'#f4f4f4'}}
@@ -80,6 +126,9 @@ class Login extends Component {
                     underlineColorAndroid={'transparent'}
                     secureTextEntry={true}
                     textAlign='center'
+                    onChange={this.handlePasswordChange}
+                    onFocus={this.handlePasswordFocus}
+                    onBlur={this.handlePasswordBlur}
                 />
                 <TouchableHighlight
                     onPress={this.onPress}

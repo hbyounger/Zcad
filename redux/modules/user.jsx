@@ -1,5 +1,5 @@
 import Immutable from 'immutable'
-import fetch from 'isomorphic-fetch'
+//import fetch from 'isomorphic-fetch'
 import Cookies from 'cookies-js'
 
 import ActionStatus from '../../constants/ActionStatus'

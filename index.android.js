@@ -36,6 +36,7 @@ import ProjectView from './components/Project'
 import TableListView from './components/TableListView'
 import Callback from './components/Callback';
 import Promise from './components/Promise';
+import Realm from './components/realm';
 ///////////////////////////////////////////
 /*class MyScene extends Component {
     static propTypes = {
@@ -70,11 +71,11 @@ class Zcad extends Component {
      </Text>
      cd android && ./gradlew assembleRelease
      */
-    startX: number;
-    startY: number;
-    state: any;
+    startX;//: number;
+    startY;//: number;
+    state;//: any;
 
-    constructor(props: {}) {
+    constructor(props) {//: {}
         super(props);
         this.state = {
             //board: new GameBoard(),
@@ -95,12 +96,12 @@ class Zcad extends Component {
             {top : Dimensions.get('window').height/2-22,left : Dimensions.get('window').width/2-10}];
     }
 
-    handleTouchStart(event: Object) {
+    handleTouchStart(event) {//: Object
         this.startX = event.nativeEvent.pageX;
         this.startY = event.nativeEvent.pageY;
     }
 
-    handleTouchEnd(event: Object) {
+    handleTouchEnd(event) {//: Object
         var deltaX = event.nativeEvent.pageX - this.startX;
         var deltaY = event.nativeEvent.pageY - this.startY;
 
@@ -121,7 +122,7 @@ class Zcad extends Component {
      onTouchStart={(event) => this.handleTouchStart(event)}
      onTouchEnd={(event) => this.handleTouchEnd(event)}>
      <Text style={styles.welcome}>
-     ÑîçæµÄÓÎÏ·
+     ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ï·
      </Text>
      <TicTacToeApp/>
      </View>*/
@@ -228,6 +229,9 @@ class Zcad extends Component {
                 break;
             case 'promise':
                 Component = <Promise navigator = {navigator}/>;
+                break;
+            case 'realm':
+                Component = <Realm navigator = {navigator} />;
                 break;
             default: //default view PickerExample
                 Component = <DefaultView navigator = {navigator} />;

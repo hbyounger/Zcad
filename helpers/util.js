@@ -4,9 +4,9 @@
 export const toJSON = response => {
   console.log(response);
   if (response.status !== 200) {
-    //const code = process.env.__CLIENT__ === true ? response.status : 500
+    const code = response.status;//process.env.__CLIENT__ === true ?  : 500
     return {
-      //code,
+      code,
       message: response.text()
     }
   }
@@ -14,7 +14,8 @@ export const toJSON = response => {
   let json = null
   try {
     json = response.json()
-  } catch (e) {
+  } 
+  catch (e) {
     json = {
       code: 500,
       message: `接口返回格式不是application/json格式`
@@ -23,8 +24,12 @@ export const toJSON = response => {
       // TODO: 此处应有日志
     }
   }
-
-  return json
+  console.log(json);
+  const code = response.status;
+  return {//json
+    code,
+    message : response.ok
+  }
 }
 
 /**

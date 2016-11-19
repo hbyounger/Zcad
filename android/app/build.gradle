@@ -82,7 +82,7 @@ def enableSeparateBuildPerCPUArchitecture = false
  */
 //def enableProguardInReleaseBuilds = false
 /**
- * ÔËÐÐProguardÀ´¼õÐ¡·¢²¼°æ±¾µÄJava×Ö½ÚÂë´óÐ¡
+ * ï¿½ï¿½ï¿½ï¿½Proguardï¿½ï¿½ï¿½ï¿½Ð¡ï¿½ï¿½ï¿½ï¿½ï¿½æ±¾ï¿½ï¿½Javaï¿½Ö½ï¿½ï¿½ï¿½ï¿½ï¿½Ð¡
  */
 def enableProguardInReleaseBuilds = true
 android {
@@ -138,6 +138,7 @@ android {
 }
 
 dependencies {
+    compile project(':realm')
     compile fileTree(dir: "libs", include: ["*.jar"])
     compile "com.android.support:appcompat-v7:23.0.1"
     compile "com.facebook.react:react-native:+"  // From node_modules

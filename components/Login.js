@@ -29,8 +29,8 @@ class Login extends Component {
         //e.preventDefault();
         let {actions} = this.props;
         //console.log('收到表单值：', this.props.form.getFieldsValue());
-        actions.userLogin('11', '11',()=>{
-            console.log('ok');
+        actions.userLogin('11', '11',(userid)=>{
+            console.log(userid);
             this.props.navigator.push({name: 'welcome'});
         });
         /*const alertMessage =  '登录失败';
@@ -48,8 +48,12 @@ class Login extends Component {
             userName: e.target.value,
         });
     }
-    
-    handleUserBlur = (e) => {
+    handlePasswordChange = (e) => {
+        this.setState({
+            wordValue: e.target.value,
+        });
+    };
+    /*handleUserBlur = (e) => {
         //console.log(e);//e.target.value
         //console.log(e.target);
         //console.log(e.target.value);
@@ -64,11 +68,7 @@ class Login extends Component {
             userFocus: e.target === document.activeElement,
         });
     };
-    handlePasswordChange = (e) => {
-        this.setState({
-            wordValue: e.target.value,
-        });
-    };
+    
     handlePasswordFocus = (e) => {
         this.setState({
             wordFocus: e.target === document.activeElement,
@@ -81,7 +81,7 @@ class Login extends Component {
         this.setState({
             wordFocus: e.target === document.activeElement,
         });
-    };
+    };*/
     render() {
         //autoFocus={true}
         /*onChange={this.handleUserChange}

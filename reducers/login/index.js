@@ -103,7 +103,7 @@ export default function login( state = $$initialState , action ){
             return state
                 .set('loginStatus', 'SUCCEED')
                 .merge(action.payload)
-                //.merge({ id: loginid });
+                //.merge({ userId: loginid });
 
         case 'PLATFORM_DATA_USER_LOGIN_FAILURE':
             console.log('action');

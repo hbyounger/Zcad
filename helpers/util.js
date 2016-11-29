@@ -24,12 +24,10 @@ export const toJSON = response => {
       // TODO: 此处应有日志
     }
   }
-  console.log(json);
+   console.log(json);
   const code = response.status;
-  return {//json
-    code,
-    message : response.ok
-  }
+  //console.log(json);
+  return json;
 }
 
 /**

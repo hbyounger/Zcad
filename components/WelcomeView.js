@@ -14,6 +14,7 @@ import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 //import * as actions from '../actions/cell';
 import * as projectActions from '../redux/project';
+import * as loginActions from '../actions/login';
 import Cell from './Cell';
 import Realm from 'realm';
 
@@ -165,7 +166,10 @@ class WelcomeView extends Component {
         this.props.navigator.push({name: 'login'});
     }
     onTest(){
-        this.props.navigator.push({name: 'realm'});//callback//promise
+        let { loginactions,login } = this.props;
+        console.log(login);
+        loginactions.getUserPrivilege(login.userid);
+        //this.props.navigator.push({name: 'realm'});//callback//promise
     }
     renderProgressEntry = (entry)=>{
         //styles.style_view_commit
@@ -351,13 +355,15 @@ const styles = StyleSheet.create({
 
 function mapStateToProps(state){
     return {
-        cell : state.cell.toJS()
+        cell : state.cell.toJS(),
+        login : state.login.toJS()
     }
 }
 
 function mapDispatchToProps(dispatch){
     return {
-        projectActions : bindActionCreators( projectActions , dispatch )
+        projectActions : bindActionCreators( projectActions , dispatch ),
+        loginactions : bindActionCreators( loginActions , dispatch )
     }
 }
 //export default

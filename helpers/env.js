@@ -8,8 +8,8 @@ const env = {
   // 静态文件根路径
   HTTP_SCRIPT_BASEURL: 'http://www.zcadsoft.com/',
 
-  // 关于用户的ajax接口
-  HTTP_USER_LOGIN: combine('http://www.zcadsoft.com/','ajaxService/admin.ashx'),
+  // 关于用户的ajax接口//ZJWeb/
+  HTTP_USER_LOGIN: combine('http://www.zcadsoft.com/','ajaxService/admin.ashx'),//www.zcadsoft.com
 
 
   // 查询方案

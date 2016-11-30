@@ -215,10 +215,12 @@ function post(options){
     var req = createXMLHTTPRequest();
     if(req){
         req.open("POST", env.HTTP_USER_LOGIN, true);
-        req.setRequestHeader("Content-Type","application/json; charset=utf-8");
+        req.setRequestHeader("Content-Type","multipart/form-data; charset=utf-8");//application/json//application/x-www-form-urlencoded
         req.send(options);
-        req.onreadystatechange = function(){
+        req.onreadystatechange = function(e){
             console.log(req);
+            console.log(e);
+            console.log(req.json());
             if(req.readyState == 4){
                 if(req.status == 200){
                     alert("success");
@@ -307,8 +309,9 @@ export const userLogin = (username,userWord,callback) => {
             .then(toJSON)
             .then((json) => {
                 console.log(json);
-                if (json.userid) {// === 200
-                    //console.log(json.data)
+                if (json) {// === 200
+                    console.log("json");
+                    console.log(json);
                     dispatch({
                         type:'PLATFORM_DATA_USER_LOGIN_SUCCEED',
                         payload:json
@@ -458,11 +461,55 @@ export const getUserPrivilege = (userid) => {
     formData.append("userid",userid);
     formData.append("option","getProjectNameByUser");
     console.log(formData);
+    console.log(formData);
+    console.log("post");
+    //(formData);
     return (dispatch) => {
         // 登陆中，做禁用登陆 Button 等操作
-        /*dispatch({
-            type: 'PLATFORM_DATA_USER_LOGIN',
-        })*/;
+        console.log(env.HTTP_USER_LOGIN);
+        fetch(env.HTTP_USER_LOGIN, {
+            method: 'POST',
+            headers: {},
+            body: formData,
+        })
+            .then((response) => {
+                //console.log(response);
+                //console.log(response.status);
+                //console.log(response.text());
+                //console.log(response.json());
+                return response.json()
+            })
+            .then((json) => {
+                console.log(json);
+                if (json) {
+                    console.log(json)
+                }
+                else {
+                    console.log(json)
+                   /* dispatch({
+                        type:'PLATFORM_DATA_USER_LOGIN_FAILURE',
+                        payload:json
+                    });*/
+                    alert('服务器打了小瞌睡，请重试～')
+                }
+            })
+            .catch((error) => {
+                console.error(error);
+            })
+    }
+}
+
+export const getAllData = (userid) => {
+    console.log(userid);
+    let formData = new FormData;
+    formData.append("userid","ewrwersds-123");
+    formData.append("projectName","3");
+    formData.append("option","getAllData");
+    console.log(formData);
+    console.log("post");
+    //post(formData);
+    return (dispatch) => {
+        // 登陆中，做禁用登陆 Button 等操作
         console.log(env.HTTP_USER_LOGIN);
         fetch(env.HTTP_USER_LOGIN, {
             method: 'POST',
@@ -477,10 +524,10 @@ export const getUserPrivilege = (userid) => {
                 }
                 else {
                     console.log(json)
-                   /* dispatch({
-                        type:'PLATFORM_DATA_USER_LOGIN_FAILURE',
-                        payload:json
-                    });*/
+                    /* dispatch({
+                     type:'PLATFORM_DATA_USER_LOGIN_FAILURE',
+                     payload:json
+                     });*/
                     alert('服务器打了小瞌睡，请重试～')
                 }
             })

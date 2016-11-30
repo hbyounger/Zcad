@@ -169,6 +169,7 @@ class WelcomeView extends Component {
         let { loginactions,login } = this.props;
         console.log(login);
         loginactions.getUserPrivilege(login.userid);
+        //loginactions.getAllData();
         //this.props.navigator.push({name: 'realm'});//callback//promise
     }
     renderProgressEntry = (entry)=>{

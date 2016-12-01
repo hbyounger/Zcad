@@ -6,10 +6,10 @@ const env = {
   },
 
   // 静态文件根路径
-  HTTP_SCRIPT_BASEURL: 'http://www.zcadsoft.com/',
+  HTTP_SCRIPT_BASEURL: 'http://192.168.43.28/',
 
   // 关于用户的ajax接口//ZJWeb/
-  HTTP_USER_LOGIN: combine('http://www.zcadsoft.com/','ajaxService/admin.ashx'),//www.zcadsoft.com
+  HTTP_USER_LOGIN: combine('http://192.168.43.28/','ajaxService/admin.ashx'),//www.zcadsoft.com
 
 
   // 查询方案

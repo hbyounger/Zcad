@@ -9,6 +9,7 @@ import {
     TouchableHighlight,
     View,
     ScrollView,
+    Dimensions,
 } from 'react-native';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
@@ -19,6 +20,78 @@ class MapView extends Component {
     /*onPressFeed = ()=> {
         this.props.navigator.push({name: 'feed'});
     };*/
+    //勘探点数据表
+    constructor(props){
+        super(props);
+        let { project,login } = this.props,
+            table = login.tables,
+            list = table["勘探点数据表"],
+            minX = list[0]["坐标X"],
+            minY = list[0]["坐标Y"],
+            maxX = list[0]["坐标X"],
+            maxY = list[0]["坐标Y"],
+            array=[];
+
+        list.forEach((ele)=>{
+            let x = ele["坐标X"],
+                y = ele["坐标Y"];
+            if(minX>x){
+                minX = x
+            }
+            else {
+                if(maxX<x){
+                    maxX = x
+                }
+            }
+            if(minY>y){
+                minY = y
+            }
+            else {
+                if(maxY<y){
+                    maxY = y
+                }
+            }
+            /*console.log(x);
+            console.log(y);*/
+        });
+        let xScale = (maxX-minX)/(Dimensions.get('window').width-20),
+            yScale = (maxY-minY)/(Dimensions.get('window').height-110),
+            Scale = xScale>yScale?xScale:yScale;
+        console.log(xScale);
+        console.log(yScale);
+        console.log(Scale);
+        list.forEach((ele)=>{
+            array.push({
+                x:10+(ele["坐标X"]-minX)/Scale,
+                y:10+(ele["坐标Y"]-minY)/Scale,
+            })
+        });
+
+        array.forEach((ele)=>{
+            console.log(ele);
+        });
+
+        /*console.log(maxX);
+        console.log(maxY);
+        console.log(minX);
+        console.log(minY);
+        console.log(maxX-minX);
+        console.log(maxY-minY);
+        console.log(Dimensions.get('window').height);
+        console.log(Dimensions.get('window').width);
+        console.log();
+        console.log();*/
+
+        /*for(ele in table){
+            console.log(ele);
+            console.log(table[ele]);
+        }*/
+        /*loginactions.getUserPrivilege(login.userid,()=>{
+            console.log(login)
+            console.log(login.projects)
+        });*/
+        this.dotList = array;
+    }
     onSubmit(){
         console.log('welcome');
         this.props.navigator.push({name: 'welcome'});
@@ -39,8 +112,8 @@ class MapView extends Component {
         let PList = [],
             {project} = this.props,
             index = 0 ;
-        if(this.props.list) {
-            this.props.list.forEach((ele,i)=> {
+        if(this.dotList) {
+            this.dotList.forEach((ele,i)=> {
                 PList.push(<Cell
                     Point = {ele}
                     num = {i}
@@ -48,7 +121,7 @@ class MapView extends Component {
                 />)//<TicTacToeApp/>
             })
         }
-        console.log('MapView render');
+        //console.log('MapView render');
         return (
             <ScrollView >
                 <Text style = {styles2.welcome}>{project.project+'选取钻位'}</Text>
@@ -135,6 +208,7 @@ function mapStateToProps(state){
     return {
         cell : state.cell.toJS(),
         project : state.project.toJS(),
+        login : state.login.toJS(),
     }
 }
 

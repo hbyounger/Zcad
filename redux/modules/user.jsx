@@ -112,6 +112,10 @@ export default (state = $$initialState, action) => {
     case 'PLATFORM_DATA_LOGIN_OUT':
       return state
         .merge({...user,loginStatus: ActionStatus.READY});
+    case 'PLATFORM_DATA_USER_LOGIN_PRJS':
+      return state
+          .merge({projects: action.projects});
+
     default:
       return state
   }

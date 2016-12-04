@@ -154,21 +154,30 @@ class WelcomeView extends Component {
                 BGSchema,
                 BSSchema]
             });
-
-        this.projectList = ['项目1','项目2','项目3','项目4','项目5'];
+        let { loginactions,login } = this.props;
+        console.log(login);
+        loginactions.getUserPrivilege(login.userid,()=>{
+            //console.log(login)
+            //console.log(login.projects)
+        });
+        this.projectList = [];
     }
     onPressMap(value){
         let {projectActions} = this.props;
-        this.props.navigator.push({name: 'map'});
-        projectActions.SetProject(value);
+
+        let { loginactions,login } = this.props;
+        //console.log(login);
+        loginactions.getAllData(login.userid,value,()=>{
+            //console.log(login)
+            //console.log(login.projects)
+            this.props.navigator.push({name: 'map'});
+            projectActions.SetProject(value);
+        });
     }
     onSubmit(){
         this.props.navigator.push({name: 'login'});
     }
     onTest(){
-        let { loginactions,login } = this.props;
-        console.log(login);
-        loginactions.getUserPrivilege(login.userid);
         //loginactions.getAllData();
         //this.props.navigator.push({name: 'realm'});//callback//promise
     }
@@ -207,18 +216,24 @@ class WelcomeView extends Component {
          </View>
 
          );*/
+        let { loginactions,login } = this.props;
         let ProjectArray = [];//.bind(this,ele)
         //let ds = new ListView.DataSource({rowHasChanged: (r1, r2) => r1 !== r2});
+        //console.log(login.projects);
+        if(login.projects){
+            this.projectList = login.projects;
+        }
+
         if(this.projectList){
             this.projectList.forEach((ele)=>{
                 ProjectArray.push(
                     <TouchableHighlight
-                        onPress={this.onPressMap.bind(this,ele)}
+                        onPress={this.onPressMap.bind(this,ele.PRIVILEGENAME)}
                         underlayColor="transparent"
                         activeOpacity={0.5}>
                         <View style={styles.style_view_commit}>
                             <Text style={{color:'#fff'}} >
-                                {ele}
+                                {ele.PRIVILEGENAME}
                             </Text>
                         </View>
                     </TouchableHighlight>
@@ -254,7 +269,7 @@ class WelcomeView extends Component {
                     activeOpacity={0.5}>
                     <View >
                         <Text style={{color:'#fff'}} >
-                            {'数据库测试'}
+                            {'加载数据'}
                         </Text>
                     </View>
                 </TouchableHighlight>

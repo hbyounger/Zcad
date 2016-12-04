@@ -309,7 +309,7 @@ export const userLogin = (username,userWord,callback) => {
             .then(toJSON)
             .then((json) => {
                 console.log(json);
-                if (json) {// === 200
+                if (json.userid) {// === 200
                     console.log("json");
                     console.log(json);
                     dispatch({
@@ -328,7 +328,7 @@ export const userLogin = (username,userWord,callback) => {
                         type:'PLATFORM_DATA_USER_LOGIN_FAILURE',
                         payload:json
                     });
-                    alert('服务器打了小瞌睡，请重试～')
+                    alert('登录失败，请重试～')
                 }
             })
             .catch((error) => {
@@ -446,16 +446,10 @@ export const userLogin = (username,userWord,callback) => {
          payload:{message :'请选择账套'},
          })
          }*/
-
-        console.log(id);
-        if(id){
-
-        }
-
     }
 }
 
-export const getUserPrivilege = (userid) => {
+export const getUserPrivilege = (userid,callback) => {
     console.log(userid);
     let formData = new FormData;
     formData.append("userid",userid);
@@ -480,16 +474,16 @@ export const getUserPrivilege = (userid) => {
                 return response.json()
             })
             .then((json) => {
-                console.log(json);
                 if (json) {
-                    console.log(json)
+                    console.log(json);
+                     dispatch({
+                     type:'PLATFORM_DATA_USER_LOGIN_PRJS',
+                         projects:json
+                     });
+                    callback();
                 }
                 else {
                     console.log(json)
-                   /* dispatch({
-                        type:'PLATFORM_DATA_USER_LOGIN_FAILURE',
-                        payload:json
-                    });*/
                     alert('服务器打了小瞌睡，请重试～')
                 }
             })
@@ -499,11 +493,11 @@ export const getUserPrivilege = (userid) => {
     }
 }
 
-export const getAllData = (userid) => {
+export const getAllData = (userid,projectName,callback) => {
     console.log(userid);
     let formData = new FormData;
-    formData.append("userid","ewrwersds-123");
-    formData.append("projectName","3");
+    formData.append("userid",userid);
+    formData.append("projectName",projectName);
     formData.append("option","getAllData");
     console.log(formData);
     console.log("post");
@@ -518,16 +512,16 @@ export const getAllData = (userid) => {
         })
             .then(toJSON)
             .then((json) => {
-                console.log(json);
                 if (json) {
-                    console.log(json)
+                    dispatch({
+                        type:'PLATFORM_DATA_USER_LOGIN_TABLES',
+                        payload:json
+                    });
+                    callback();
+                    //console.log(json)
                 }
                 else {
                     console.log(json)
-                    /* dispatch({
-                     type:'PLATFORM_DATA_USER_LOGIN_FAILURE',
-                     payload:json
-                     });*/
                     alert('服务器打了小瞌睡，请重试～')
                 }
             })

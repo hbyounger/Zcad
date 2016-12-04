@@ -67,8 +67,8 @@ class Cell extends Component{
         /*if(this.props.Point){
 
         }*/
-        let top = this.props.Point.top,
-            left = this.props.Point.left;//.bind(this)
+        let top = this.props.Point.top||this.props.Point.y,
+            left = this.props.Point.left||this.props.Point.x;//.bind(this)
         return (
             <View style={{position: 'absolute',top: top, left: left}}>
                 <TouchableHighlight

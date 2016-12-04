@@ -112,7 +112,17 @@ export default function login( state = $$initialState , action ){
                 .set('loginStatus', 'FAILURE')
                 .merge({
                     errorMsg: action.payload.message
-                })
+                });
+        case 'PLATFORM_DATA_USER_LOGIN_PRJS':
+            console.log(action);
+            console.log(action.projects);
+            return state
+                .merge({projects: action.projects});//
+        case 'PLATFORM_DATA_USER_LOGIN_TABLES':
+            console.log(action);
+            console.log(action.payload);
+            return state
+                .merge({tables: action.payload});
         default :
             return state;
     }

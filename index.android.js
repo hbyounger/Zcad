@@ -199,9 +199,7 @@ class Zcad extends Component {
                 Component = <FeedView navigator = {navigator} />;
                 break;
             case "map":
-                Component = <MapView
-                    list = {this.list}
-                    navigator = {navigator} />;
+                Component = <MapView navigator = {navigator} />;
                 break;
 /*            case "default":
                 Component = <DefaultView navigator = {navigator} />;

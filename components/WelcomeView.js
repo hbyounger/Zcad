@@ -16,7 +16,7 @@ import { bindActionCreators } from 'redux';
 import * as projectActions from '../redux/project';
 import * as loginActions from '../actions/login';
 import Cell from './Cell';
-import Realm from 'realm';
+//import Realm from 'realm';
 
 const CarSchema = {
   name: 'Car',
@@ -146,18 +146,126 @@ class WelcomeView extends Component {
     constructor(props){
         super(props);
         // Initialize a Realm with Car and Person models
-        let realm = new Realm({
+        /*let realm = new Realm({
             schema: [
                 ProjectSchema, 
                 TableSchema,
                 FieldSchema,
                 BGSchema,
                 BSSchema]
-            });
+            });*/
         let { loginactions,login } = this.props;
-        console.log(login);
-        loginactions.getUserPrivilege(login.userid,()=>{
-            //console.log(login)
+        //console.log(login);
+        loginactions.getUserPrivilege(login.userid,(projects)=>{
+            //console.log(projects);
+            /*storage.remove({
+                key: 'userid',
+                id: login.userid,
+            });*/
+            storage.load({
+                    key: 'userid',
+                    id:login.userid,
+                    // autoSync(默认为true)意味着在没有找到数据或数据过期时自动调用相应的sync方法
+                    autoSync: false,//true,
+
+                    // syncInBackground(默认为true)意味着如果数据过期，
+                    // 在调用sync方法的同时先返回已经过期的数据。
+                    // 设置为false的话，则始终强制返回sync方法提供的最新数据(当然会需要更多等待时间)。
+                    syncInBackground: false,//true
+                })
+                .then(ret => {
+                    // 如果找到数据，则在then方法中返回
+                    // 注意：这是异步返回的结果（不了解异步请自行搜索学习）
+                    // 你只能在then这个方法内继续处理ret数据
+                    // 而不能在then以外处理
+                    // 也没有办法“变成”同步返回
+                    // 你也可以使用“看似”同步的async/await语法
+                    console.log("load");
+                    console.log(ret);
+                    //this.setState({ user: ret });
+                })
+                .catch(err => {
+                    //如果没有找到数据且没有sync方法，
+                    //或者有其他异常，则在catch中返回
+                    console.warn(err.message);
+                    switch (err.name) {
+                        case 'NotFoundError':
+                            // TODO;
+                            //alert('未找到数据');
+                            console.log("save");
+                            console.log(login.userid);
+                            storage.save({
+                                key: 'userid',  // 注意:请不要在key中使用_下划线符号!
+                                id:login.userid,
+                                rawData: projects,
+                                // 如果不指定过期时间，则会使用defaultExpires参数
+                                // 如果设为null，则永不过期
+                                expires: null,//1000 * 3600
+                            });
+                            break;
+                        case 'ExpiredError':
+                            // TODO
+                            alert('出错了');
+                            break;
+                    }
+                });
+            projects.forEach((ele)=>{
+                //console.log(ele.PRIVILEGENAME);
+                let projectid = login.userid+'-'+ele.PRIVILEGENAME;
+                storage.load({
+                        key: 'projectid',
+                        id:projectid,
+                        // autoSync(默认为true)意味着在没有找到数据或数据过期时自动调用相应的sync方法
+                        autoSync: false,//true,
+
+                        // syncInBackground(默认为true)意味着如果数据过期，
+                        // 在调用sync方法的同时先返回已经过期的数据。
+                        // 设置为false的话，则始终强制返回sync方法提供的最新数据(当然会需要更多等待时间)。
+                        syncInBackground: false,//true
+                    })
+                    .then(ret => {
+                        // 如果找到数据，则在then方法中返回
+                        // 注意：这是异步返回的结果（不了解异步请自行搜索学习）
+                        // 你只能在then这个方法内继续处理ret数据
+                        // 而不能在then以外处理
+                        // 也没有办法“变成”同步返回
+                        // 你也可以使用“看似”同步的async/await语法
+                        console.log("load prj");
+                        console.log(ret);
+                        //this.setState({ user: ret });
+                    })
+                    .catch(err => {
+                        //如果没有找到数据且没有sync方法，
+                        //或者有其他异常，则在catch中返回
+                        console.warn(err.message);
+                        switch (err.name) {
+                            case 'NotFoundError':
+                                // TODO;
+                                //alert('未找到数据');
+                                console.log("save prj");
+                                console.log(projectid);
+                                loginactions.getAllData(login.userid,ele.PRIVILEGENAME,(data)=>{
+                                    console.log("getAllData");
+                                    console.log(data);
+                                    //console.log(login.projects)
+                                    storage.save({
+                                        key: 'projectid',  // 注意:请不要在key中使用_下划线符号!
+                                        id:projectid,
+                                        rawData: data,
+                                        // 如果不指定过期时间，则会使用defaultExpires参数
+                                        // 如果设为null，则永不过期
+                                        expires: null,//1000 * 3600
+                                    });
+                                });
+                                break;
+                            case 'ExpiredError':
+                                // TODO
+                                alert('出错了');
+                                break;
+                        }
+                    });
+                console.log(ele);
+            });
             //console.log(login.projects)
         });
         this.projectList = [];

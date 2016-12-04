@@ -480,7 +480,7 @@ export const getUserPrivilege = (userid,callback) => {
                      type:'PLATFORM_DATA_USER_LOGIN_PRJS',
                          projects:json
                      });
-                    callback();
+                    callback(json);
                 }
                 else {
                     console.log(json)
@@ -517,7 +517,7 @@ export const getAllData = (userid,projectName,callback) => {
                         type:'PLATFORM_DATA_USER_LOGIN_TABLES',
                         payload:json
                     });
-                    callback();
+                    callback(json);
                     //console.log(json)
                 }
                 else {

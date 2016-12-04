@@ -13,7 +13,8 @@ import {
     TouchableHighlight,
     View,
     ScrollView,
-    Dimensions
+    Dimensions,
+    AsyncStorage,//Storage
 } from 'react-native';
 
 import configureStore from './store/configureStore'
@@ -36,7 +37,33 @@ import ProjectView from './components/Project'
 import TableListView from './components/TableListView'
 import Callback from './components/Callback';
 import Promise from './components/Promise';
-import Realm from './components/realm';
+//import Realm from './components/realm';
+import Storage from 'react-native-storage';
+
+var storage = new Storage({
+    // 最大容量，默认值1000条数据循环存储
+    size: 10000,//1000,
+
+    // 存储引擎：对于RN使用AsyncStorage，对于web使用window.localStorage
+    // 如果不指定则数据只会保存在内存中，重启后即丢失
+    storageBackend: AsyncStorage,
+
+    // 数据过期时间，默认一整天（1000 * 3600 * 24 毫秒），设为null则永不过期
+    defaultExpires: null,//1000 * 3600 * 24,
+
+    // 读写时在内存中缓存数据。默认启用。
+    enableCache: true,
+
+    // 如果storage中没有相应数据，或数据已过期，
+    // 则会调用相应的sync方法，无缝返回最新数据。
+    // sync方法的具体说明会在后文提到
+    // 你可以在构造函数这里就写好sync的方法
+    // 或是写到另一个文件里，这里require引入
+    // 或是在任何时候，直接对storage.sync进行赋值修改
+    //sync: require('./sync')
+})
+
+global.storage = storage;
 ///////////////////////////////////////////
 /*class MyScene extends Component {
     static propTypes = {
@@ -82,7 +109,7 @@ class Zcad extends Component {
         };
         this.startX = 0;
         this.startY = 0;
-        this.list = [
+        /*this.list = [
             {top : 0 ,left : 0},
             {top : 55 ,left : 66},
             {top : 77 ,left : 23},
@@ -93,10 +120,10 @@ class Zcad extends Component {
             {top : Dimensions.get('window').height-45,left : 0},
             {top : Dimensions.get('window').height-45,left : Dimensions.get('window').width-20},
             {top : 0,left : Dimensions.get('window').width-20},
-            {top : Dimensions.get('window').height/2-22,left : Dimensions.get('window').width/2-10}];
+            {top : Dimensions.get('window').height/2-22,left : Dimensions.get('window').width/2-10}];*/
     }
 
-    handleTouchStart(event) {//: Object
+    /*handleTouchStart(event) {//: Object
         this.startX = event.nativeEvent.pageX;
         this.startY = event.nativeEvent.pageY;
     }
@@ -115,7 +142,7 @@ class Zcad extends Component {
         if (direction !== -1) {
             //this.setState({board: this.state.board.move(direction)});
         }
-    }
+    }*/
     /*<MoviesApp>123</MoviesApp>
     * <SampleApp style={styles.instructions}/>
     * <View style={styles.container}
@@ -228,9 +255,9 @@ class Zcad extends Component {
             case 'promise':
                 Component = <Promise navigator = {navigator}/>;
                 break;
-            case 'realm':
+            /*case 'realm':
                 Component = <Realm navigator = {navigator} />;
-                break;
+                break;*/
             default: //default view PickerExample
                 Component = <DefaultView navigator = {navigator} />;
         }

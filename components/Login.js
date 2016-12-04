@@ -25,13 +25,13 @@ class Login extends Component {
         super(props);
         // Initialize a Realm with Car and Person models
         //this.state
-        console.log(this);
-        console.log(this.state);
+        //console.log(this);
+        //console.log(this.state);
         this.state = {
             userName : '',
             wordValue : '',
         };
-        console.log(this.state);
+        //console.log(this.state);
     }
     onPress = ()=>{
         /*let { actions } = this.props;
@@ -45,6 +45,25 @@ class Login extends Component {
 
         actions.userLogin(this.state.userName,this.state.wordValue,(userid)=>{
             console.log(userid);
+            console.log("save user");
+            console.log(userid);
+            storage.save({
+                key: 'user',  // 注意:请不要在key中使用_下划线符号!
+                id:'last',
+                rawData: userid,
+                // 如果不指定过期时间，则会使用defaultExpires参数
+                // 如果设为null，则永不过期
+                expires: null,//1000 * 3600
+            });
+            storage.save({
+                key: 'user',  // 注意:请不要在key中使用_下划线符号!
+                id:'login',
+                rawData: "online",
+                // 如果不指定过期时间，则会使用defaultExpires参数
+                // 如果设为null，则永不过期
+                expires: null,//1000 * 3600
+            });
+
             this.props.navigator.push({name: 'welcome'});
         });
         /*const alertMessage =  '登录失败';
@@ -53,7 +72,42 @@ class Login extends Component {
 
     onOfflinePress = ()=>{
         let { actions } = this.props;
-        this.props.navigator.push({name: 'welcome'});
+        storage.load({
+                key: 'user',
+                id:'last',
+                autoSync: false,//true,
+                syncInBackground: false,//true
+            })
+            .then(ret => {
+                console.log("load user");
+                console.log(ret);
+                storage.save({
+                    key: 'user',  // 注意:请不要在key中使用_下划线符号!
+                    id:'login',
+                    rawData: "offline",
+                    // 如果不指定过期时间，则会使用defaultExpires参数
+                    // 如果设为null，则永不过期
+                    expires: null,//1000 * 3600
+                });
+                this.props.navigator.push({name: 'welcome'});
+                //this.setState({ user: ret });
+            })
+            .catch(err => {
+                //如果没有找到数据且没有sync方法，
+                //或者有其他异常，则在catch中返回
+                console.warn(err.message);
+                switch (err.name) {
+                    case 'NotFoundError':
+                        // TODO;
+                        alert('未找到之前登录数据');
+                        break;
+                    case 'ExpiredError':
+                        // TODO
+                        alert('出错了');
+                        break;
+                }
+            });
+
         //actions.test(this.props.num);
     };
 

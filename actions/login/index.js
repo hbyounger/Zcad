@@ -4,26 +4,6 @@
 //import fetchURL from 'fetch';
 import env from '../../helpers/env';
 import { toJSON, genAction, genFetchOptions } from '../../helpers/util';
-/*import request from 'superagent'
-
- export function login(name,password){
- return function(dispatch){
- console.log('login');
- request
- .post('/plogin')
- /!*            .send({
- acct_name:'1',
- password:'123'
- })*!/
- .end(function(err,res){
- dispatch({
- type : 'LOGIN',
- logresult : res.body
- })
- })
- }
- }*/
-
 
 export function modalclose(){
     return function(dispatch){
@@ -54,185 +34,6 @@ export function onchange(name,value){
     }
 }
 
-/*export function anonymouslogin(name,password){
- return function(dispatch){
- //console.log('anonymouslogin');
- request
- .post('/quickLogin')
- .end(function(err,res){
- dispatch({
- type : 'ALOGIN',
- logresult : res.body
- })
- })
- }
- }*/
-
-export function setaccount(value){
-    return function(dispatch){
-        //console.log('SETACCOUNT'+value);
-        dispatch({
-            type : 'SETACCOUNT',
-            account : value
-        })
-    }
-}
-export function setstatus(value){
-    return function(dispatch){
-        //console.log('SETSTATUS'+value);
-        dispatch({
-            type : 'SETSTATUS',
-            logstatus : value
-        })
-    }
-}
-
-export function setUserName(value) {
-    //emptyAccountUL();
-    //console.log(value);
-    let username = value,
-        errorMsg = '';
-    if (!username || username == "") {
-        errorMsg = "登录账号不能为空，请输入";
-        //hiddenTitle();
-        //return;
-        //console.log(errorMsg);
-    }
-    return (dispatch) => {
-        dispatch({
-            type: 'PLATFORM_DATA_LOGIN_USERNAME',
-            username: value,
-            errorMsg: errorMsg
-        })
-    };
-}
-
-
-export function setPassWord(name, word) {
-    //emptyAccountUL();
-    //console.log(name+'-'+word);
-    let password = word,
-        username = name,
-        errorMsg = '';
-    if (!username || username == "") {
-        if (!password || password == "") {
-            errorMsg = "登录账号和密码不能为空，请输入";
-        }
-        else {
-            errorMsg = "登录账号不能为空，请输入";
-        }
-    }
-    else {
-        if (!password || password == "") {
-            errorMsg = "密码不能为空，请输入";
-        }
-    }
-    //console.log(errorMsg);
-    /*if (!password || password == "") {
-     errorMsg = "密码不能空，请输入";
-     //hiddenTitle();
-     //return;
-
-     }*/
-    return (dispatch) => {
-        //getAccount(username,password);
-        dispatch({
-            type: 'PLATFORM_DATA_LOGIN_PASSWORD',
-            errorMsg: errorMsg
-        })
-        let options = {
-            method: 'post',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({
-                'username': username,
-                'password': password,
-            })
-        }
-
-        /*fetchUrl(env.HTTP_USER_COR_ACC, options)
-         .then(function (response) {
-         if (response.status >= 400) {
-         throw new Error("Bad response from server")
-         }
-         //let temp = response.json()
-         //console.log(temp);
-         return response.json()
-         })
-         .then(function (json) {
-         if (json.code === 200) {
-         //console.log(json.data);
-         dispatch({
-         type: 'PLATFORM_DATA_LOGIN_GET_ACCOUT_SUC',
-         account: json.data,
-         });
-         } else {
-         //console.log(json.data);
-         dispatch({
-         type: 'PLATFORM_DATA_LOGIN_GET_ACCOUT_FAI',
-         errorMsg: json.data
-         })
-         }
-         })*/
-    };
-}
-
-function createXMLHTTPRequest() {
-    //1.创建XMLHttpRequest对象
-    //这是XMLHttpReuquest对象无部使用中最复杂的一步
-    //需要针对IE和其他类型的浏览器建立这个对象的不同方式写不同的代码
-    var xmlHttpRequest;
-    if (window.XMLHttpRequest) {
-        //针对FireFox，Mozillar，Opera，Safari，IE7，IE8
-        xmlHttpRequest = new XMLHttpRequest();
-        //针对某些特定版本的mozillar浏览器的BUG进行修正
-        if (xmlHttpRequest.overrideMimeType) {
-            xmlHttpRequest.overrideMimeType("text/xml");
-        }
-    } else if (window.ActiveXObject) {
-        //针对IE6，IE5.5，IE5
-        //两个可以用于创建XMLHTTPRequest对象的控件名称，保存在一个js的数组中
-        //排在前面的版本较新
-        var activexName = [ "MSXML2.XMLHTTP", "Microsoft.XMLHTTP" ];
-        for ( var i = 0; i < activexName.length; i++) {
-            try {
-                //取出一个控件名进行创建，如果创建成功就终止循环
-                //如果创建失败，回抛出异常，然后可以继续循环，继续尝试创建
-                xmlHttpRequest = new ActiveXObject(activexName[i]);
-                if(xmlHttpRequest){
-                    break;
-                }
-            } catch (e) {
-            }
-        }
-    }
-    return xmlHttpRequest;
-}
-
-function post(options){
-    console.log('post');
-    var req = createXMLHTTPRequest();
-    if(req){
-        req.open("POST", env.HTTP_USER_LOGIN, true);
-        req.setRequestHeader("Content-Type","multipart/form-data; charset=utf-8");//application/json//application/x-www-form-urlencoded
-        req.send(options);
-        req.onreadystatechange = function(e){
-            console.log(req);
-            console.log(e);
-            console.log(req.json());
-            if(req.readyState == 4){
-                if(req.status == 200){
-                    alert("success");
-                }
-                else{
-                    alert("error");
-                }
-            }
-        }
-    }
-}
-
 export const userLogin = (username,userWord,callback) => {
 
     let formData = new FormData;
@@ -245,10 +46,7 @@ export const userLogin = (username,userWord,callback) => {
             type: 'PLATFORM_DATA_USER_LOGIN',
         });
         console.log(env.HTTP_USER_LOGIN);
-        //console.log(formData);
         options = genFetchOptions('post', formData);
-        //console.log(options);
-        //post(options);
         let id;
         fetch(env.HTTP_USER_LOGIN, {
             method: 'POST',
@@ -266,7 +64,7 @@ export const userLogin = (username,userWord,callback) => {
                     dispatch({
                         type:'PLATFORM_DATA_USER_LOGIN_SUCCEED',
                         payload:json,
-                        logType : 'off',
+                        offline : false,
                     });
                     callback(json.userid);
                 }
@@ -286,12 +84,13 @@ export const userLogin = (username,userWord,callback) => {
 };
 export const userOfflineLogin = (userid) => {
 
+    console.log(userid);
     return (dispatch) => {
         // 登陆中，做禁用登陆 Button 等操作
         dispatch({
             type:'PLATFORM_DATA_USER_LOGIN_SUCCEED',
             payload:{
-                logType : 'off',
+                offline : true,
                 userid : userid
             },
         });
@@ -319,7 +118,53 @@ export const getUserPrivilege = (userid,callback) => {
             })
             .then((json) => {
                 if (json) {
-                    console.log(json);
+                    //console.log(json);
+                    storage.load({
+                            key: 'userid',
+                            id:userid,
+                            // autoSync(默认为true)意味着在没有找到数据或数据过期时自动调用相应的sync方法
+                            autoSync: false,//true,
+                            syncInBackground: false,//true
+                        })
+                        .then(ret => {
+                            console.log("load");
+                            console.log(ret);
+                            //TODO:比较工程队列是否需要更新
+                            if(ret.length!=json.length){
+                                storage.save({
+                                    key: 'userid',  // 注意:请不要在key中使用_下划线符号!
+                                    id:userid,
+                                    rawData: json,
+                                    // 如果不指定过期时间，则会使用defaultExpires参数
+                                    // 如果设为null，则永不过期
+                                    expires: null,//1000 * 3600
+                                });
+                            }
+                            //this.setState({ user: ret });
+                        })
+                        .catch(err => {
+                            console.warn(err.message);
+                            switch (err.name) {
+                                case 'NotFoundError':
+                                    // TODO;
+                                    //alert('未找到数据');
+                                    console.log("save");
+                                    console.log(userid);
+                                    storage.save({
+                                        key: 'userid',  // 注意:请不要在key中使用_下划线符号!
+                                        id:userid,
+                                        rawData: json,
+                                        // 如果不指定过期时间，则会使用defaultExpires参数
+                                        // 如果设为null，则永不过期
+                                        expires: null,//1000 * 3600
+                                    });
+                                    break;
+                                case 'ExpiredError':
+                                    // TODO
+                                    alert('出错了');
+                                    break;
+                            }
+                        });
                      dispatch({
                      type:'PLATFORM_DATA_USER_LOGIN_PRJS',
                          projects:json
@@ -336,7 +181,23 @@ export const getUserPrivilege = (userid,callback) => {
             })
     }
 }
+export const getOfflineData = (data)=>{
+    return(dispatch)=>{
+        dispatch({
+            type:'PLATFORM_DATA_USER_LOGIN_PRJS',
+            projects:data
+        });
+    }
+}
+export const getOfflineTables = (data) => {
 
+    return (dispatch) => {
+        dispatch({
+            type:'PLATFORM_DATA_USER_LOGIN_TABLES',
+            payload:data
+        });
+    }
+}
 export const getAllData = (userid,projectName,callback) => {
     console.log(userid);
     let formData = new FormData;

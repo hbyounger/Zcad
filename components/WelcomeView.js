@@ -146,117 +146,151 @@ class WelcomeView extends Component {
     constructor(props){
         super(props);
         // Initialize a Realm with Car and Person models
-        /*let realm = new Realm({
-            schema: [
-                ProjectSchema, 
-                TableSchema,
-                FieldSchema,
-                BGSchema,
-                BSSchema]
-            });*/
-        let { loginactions,login } = this.props;
-        //console.log(login);
-        loginactions.getUserPrivilege(login.userid,(projects)=>{
-            //console.log(projects);
-            /*storage.remove({
-                key: 'userid',
-                id: login.userid,
-            });*/
-            storage.load({
-                    key: 'userid',
-                    id:login.userid,
-                    // autoSync(默认为true)意味着在没有找到数据或数据过期时自动调用相应的sync方法
-                    autoSync: false,//true,
+        this.projectList = [];
+        console.log("loadData");
+        this.loadData();
+    }
 
-                    // syncInBackground(默认为true)意味着如果数据过期，
-                    // 在调用sync方法的同时先返回已经过期的数据。
-                    // 设置为false的话，则始终强制返回sync方法提供的最新数据(当然会需要更多等待时间)。
-                    syncInBackground: false,//true
-                })
-                .then(ret => {
-                    // 如果找到数据，则在then方法中返回
-                    // 注意：这是异步返回的结果（不了解异步请自行搜索学习）
-                    // 你只能在then这个方法内继续处理ret数据
-                    // 而不能在then以外处理
-                    // 也没有办法“变成”同步返回
-                    // 你也可以使用“看似”同步的async/await语法
-                    console.log("load");
-                    console.log(ret);
-                    //this.setState({ user: ret });
-                })
-                .catch(err => {
-                    //如果没有找到数据且没有sync方法，
-                    //或者有其他异常，则在catch中返回
-                    console.warn(err.message);
-                    switch (err.name) {
-                        case 'NotFoundError':
-                            // TODO;
-                            //alert('未找到数据');
-                            console.log("save");
-                            console.log(login.userid);
-                            storage.save({
-                                key: 'userid',  // 注意:请不要在key中使用_下划线符号!
-                                id:login.userid,
-                                rawData: projects,
-                                // 如果不指定过期时间，则会使用defaultExpires参数
-                                // 如果设为null，则永不过期
-                                expires: null,//1000 * 3600
-                            });
-                            break;
-                        case 'ExpiredError':
-                            // TODO
-                            alert('出错了');
-                            break;
-                    }
+    onPressMap(value){
+        let {loginactions,login,projectActions} = this.props;
+        let projectid = login.userid+'-'+value;
+        //console.log(login);
+        projectActions.SetProject(value);
+
+        storage.load({
+                key: 'projectid',
+                id:projectid,
+                // autoSync(默认为true)意味着在没有找到数据或数据过期时自动调用相应的sync方法
+                autoSync: false,//true,
+                syncInBackground: false,//true
+            })
+            .then(ret => {
+                // 如果找到数据，则在then方法中返回
+                // 注意：这是异步返回的结果（不了解异步请自行搜索学习）
+                // 你只能在then这个方法内继续处理ret数据
+                // 而不能在then以外处理
+                // 也没有办法“变成”同步返回
+                // 你也可以使用“看似”同步的async/await语法
+                console.log("load prj");
+                console.log(ret);
+                //this.setState({ user: ret });
+                loginactions.getOfflineTables(ret);
+                this.props.navigator.push({name: 'map'});
+            })
+            .catch(err => {
+                //如果没有找到数据且没有sync方法，
+                //或者有其他异常，则在catch中返回
+                console.warn(err.message);
+                switch (err.name) {
+                    case 'NotFoundError':
+                        // TODO;
+                        alert("没有数据");
+                        break;
+                    case 'ExpiredError':
+                        // TODO
+                        alert('出错了');
+                        break;
+                }
+            });
+    }
+    onSubmit(){
+        this.props.navigator.push({name: 'login'});
+    }
+    onTest(){
+        this.loadData();
+        //loginactions.getAllData();
+        //this.props.navigator.push({name: 'realm'});//callback//promise
+    }
+    loadData = ()=>{
+        let { loginactions,login } = this.props;
+        console.log(login);
+        console.log(login.offline);
+        if(!login.offline){
+            loginactions.getUserPrivilege(login.userid,(projects)=>{
+
+                projects.forEach((ele)=>{
+                    //console.log(ele.PRIVILEGENAME);
+                    let projectid = login.userid+'-'+ele.PRIVILEGENAME;
+                    storage.load({
+                            key: 'projectid',
+                            id:projectid,
+                            // autoSync(默认为true)意味着在没有找到数据或数据过期时自动调用相应的sync方法
+                            autoSync: false,//true,
+
+                            // syncInBackground(默认为true)意味着如果数据过期，
+                            // 在调用sync方法的同时先返回已经过期的数据。
+                            // 设置为false的话，则始终强制返回sync方法提供的最新数据(当然会需要更多等待时间)。
+                            syncInBackground: false,//true
+                        })
+                        .then(ret => {
+                            // 如果找到数据，则在then方法中返回
+                            // 注意：这是异步返回的结果（不了解异步请自行搜索学习）
+                            // 你只能在then这个方法内继续处理ret数据
+                            // 而不能在then以外处理
+                            // 也没有办法“变成”同步返回
+                            // 你也可以使用“看似”同步的async/await语法
+                            console.log("load prj");
+                            console.log(ret);
+                            //this.setState({ user: ret });
+                        })
+                        .catch(err => {
+                            //如果没有找到数据且没有sync方法，
+                            //或者有其他异常，则在catch中返回
+                            console.warn(err.message);
+                            switch (err.name) {
+                                case 'NotFoundError':
+                                    // TODO;
+                                    //
+                                    console.log("save prj");
+                                    console.log(projectid);
+                                    loginactions.getAllData(login.userid,ele.PRIVILEGENAME,(data)=>{
+                                        console.log("getAllData");
+                                        console.log(data);
+                                        //console.log(login.projects)
+                                        storage.save({
+                                            key: 'projectid',  // 注意:请不要在key中使用_下划线符号!
+                                            id:projectid,
+                                            rawData: data,
+                                            // 如果不指定过期时间，则会使用defaultExpires参数
+                                            // 如果设为null，则永不过期
+                                            expires: null,//1000 * 3600
+                                        });
+                                    });
+                                    break;
+                                case 'ExpiredError':
+                                    // TODO
+                                    alert('出错了');
+                                    break;
+                            }
+                        });
+                    console.log(ele);
                 });
-            projects.forEach((ele)=>{
-                //console.log(ele.PRIVILEGENAME);
-                let projectid = login.userid+'-'+ele.PRIVILEGENAME;
+                //console.log(login.projects)
+            });
+        }
+        else {
+            console.log("offline")
+            if(!login.projects){
                 storage.load({
-                        key: 'projectid',
-                        id:projectid,
+                        key: 'userid',
+                        id:login.userid,
                         // autoSync(默认为true)意味着在没有找到数据或数据过期时自动调用相应的sync方法
                         autoSync: false,//true,
-
-                        // syncInBackground(默认为true)意味着如果数据过期，
-                        // 在调用sync方法的同时先返回已经过期的数据。
-                        // 设置为false的话，则始终强制返回sync方法提供的最新数据(当然会需要更多等待时间)。
                         syncInBackground: false,//true
                     })
                     .then(ret => {
-                        // 如果找到数据，则在then方法中返回
-                        // 注意：这是异步返回的结果（不了解异步请自行搜索学习）
-                        // 你只能在then这个方法内继续处理ret数据
-                        // 而不能在then以外处理
-                        // 也没有办法“变成”同步返回
-                        // 你也可以使用“看似”同步的async/await语法
-                        console.log("load prj");
+                        console.log("load");
                         console.log(ret);
+                        //TODO:比较工程队列是否需要更新
+                        loginactions.getOfflineData(ret);
                         //this.setState({ user: ret });
                     })
                     .catch(err => {
-                        //如果没有找到数据且没有sync方法，
-                        //或者有其他异常，则在catch中返回
                         console.warn(err.message);
                         switch (err.name) {
                             case 'NotFoundError':
                                 // TODO;
-                                //alert('未找到数据');
-                                console.log("save prj");
-                                console.log(projectid);
-                                loginactions.getAllData(login.userid,ele.PRIVILEGENAME,(data)=>{
-                                    console.log("getAllData");
-                                    console.log(data);
-                                    //console.log(login.projects)
-                                    storage.save({
-                                        key: 'projectid',  // 注意:请不要在key中使用_下划线符号!
-                                        id:projectid,
-                                        rawData: data,
-                                        // 如果不指定过期时间，则会使用defaultExpires参数
-                                        // 如果设为null，则永不过期
-                                        expires: null,//1000 * 3600
-                                    });
-                                });
+                                alert('未找到数据');
                                 break;
                             case 'ExpiredError':
                                 // TODO
@@ -264,31 +298,9 @@ class WelcomeView extends Component {
                                 break;
                         }
                     });
-                console.log(ele);
-            });
-            //console.log(login.projects)
-        });
-        this.projectList = [];
-    }
-    onPressMap(value){
-        let {projectActions} = this.props;
-
-        let { loginactions,login } = this.props;
-        //console.log(login);
-        loginactions.getAllData(login.userid,value,()=>{
-            //console.log(login)
-            //console.log(login.projects)
-            this.props.navigator.push({name: 'map'});
-            projectActions.SetProject(value);
-        });
-    }
-    onSubmit(){
-        this.props.navigator.push({name: 'login'});
-    }
-    onTest(){
-        //loginactions.getAllData();
-        //this.props.navigator.push({name: 'realm'});//callback//promise
-    }
+            }
+        }
+    };
     renderProgressEntry = (entry)=>{
         //styles.style_view_commit
         //listStyles.li
@@ -305,29 +317,12 @@ class WelcomeView extends Component {
             </TouchableHighlight>
         )
     }
-    /*<TouchableHighlight
-     onPress={this.onPressMap.bind(this,entry)}
-     underlayColor="transparent"
-     activeOpacity={0.5}>
 
-     </TouchableHighlight>*/
     render() {
-        /*var rows = this.state.board.grid.map((cells, row) =>
-         <View key={'row' + row} style={styles.row}>
-         {cells.map((player, col) =>
-         <Cell
-         key={'cell' + col}
-         player={player}
-         onPress={this.handleCellPress.bind(this, row, col)}
-         />
-         )}
-         </View>
 
-         );*/
         let { loginactions,login } = this.props;
         let ProjectArray = [];//.bind(this,ele)
-        //let ds = new ListView.DataSource({rowHasChanged: (r1, r2) => r1 !== r2});
-        //console.log(login.projects);
+
         if(login.projects){
             this.projectList = login.projects;
         }
@@ -348,10 +343,7 @@ class WelcomeView extends Component {
                 )
             })
         }
-        /*<ListView
-         dataSource={ds.cloneWithRows(this.projectList)}
-         renderRow={this.renderProgressEntry}
-         style={listStyles.liContainer}/>*/
+
         return (
 
             <View >
@@ -382,34 +374,10 @@ class WelcomeView extends Component {
                     </View>
                 </TouchableHighlight>
             </View>
-
         );
     }
 }
-/*const listStyles = StyleSheet.create({
-    li: {
-        borderBottomColor: '#c8c7cc',
-        borderBottomWidth: 0.5,
-        paddingTop: 15,
-        paddingRight: 15,
-        paddingBottom: 15,
-    },
-    liContainer: {
-        backgroundColor: '#fff',
-        flex: 1,
-        paddingLeft: 15,
-    },
-    liIndent: {
-        flex: 1,
-    },
-    liText: {
-        color: '#333',
-        fontSize: 17,
-        fontWeight: '400',
-        marginBottom: -3.5,
-        marginTop: -3.5,
-    },
-});*/
+
 const styles = StyleSheet.create({
     style_view_exit:{
         marginTop:25,

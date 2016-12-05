@@ -34,15 +34,8 @@ class Login extends Component {
         //console.log(this.state);
     }
     onPress = ()=>{
-        /*let { actions } = this.props;
-        this.props.navigator.push({name: 'welcome'});*/
-        //actions.test(this.props.num);
-        //let { loginActions } = this.props;
-        //e.preventDefault();
-        let {actions} = this.props;
-        //console.log('收到表单值：', this.props.form.getFieldsValue());
-        //
 
+        let {actions} = this.props;
         actions.userLogin(this.state.userName,this.state.wordValue,(userid)=>{
             console.log(userid);
             console.log("save user");
@@ -55,14 +48,14 @@ class Login extends Component {
                 // 如果设为null，则永不过期
                 expires: null,//1000 * 3600
             });
-            storage.save({
+            /*storage.save({
                 key: 'user',  // 注意:请不要在key中使用_下划线符号!
                 id:'login',
                 rawData: "online",
                 // 如果不指定过期时间，则会使用defaultExpires参数
                 // 如果设为null，则永不过期
                 expires: null,//1000 * 3600
-            });
+            });*/
 
             this.props.navigator.push({name: 'welcome'});
         });
@@ -81,14 +74,15 @@ class Login extends Component {
             .then(ret => {
                 console.log("load user");
                 console.log(ret);
-                storage.save({
+                actions.userOfflineLogin(ret);
+                /*storage.save({
                     key: 'user',  // 注意:请不要在key中使用_下划线符号!
                     id:'login',
                     rawData: "offline",
                     // 如果不指定过期时间，则会使用defaultExpires参数
                     // 如果设为null，则永不过期
                     expires: null,//1000 * 3600
-                });
+                });*/
                 this.props.navigator.push({name: 'welcome'});
                 //this.setState({ user: ret });
             })
@@ -107,8 +101,6 @@ class Login extends Component {
                         break;
                 }
             });
-
-        //actions.test(this.props.num);
     };
 
     handleServerChange = (e)=>{

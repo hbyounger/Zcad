@@ -234,8 +234,7 @@ function post(options){
 }
 
 export const userLogin = (username,userWord,callback) => {
-    /*let corp_id = user.corp_id,
-     username = user.username;*/
+
     let formData = new FormData;
     formData.append("username",username);
     formData.append("password",userWord);
@@ -246,57 +245,10 @@ export const userLogin = (username,userWord,callback) => {
             type: 'PLATFORM_DATA_USER_LOGIN',
         });
         console.log(env.HTTP_USER_LOGIN);
-        console.log(formData);
-
-        options = genFetchOptions('post', formData/*{
-         username: username,
-         password: userWord,
-         option: 'login',
-         }*/);
-        console.log(options);
+        //console.log(formData);
+        options = genFetchOptions('post', formData);
+        //console.log(options);
         //post(options);
-        /*fetch(env.HTTP_USER_LOGIN, options)
-            .then(toJSON)//(response) => response.json()//
-            .then(function (json){
-                console.log(json);
-                if (json.code === 200) {
-                    //console.log(json.data)
-                    dispatch({
-                        type:'PLATFORM_DATA_USER_LOGIN_SUCCEED',
-                        payload:json
-                    });
-                    console.log('login ok');
-                    callback();
-                    //getuserprivilege();
-                    /!*if (process.env.__CLIENT__ === true) {
-                     //cb.rest.AppContext.token = json.data.token;
-                     //location.href = '/'
-                     }*!/
-                }
-                else {
-                    console.log(json)
-                    dispatch({
-                        type:'PLATFORM_DATA_USER_LOGIN_FAILURE',
-                        payload:json
-                    });
-                    alert('服务器打了小瞌睡，请重试～')
-                }
-            })
-            .catch((error) => {
-                console.error(error);
-            });*/
-        /*options={
-            option: 'login',
-            type: 'POST',
-            dataType: 'json',
-            data: {
-                username: username,
-                password: userWord,
-                option: 'login'//  option: 'layerControl'   //
-            },
-        }
-        console.log(options);*/
-
         let id;
         fetch(env.HTTP_USER_LOGIN, {
             method: 'POST',
@@ -308,19 +260,15 @@ export const userLogin = (username,userWord,callback) => {
         })
             .then(toJSON)
             .then((json) => {
-                console.log(json);
                 if (json.userid) {// === 200
                     console.log("json");
                     console.log(json);
                     dispatch({
                         type:'PLATFORM_DATA_USER_LOGIN_SUCCEED',
-                        payload:json
+                        payload:json,
+                        logType : 'off',
                     });
-                    //console.log(json.);
-                    //console.log(json._65.userid);
                     callback(json.userid);
-                    //getUserPrivilege(json.userid);
-                    //id = json.userid;
                 }
                 else {
                     console.log(json);
@@ -333,122 +281,22 @@ export const userLogin = (username,userWord,callback) => {
             })
             .catch((error) => {
                 console.error(error);
-            })
-         //fetch(env.HTTP_USER_LOGIN,options)
-         //.then((response) => {
-         //    console.log(response);
-         //    response.json();
-         //  })
-         //.catch((error) => {
-         //   console.log(error);
-         /*LOADING[query] = false;
-         resultsCache.dataForQuery[query] = undefined;
-
-         this.setState({
-         dataSource: this.getDataSource([]),
-         isLoading: false,
-         });*/
-        //})
-        //.then((responseData) => {
-        //    console.log(responseData);
-        /*LOADING[query] = false;
-         resultsCache.totalForQuery[query] = responseData.total;
-         resultsCache.dataForQuery[query] = responseData.movies;
-         resultsCache.nextPageNumberForQuery[query] = 2;
-
-         if (this.state.filter !== query) {
-         // do not update state if the query is stale
-         return;
-         }
-
-         this.setState({
-         isLoading: false,
-         dataSource: this.getDataSource(responseData.movies),
-         });*/
-        //})
-        //.done();
-
-        /*$.ajax({
-         type: 'POST',
-         // url: 'ajaxService/mapOperate.ashx',
-         url: env.HTTP_USER_LOGIN,
-         dataType: 'json',
-         data: {
-         username: username,
-         password: userWord,
-         option: 'login'//  option: 'layerControl'   //
-         },
-         success: function (json) {
-         console.log(json);
-         var msg = json.result;
-
-         if (msg == '0') {
-         Ext.MessageBox.alert('提示', '用户名或密码错误');// alert('用户名或密码错误！');
-         }
-         else if (msg == "-1") {
-         Ext.MessageBox.alert('提示', '用户尚未被审核，请尽快与管理员联系！'); //alert('用户尚未被审核，请尽快与管理员联系！');
-         }
-         else if (msg == "-2") {
-         Ext.MessageBox.alert('提示', '数据服务错误，请尽快与管理员联系！'); //alert('数据连接错误，请尽快与管理员联系！');
-         }
-         else if (msg == "-3") {
-         Ext.MessageBox.alert('提示', '权限不足，您无法登录系统！');
-         }
-         else {
-         window.location = "MainForm.aspx";
-         }
-         },
-         error: function () {
-         alert('系统故障');
-         }
-         });*/
-        /*$.ajax({
-         type: 'POST',
-         // url: 'ajaxService/mapOperate.ashx',
-         url: env.HTTP_USER_LOGIN,
-         dataType: 'json',
-         data: {
-         username:username,
-         password:userWord,
-         option:'login'//  option: 'layerControl'   //
-         },
-         success: function (json) {
-
-         var msg = json.result;
-         if(msg =='0'){
-         console.log('提示', '用户名或密码错误');// alert('用户名或密码错误！');
-         }
-         else if(msg == "-1"){
-         console.log('提示', '用户尚未被审核，请尽快与管理员联系！'); //alert('用户尚未被审核，请尽快与管理员联系！');
-         }
-         else if (msg == "-2") {
-         console.log('提示', '数据服务错误，请尽快与管理员联系！'); //alert('数据连接错误，请尽快与管理员联系！');
-         }
-         else if (msg == "-3") {
-         console.log('提示', '权限不足，您无法登录系统！');
-         }
-         else{
-         callback();
-         }
-         },
-         error: function () {
-         alert('用户信息错误！');
-         }
-         });*/
-
-        /*if(process.env.NODE_ENV === 'development'){
-         console.log(options);
-
-         }
-         else {
-         dispatch({
-         type:'PLATFORM_DATA_USER_LOGIN_FAILURE',
-         payload:{message :'请选择账套'},
-         })
-         }*/
+            });
     }
-}
+};
+export const userOfflineLogin = (userid) => {
 
+    return (dispatch) => {
+        // 登陆中，做禁用登陆 Button 等操作
+        dispatch({
+            type:'PLATFORM_DATA_USER_LOGIN_SUCCEED',
+            payload:{
+                logType : 'off',
+                userid : userid
+            },
+        });
+    }
+};
 export const getUserPrivilege = (userid,callback) => {
     console.log(userid);
     let formData = new FormData;
@@ -467,10 +315,6 @@ export const getUserPrivilege = (userid,callback) => {
             body: formData,
         })
             .then((response) => {
-                //console.log(response);
-                //console.log(response.status);
-                //console.log(response.text());
-                //console.log(response.json());
                 return response.json()
             })
             .then((json) => {

@@ -27,7 +27,7 @@ class WelcomeView extends Component {
     constructor(props){
         super(props);
         this.projectList = [];
-        console.log("loadData");
+        //console.log("loadData");
         this.loadData();
     }
 
@@ -44,9 +44,6 @@ class WelcomeView extends Component {
                 syncInBackground: false,//true
             })
             .then(ret => {
-                console.log("load prj");
-                console.log(ret);
-                //this.setState({ user: ret });
                 loginactions.getOfflineTables(ret);
                 this.props.navigator.push({name: 'map'});
             })
@@ -64,12 +61,15 @@ class WelcomeView extends Component {
                 }
             });
     }
+
     onSubmit(){
         this.props.navigator.push({name: 'login'});
     }
+
     onTest(){
         this.loadData();
     }
+
     loadData = ()=>{
         let { loginactions,login } = this.props;
         if(!login.offline){
@@ -84,9 +84,6 @@ class WelcomeView extends Component {
                             syncInBackground: false,//true
                         })
                         .then(ret => {
-                            console.log("load prj");
-                            console.log(ret);
-                            //this.setState({ user: ret });
                         })
                         .catch(err => {
                             console.warn(err.message);
@@ -94,12 +91,7 @@ class WelcomeView extends Component {
                                 case 'NotFoundError':
                                     // TODO;
                                     //
-                                    console.log("save prj");
-                                    console.log(projectid);
                                     loginactions.getAllData(login.userid,ele.PRIVILEGENAME,(data)=>{
-                                        console.log("getAllData");
-                                        console.log(data);
-                                        //console.log(login.projects)
                                         storage.save({
                                             key: 'projectid',  // 注意:请不要在key中使用_下划线符号!
                                             id:projectid,
@@ -114,7 +106,7 @@ class WelcomeView extends Component {
                                     break;
                             }
                         });
-                    console.log(ele);
+                    //console.log(ele);
                 });
                 //console.log(login.projects)
             });
@@ -130,8 +122,8 @@ class WelcomeView extends Component {
                         syncInBackground: false,//true
                     })
                     .then(ret => {
-                        console.log("load");
-                        console.log(ret);
+                        /*console.log("load");
+                        console.log(ret);*/
                         //TODO:比较工程队列是否需要更新
                         loginactions.getOfflineData(ret);
                         //this.setState({ user: ret });
@@ -152,6 +144,7 @@ class WelcomeView extends Component {
             }
         }
     };
+
     renderProgressEntry = (entry)=>{
         //styles.style_view_commit
         //listStyles.li
@@ -196,7 +189,6 @@ class WelcomeView extends Component {
         }
 
         return (
-
             <View >
                 <Text style={styles.welcome} >
                     选择项目

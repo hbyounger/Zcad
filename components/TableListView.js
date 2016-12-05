@@ -21,7 +21,7 @@ class TableListView extends Component {
         let table = login.tables,
             List = table["项目_表"];//表名
         List.forEach(ele=>{
-            console.log(ele["表名"]);
+            //console.log(ele["表名"]);
             this.tableList.push(ele["表名"]);
         })
     }

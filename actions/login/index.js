@@ -35,7 +35,6 @@ export function onchange(name,value){
 }
 
 export const userLogin = (username,userWord,callback) => {
-
     let formData = new FormData;
     formData.append("username",username);
     formData.append("password",userWord);
@@ -45,9 +44,9 @@ export const userLogin = (username,userWord,callback) => {
         dispatch({
             type: 'PLATFORM_DATA_USER_LOGIN',
         });
-        console.log(env.HTTP_USER_LOGIN);
+        //console.log(env.HTTP_USER_LOGIN);
         options = genFetchOptions('post', formData);
-        let id;
+        //let id;
         fetch(env.HTTP_USER_LOGIN, {
             method: 'POST',
             headers: {
@@ -83,8 +82,7 @@ export const userLogin = (username,userWord,callback) => {
     }
 };
 export const userOfflineLogin = (userid) => {
-
-    console.log(userid);
+    //console.log(userid);
     return (dispatch) => {
         // 登陆中，做禁用登陆 Button 等操作
         dispatch({
@@ -97,7 +95,7 @@ export const userOfflineLogin = (userid) => {
     }
 };
 export const getUserPrivilege = (userid,callback) => {
-    console.log(userid);
+    //console.log(userid);
     let formData = new FormData;
     formData.append("userid",userid);
     formData.append("option","getProjectNameByUser");
@@ -172,7 +170,7 @@ export const getUserPrivilege = (userid,callback) => {
                     callback(json);
                 }
                 else {
-                    console.log(json)
+                    console.log(json);
                     alert('服务器打了小瞌睡，请重试～')
                 }
             })

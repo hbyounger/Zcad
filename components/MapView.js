@@ -23,7 +23,7 @@ class MapView extends Component {
     //勘探点数据表
     constructor(props){
         super(props);
-        let { project,login } = this.props,
+        let { login } = this.props,//project
             table = login.tables,
             list = table["勘探点数据表"],
             minX = list[0]["坐标X"],
@@ -31,7 +31,6 @@ class MapView extends Component {
             maxX = list[0]["坐标X"],
             maxY = list[0]["坐标Y"],
             array=[];
-
         list.forEach((ele)=>{
             let x = ele["坐标X"],
                 y = ele["坐标Y"];
@@ -51,44 +50,21 @@ class MapView extends Component {
                     maxY = y
                 }
             }
-            /*console.log(x);
-            console.log(y);*/
         });
         let xScale = (maxX-minX)/(Dimensions.get('window').width-20),
             yScale = (maxY-minY)/(Dimensions.get('window').height-110),
             Scale = xScale>yScale?xScale:yScale;
-        console.log(xScale);
+        /*console.log(xScale);
         console.log(yScale);
-        console.log(Scale);
+        console.log(Scale);*/
         list.forEach((ele)=>{
             array.push({
                 x:10+(ele["坐标X"]-minX)/Scale,
                 y:10+(ele["坐标Y"]-minY)/Scale,
             })
         });
-
-        array.forEach((ele)=>{
+        /*array.forEach((ele)=>{
             console.log(ele);
-        });
-
-        /*console.log(maxX);
-        console.log(maxY);
-        console.log(minX);
-        console.log(minY);
-        console.log(maxX-minX);
-        console.log(maxY-minY);
-        console.log(Dimensions.get('window').height);
-        console.log(Dimensions.get('window').width);
-        console.log();
-        console.log();*/
-
-        /*for(ele in table){
-            console.log(ele);
-            console.log(table[ele]);
-        }*/
-        /*loginactions.getUserPrivilege(login.userid,()=>{
-            console.log(login)
-            console.log(login.projects)
         });*/
         this.dotList = array;
     }
@@ -97,18 +73,6 @@ class MapView extends Component {
         this.props.navigator.push({name: 'welcome'});
     }
     render() {
-        /*var rows = this.state.board.grid.map((cells, row) =>
-         <View key={'row' + row} style={styles.row}>
-         {cells.map((player, col) =>
-         <Cell
-         key={'cell' + col}
-         player={player}
-         onPress={this.handleCellPress.bind(this, row, col)}
-         />
-         )}
-         </View>
-
-         );*/
         let PList = [],
             {project} = this.props,
             index = 0 ;
@@ -121,7 +85,6 @@ class MapView extends Component {
                 />)//<TicTacToeApp/>
             })
         }
-        //console.log('MapView render');
         return (
             <ScrollView >
                 <Text style = {styles2.welcome}>{project.project+'选取钻位'}</Text>

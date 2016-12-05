@@ -48,11 +48,14 @@ class Cell extends Component{
         let { cell } = this.props;
         return cell.value;
     }
-    onPress(){
+    onPress(data){
         console.log('tablelist');
         let { actions } = this.props;
         this.props.navigator.push({name: 'tablelist'});//callback//tablelist
-        actions.SetPosition(this.props.num);
+        actions.SetPosition({
+            num:this.props.num,
+            data:data
+        });
         //actions.test(this.props.num);
     }
 
@@ -72,7 +75,7 @@ class Cell extends Component{
         return (
             <View style={{position: 'absolute',top: top, left: left}}>
                 <TouchableHighlight
-                    onPress={this.onPress.bind(this)}
+                    onPress={this.onPress.bind(this,this.props.Point.data)}
                     underlayColor="transparent"
                     activeOpacity={0.5}>
                     <View style={[styles.cell, this.cellStyle()]}>

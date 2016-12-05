@@ -61,6 +61,7 @@ class MapView extends Component {
             array.push({
                 x:10+(ele["坐标X"]-minX)/Scale,
                 y:10+(ele["坐标Y"]-minY)/Scale,
+                data:ele,
             })
         });
         /*array.forEach((ele)=>{

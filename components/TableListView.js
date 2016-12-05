@@ -33,7 +33,7 @@ class TableListView extends Component {
     }
     componentWillMount(){
         this.tableArray = [];//.bind(this,ele)
-        tableList.forEach((ele)=>{
+        this.tableList.forEach((ele)=>{
             this.tableArray.push(
                 <TouchableHighlight
                     onPress={this.onPressTable.bind(this,ele)}

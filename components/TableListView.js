@@ -15,6 +15,17 @@ import * as actions from '../redux/table';
 
 var tableList = ['勘探点数据表','波速表','剖线数据表','静探表','动探表'];
 class TableListView extends Component {
+    constructor(props) {
+        super(props);
+        let {login} = this.props;
+        let table = login.tables,
+            List = table["项目_表"];//表名
+        List.forEach(ele=>{
+            console.log(ele["表名"]);
+            this.tableList.push(ele["表名"]);
+        })
+    }
+    tableList = [];
     onPressTable(value){
         let {actions} = this.props;
         this.props.navigator.push({name: 'data'});
@@ -40,8 +51,6 @@ class TableListView extends Component {
     render() {
         //let tableArray = [];
         let {cell} = this.props;
-        console.log(this.props);
-
 
         return (
             <View >
@@ -113,7 +122,8 @@ const styles3 = StyleSheet.create({
 
 function mapStateToProps(state){
     return {
-        cell : state.cell.toJS()
+        cell : state.cell.toJS(),
+        login : state.login.toJS(),
     }
 }
 

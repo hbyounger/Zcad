@@ -24,6 +24,7 @@ import * as actions from '../redux/table';
 import Cell from './Cell'//SvgExample
 //import SvgExample from './main'
 //import Example from './Map'
+import * as loginActions from '../actions/login';
 
 const window = Dimensions.get('window');
 var RIGHT_LISTVIEW = 'right_listView';
@@ -65,16 +66,28 @@ class Grid extends Component{
         console.log(data);
         this.nameArray = [];
         this.leftArray = [];
+        this.rightArray = [];
         for(let ele in data[0]){
-            console.log(ele);
+            //console.log(ele);
             this.nameArray.push(ele)
         }
         data.forEach((ele,i)=>{
-            this.leftArray.push(ele["ID"]?ele["ID"]:i);
+            if((ele["钻孔编号"]===pointInfo["钻孔编号"])||(!ele["钻孔编号"])){
+                this.leftArray.push(ele["ID"]?ele["ID"]:i);
+                this.rightArray.push(ele);
+            }
+        });
+        this.nameList=[];
+        this.nameArray.forEach((ele,i)=>{
+            this.nameList.push(
+                <View key = {`title${i}`} style = {styles.titleView}>
+                    <Text>{ele}</Text>
+                </View>
+            )
         });
         this.state ={
             leftDataSource: ds.cloneWithRows(this.leftArray),
-            rightdataSource: ds1.cloneWithRows(data),
+            rightdataSource: ds1.cloneWithRows(this.rightArray),
             leftListOffset: {x : 0, y: 0},
             loaded: false,
 
@@ -117,15 +130,17 @@ class Grid extends Component{
         this.setState(newState);
         //Alert.alert('Alert Title',key+','+value,[{text: 'OK', onPress: () => console.log('OK Pressed!')}]);
     }
-
+    onTableChange = (e)=>{
+        this.props.callback(this.rightArray);
+    };
     onScroll = ()=>{
-        console.log("onScroll");
-        console.log(this.state.loaded);
+        //console.log("onScroll");
+        //console.log(this.state.loaded);
         if (this.state.loaded) {//this.state.loaded
             var rightList = this.refs[RIGHT_LISTVIEW];
-            console.log(rightList)
+            //console.log(rightList)
             var y1 = rightList.scrollProperties.offset;
-            console.log(y1)
+            //console.log(y1)
             this.setState({
                 leftListOffset :{x: 0 , y: y1}
             });
@@ -148,8 +163,8 @@ class Grid extends Component{
         let list=[];
         this.nameArray.forEach((ele,i)=>{
             list.push(
-                <View key = {`right${i}`} style = {styles.cellView}>
-                    <TextInput>{rowData[ele]}</TextInput>
+                <View key = {`right${i}`}>
+                    <TextInput style = {styles.cellView} onChangeText ={(e)=>{rowData[ele]=e;this.onTableChange(e);}}>{rowData[ele]}</TextInput>
                 </View>)
         });
         /*<View style = {styles.cellView}>
@@ -232,17 +247,14 @@ class Grid extends Component{
  <Text>取土编号</Text>
  </View>*/
     render() {
-        console.log(this.state.loaded);
-        let list=[];
-        this.nameArray.forEach((ele,i)=>{
-            list.push(
-                <View key = {`title${i}`} style = {styles.titleView}>
-                    <Text>{ele}</Text>
-                </View>
-            )
-        });
+        //console.log(this.state.loaded);
+
+
+        /*showsHorizontalScrollIndicator = {true}
+         showsVerticalScrollIndicator = {false}
+         horizontal = {true}*/
         return (
-            <View style = {styles.container}>
+            <ScrollView horizontal = {true} style = {styles.container}>
                 <View style = {styles.left}>
                     <View style = {styles.mingcheng}>
                         <Text>ID</Text>
@@ -263,27 +275,26 @@ class Grid extends Component{
 
                 </View>
                 <View style = {styles.right}>
-                    <ScrollView style = {styles.scrollView}
-                                scrollEnabled = {true}
-                                showsHorizontalScrollIndicator = {true}
-                                showsVerticalScrollIndicator = {false}
-                                horizontal = {true}>
+                    <ScrollView
+                        style = {styles.scrollView}
+                        horizontal = {true}
+                    >
                         <View style = {styles.contentView}>
-                            <View style = {{width: 1600 , height: 40, flexDirection:'row'}}>
-                                {list}
+                            <View style = {{width: 1000 , height: 40, flexDirection:'row'}}>
+                                {this.nameList}
                             </View>
                             <ListView
                                 ref = {RIGHT_LISTVIEW}
                                 //scrollEventThrottle={500}
                                 style = {styles.rightListView}
                                 dataSource = {this.state.rightdataSource}
-                                onScroll={this.onScroll}
+                                //onScroll={this.onScroll}
                                 renderRow = {this._rightRenderRow}
                             />
                         </View>
                     </ScrollView>
                 </View>
-            </View>
+            </ScrollView>
         );
     }
 }
@@ -291,36 +302,57 @@ class Grid extends Component{
 class DataView extends Component{
     constructor(props) {
         super(props);
-        let {cell,login,table} = this.props;
+        let {cell,login,table,project} = this.props;
         let tables = login.tables;
         this.List = tables[table.table];
+        console.log(tables[table.table]);
+        this.Array=[];
         this.pointInfo = cell.pointData;
-        console.log(table.table);
-        console.log(this.List);
-        console.log(cell.pointData);
+        this.projectid = login.userid+'-'+project.project;
+        //console.log(table.table);
+        //console.log(this.List);
+        //console.log(cell.pointData);
         //cell.pointData
     }
 
-    onSubmit = ()=>{
-        this.props.navigator.push({name: 'map'});
-    }
+    onSubmit = (list)=>{
+        let {login,table,loginactions} = this.props;
+        let tables = login.tables;
+        //tables[table.table] = this.List;
+        console.log(tables[table.table]);
+        loginactions.getOfflineTables(tables);
+        storage.save({
+            key: 'projectid',  // 注意:请不要在key中使用_下划线符号!
+            id: this.projectid,
+            rawData: tables,
+            expires: null,//1000 * 3600
+        });
+        this.props.navigator.push({name: 'tablelist'});
+    };
 //navigator = {this.props.navigator}
 
-    /* <TouchableHighlight
-     style={[styles.style_view_commit,{top : 0 ,left : 0}]}
-     onPress={this.onSubmit}
-     underlayColor="transparent"
-     activeOpacity={0.5}>
-     <View >
-     <Text style={{color:'#fff'}} >
-     {table.table+'-提交'}
-     </Text>
-     </View>
-     </TouchableHighlight>*/
+
     render(){
+        let {login,table} = this.props;
+        let tables = login.tables;
+
         return (
             <ScrollView>
+                <TouchableHighlight
+                    style={[styles.style_view_commit,{top : 0 ,left : 0}]}
+                    onPress={this.onSubmit}
+                    underlayColor="transparent"
+                    activeOpacity={0.5}>
+                    <View >
+                        <Text style={{color:'#fff'}} >
+                            {table.table+'-点此保存'}
+                        </Text>
+                    </View>
+                </TouchableHighlight>
                 <Grid
+                    callback ={(list)=>{
+                    console.log(tables[table.table]);
+                    }}
                     pointInfo = {this.pointInfo}
                     data = {this.List}
                     navigator = {this.props.navigator}/>
@@ -351,7 +383,8 @@ var styles = StyleSheet.create({
         width: 100,
     },
     left:{
-        flex: 1,
+        width: 50,
+        //flex: 1,
         // backgroundColor:'yellow',
         flexDirection: 'column',
     },
@@ -383,23 +416,24 @@ var styles = StyleSheet.create({
     },
 
     leftListRow:{
+        //width:50,
         alignItems: 'center',      // 水平局中
         justifyContent: 'center',  // 垂直居中
         height: 40,
-        // backgroundColor:'#db384c',
+        //backgroundColor:'#db384c',
         borderColor: '#DCD7CD',
         borderBottomWidth:1,
         borderRightWidth:1,
     },
 
     rightListRow:{
-        width: 1600 ,
+        width: 1000 ,
         height: 40,
         flexDirection:'row'
     },
 
     scrollView:{
-        flex: 1,
+        //flex: 1,
         marginRight:1,
         marginLeft:1,
         marginTop:0,
@@ -410,8 +444,8 @@ var styles = StyleSheet.create({
 
     contentView:{
 
-        height: window.height -50,
-        width: 1600 ,
+        //height: window.height -50,
+        width: 1000 ,
         // backgroundColor:'yellow',
         flexDirection: 'column',
     },
@@ -461,12 +495,14 @@ function mapStateToProps(state){
         table : state.table.toJS(),
         login : state.login.toJS(),
         cell : state.cell.toJS(),
+        project : state.project.toJS(),
     }
 }
 
 function mapDispatchToProps(dispatch){
     return {
-        actions : bindActionCreators( actions , dispatch )
+        actions : bindActionCreators( actions , dispatch ),
+        loginactions : bindActionCreators( loginActions , dispatch )
     }
 }
 

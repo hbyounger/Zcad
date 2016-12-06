@@ -70,7 +70,7 @@ class MapView extends Component {
         this.dotList = array;
     }
     onSubmit(){
-        console.log('welcome');
+        //console.log('welcome');
         this.props.navigator.push({name: 'welcome'});
     }
     render() {
@@ -87,15 +87,10 @@ class MapView extends Component {
                 />)//<TicTacToeApp/>
             })
         }
+
         return (
             <ScrollView >
                 <Text style = {styles2.welcome}>{project.project+'选取钻位'}</Text>
-                <ScrollView
-                    horizontal = {true}>
-                    <View style = {[styles2.container,{width: 500,height: 900,}]}>
-                        { PList }
-                    </View>
-                </ScrollView>
                 <TouchableHighlight
                     style={[styles2.style_view_commit,{top : 0 ,left : 0}]}
                     onPress={this.onSubmit.bind(this)}
@@ -103,10 +98,17 @@ class MapView extends Component {
                     activeOpacity={0.5}>
                     <View >
                         <Text style={{color:'#fff'}} >
-                            {'提交'}
+                            {'返回项目列表'}
                         </Text>
                     </View>
                 </TouchableHighlight>
+                <ScrollView
+                    horizontal = {true}>
+                    <View style = {[styles2.container,{width: 500,height: 900,}]}>
+                        { PList }
+                    </View>
+                </ScrollView>
+
             </ScrollView>
         );
     }

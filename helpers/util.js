@@ -2,7 +2,7 @@
  * 将fetch函数的response转化为json格式
  */
 export const toJSON = response => {
-  //console.log(response);
+  console.log(response);
   if (response.status !== 200) {
     const code = response.status;//process.env.__CLIENT__ === true ?  : 500
     return {

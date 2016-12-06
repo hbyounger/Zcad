@@ -31,30 +31,31 @@ class Login extends Component {
             userName : '',
             wordValue : '',
         };
+        this.serverList = [];
         //console.log(this.state);
     }
     onPress = ()=>{
 
         let {actions} = this.props;
-        actions.userLogin(this.state.userName,this.state.wordValue,(userid)=>{
+        actions.userLogin(this.state.server,this.state.userName,this.state.wordValue,(userid)=>{
             //console.log("save user");
             //console.log(userid);
             storage.save({
                 key: 'user',  // 注意:请不要在key中使用_下划线符号!
                 id:'last',
-                rawData: userid,
+                rawData: this.serverList,
                 // 如果不指定过期时间，则会使用defaultExpires参数
                 // 如果设为null，则永不过期
                 expires: null,//1000 * 3600
             });
-            /*storage.save({
-                key: 'user',  // 注意:请不要在key中使用_下划线符号!
+            storage.save({
+                key: 'server',  // 注意:请不要在key中使用_下划线符号!
                 id:'login',
-                rawData: "online",
+                rawData: this.state.server,
                 // 如果不指定过期时间，则会使用defaultExpires参数
                 // 如果设为null，则永不过期
                 expires: null,//1000 * 3600
-            });*/
+            });
 
             this.props.navigator.push({name: 'welcome'});
         });
@@ -185,12 +186,7 @@ class Login extends Component {
                     </View>
                 </TouchableHighlight>
                 <View style={{flex:1,flexDirection:'row',alignItems: 'flex-end',bottom:10}}>
-                    <Text style={styles.style_view_unlogin}>
-                        无法登录?
-                    </Text>
-                    <Text style={styles.style_view_register}>
-                        新用户
-                    </Text>
+
                 </View>
             </View>
         );

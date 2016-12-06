@@ -8,6 +8,7 @@ import {
     Text,
     TouchableHighlight,
     View,
+    ScrollView,
     ListView
 } from 'react-native';
 import { connect } from 'react-redux';
@@ -67,13 +68,31 @@ class WelcomeView extends Component {
     }
 
     onTest(){
-        this.loadData();
+        let { loginactions,login } = this.props;
+        loginactions.getUserPrivilege(login.server,login.userid,(projects)=>{
+            projects.forEach((ele)=>{
+                //console.log(ele.PRIVILEGENAME);
+                let projectid = login.userid+'-'+ele.PRIVILEGENAME;
+                loginactions.getAllData(login.server,login.userid,ele.PRIVILEGENAME,(data)=>{
+                    storage.save({
+                        key: 'projectid',  // 注意:请不要在key中使用_下划线符号!
+                        id:projectid,
+                        rawData: data,
+                        expires: null,//1000 * 3600
+                    });
+
+                });
+            });
+            alert("操作成功");
+            //console.log(login.projects)
+        });
     }
 
     loadData = ()=>{
         let { loginactions,login } = this.props;
         if(!login.offline){
-            loginactions.getUserPrivilege(login.userid,(projects)=>{
+            console.log(login.server);
+            loginactions.getUserPrivilege(login.server,login.userid,(projects)=>{
                 projects.forEach((ele)=>{
                     //console.log(ele.PRIVILEGENAME);
                     let projectid = login.userid+'-'+ele.PRIVILEGENAME;
@@ -84,6 +103,7 @@ class WelcomeView extends Component {
                             syncInBackground: false,//true
                         })
                         .then(ret => {
+                            alert("数据已存在");
                         })
                         .catch(err => {
                             console.warn(err.message);
@@ -91,7 +111,7 @@ class WelcomeView extends Component {
                                 case 'NotFoundError':
                                     // TODO;
                                     //
-                                    loginactions.getAllData(login.userid,ele.PRIVILEGENAME,(data)=>{
+                                    loginactions.getAllData(login.server,login.userid,ele.PRIVILEGENAME,(data)=>{
                                         storage.save({
                                             key: 'projectid',  // 注意:请不要在key中使用_下划线符号!
                                             id:projectid,
@@ -112,7 +132,7 @@ class WelcomeView extends Component {
             });
         }
         else {
-            console.log("offline")
+            //console.log("offline")
             if(!login.projects){
                 storage.load({
                         key: 'userid',
@@ -162,6 +182,38 @@ class WelcomeView extends Component {
         )
     }
 
+    onUpload = ()=>{
+        let {loginactions,login} = this.props;
+        if(this.projectList){
+            this.projectList.forEach((ele,i)=>{
+                let projectid = login.userid+'-'+ele.PRIVILEGENAME;
+                storage.load({
+                        key: 'projectid',
+                        id:projectid,
+                        autoSync: false,//true,
+                        syncInBackground: false,//true
+                    })
+                    .then(ret => {
+                        loginactions.setAllData(login.server,login.userid,ele.PRIVILEGENAME,ret);
+                    })
+                    .catch(err => {
+                        console.warn(err.message);
+                        switch (err.name) {
+                            case 'NotFoundError':
+                                // TODO;
+                                //
+                                break;
+                            case 'ExpiredError':
+                                // TODO
+                                alert('出错了');
+                                break;
+                        }
+                    });
+
+            })
+        }
+    };
+
     render() {
 
         let { loginactions,login } = this.props;
@@ -189,8 +241,9 @@ class WelcomeView extends Component {
             })
         }
 
+        console.log(!login.offline);
         return (
-            <View >
+            <ScrollView >
                 <Text style={styles.welcome} >
                     选择项目
                 </Text>
@@ -206,18 +259,38 @@ class WelcomeView extends Component {
                         </Text>
                     </View>
                 </TouchableHighlight>
-                <TouchableHighlight
-                    style={[styles.style_view_exit,{top : 0 ,left : 0}]}
-                    onPress={this.onTest.bind(this)}
-                    underlayColor="transparent"
-                    activeOpacity={0.5}>
-                    <View >
-                        <Text style={{color:'#fff'}} >
-                            {'加载数据'}
-                        </Text>
-                    </View>
-                </TouchableHighlight>
-            </View>
+                {
+                    (!login.offline)&&(
+                        <TouchableHighlight
+                            style={[styles.style_view_exit,{top : 0 ,left : 0}]}
+                            onPress={this.onTest.bind(this)}
+                            underlayColor="transparent"
+                            activeOpacity={0.5}>
+                            <View >
+                                <Text style={{color:'#fff'}} >
+                                    {'重新加载数据并覆盖本地数据'}
+                                </Text>
+                            </View>
+                        </TouchableHighlight>
+                    )
+
+                }
+                {
+                    (!login.offline)&&(
+                        <TouchableHighlight
+                            style={[styles.style_view_exit,{top : 0 ,left : 0}]}
+                            onPress={this.onUpload}
+                            underlayColor="transparent"
+                            activeOpacity={0.5}>
+                            <View >
+                                <Text style={{color:'#fff'}} >
+                                    {'上传数据'}
+                                </Text>
+                            </View>
+                        </TouchableHighlight>
+                    )
+                }
+            </ScrollView>
         );
     }
 }

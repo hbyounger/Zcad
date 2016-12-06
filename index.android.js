@@ -201,4 +201,4 @@ const styles = StyleSheet.create({
     },
 });
 
-AppRegistry.registerComponent('Zcad', () => Zcad);
+AppRegistry.registerComponent('Zcad', () => Zcad);//Zcad

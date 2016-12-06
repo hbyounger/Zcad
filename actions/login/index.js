@@ -34,7 +34,7 @@ export function onchange(name,value){
     }
 }
 
-export const userLogin = (username,userWord,callback) => {
+export const userLogin = (server,username,userWord,callback) => {
     let formData = new FormData;
     formData.append("username",username);
     formData.append("password",userWord);
@@ -44,10 +44,10 @@ export const userLogin = (username,userWord,callback) => {
         dispatch({
             type: 'PLATFORM_DATA_USER_LOGIN',
         });
-        //console.log(env.HTTP_USER_LOGIN);
+        console.log('http://'+server+'/ajaxService/admin.ashx');
         options = genFetchOptions('post', formData);
-        //let id;
-        fetch(env.HTTP_USER_LOGIN, {
+        //let id;env.HTTP_USER_LOGIN
+        fetch(env.HTTP_USER_LOGIN/*'http://'+server+'/ajaxService/admin.ashx'*/, {
             method: 'POST',
             headers: {
                 //'Accept': 'application/json',
@@ -59,11 +59,14 @@ export const userLogin = (username,userWord,callback) => {
             .then((json) => {
                 if (json.userid) {// === 200
                     //console.log("json");
-                    //console.log(json);
+                    console.log(json);
                     dispatch({
                         type:'PLATFORM_DATA_USER_LOGIN_SUCCEED',
-                        payload:json,
-                        offline : false,
+                        payload:{
+                            userid: json.userid,
+                            offline : false,
+                            server:server,
+                        }
                     });
                     callback(json.userid);
                 }
@@ -81,6 +84,7 @@ export const userLogin = (username,userWord,callback) => {
             });
     }
 };
+
 export const userOfflineLogin = (userid) => {
     //console.log(userid);
     return (dispatch) => {
@@ -94,7 +98,8 @@ export const userOfflineLogin = (userid) => {
         });
     }
 };
-export const getUserPrivilege = (userid,callback) => {
+
+export const getUserPrivilege = (server,userid,callback) => {
     //console.log(userid);
     let formData = new FormData;
     formData.append("userid",userid);
@@ -104,8 +109,8 @@ export const getUserPrivilege = (userid,callback) => {
     //(formData);
     return (dispatch) => {
         // 登陆中，做禁用登陆 Button 等操作
-        //console.log(env.HTTP_USER_LOGIN);
-        fetch(env.HTTP_USER_LOGIN, {
+        //console.log('http://'+server+'/ajaxService/admin.ashx');
+        fetch('http://'+server+'/ajaxService/admin.ashx', {
             method: 'POST',
             headers: {},
             body: formData,
@@ -177,7 +182,8 @@ export const getUserPrivilege = (userid,callback) => {
                 console.error(error);
             })
     }
-}
+};
+
 export const getOfflineData = (data)=>{
     return(dispatch)=>{
         dispatch({
@@ -185,7 +191,8 @@ export const getOfflineData = (data)=>{
             projects:data
         });
     }
-}
+};
+
 export const getOfflineTables = (data) => {
 
     return (dispatch) => {
@@ -194,8 +201,9 @@ export const getOfflineTables = (data) => {
             payload:data
         });
     }
-}
-export const getAllData = (userid,projectName,callback) => {
+};
+
+export const getAllData = (server,userid,projectName,callback) => {
     console.log(userid);
     let formData = new FormData;
     formData.append("userid",userid);
@@ -206,8 +214,8 @@ export const getAllData = (userid,projectName,callback) => {
     //post(formData);
     return (dispatch) => {
         // 登陆中，做禁用登陆 Button 等操作
-        console.log(env.HTTP_USER_LOGIN);
-        fetch(env.HTTP_USER_LOGIN, {
+        console.log('http://'+server+'/ajaxService/admin.ashx');
+        fetch('http://'+server+'/ajaxService/admin.ashx', {
             method: 'POST',
             headers: {},
             body: formData,
@@ -231,4 +239,43 @@ export const getAllData = (userid,projectName,callback) => {
                 console.error(error);
             })
     }
-}
+};
+
+export const setAllData = (server,userid,projectName,Data) => {
+    console.log(userid);
+    let formData = new FormData;
+    formData.append("userid",userid);
+    formData.append("projectName",projectName);
+    formData.append("Data",Data);
+    formData.append("option","setAllData");
+    console.log(formData);
+    //console.log("post");
+    //post(formData);
+    return (dispatch) => {
+        // 登陆中，做禁用登陆 Button 等操作
+        console.log('http://'+server+'/ajaxService/admin.ashx');
+        fetch('http://'+server+'/ajaxService/admin.ashx', {
+            method: 'POST',
+            headers: {},
+            body: formData,
+        })
+            .then(toJSON)
+            .then((json) => {
+                if (json) {
+                    /*dispatch({
+                        type:'PLATFORM_DATA_USER_LOGIN_TABLES',
+                        payload:json
+                    });*/
+                    //callback(json);
+                    console.log(json)
+                }
+                else {
+                    console.log(json)
+                    alert('服务器打了小瞌睡，请重试～')
+                }
+            })
+            .catch((error) => {
+                console.error(error);
+            })
+    }
+};

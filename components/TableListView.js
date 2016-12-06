@@ -49,6 +49,10 @@ class TableListView extends Component {
             )
         });
     }
+
+    onTest(){
+        this.props.navigator.push({name: 'map'});
+    }
     render() {
         //let tableArray = [];
         let {cell} = this.props;
@@ -56,9 +60,20 @@ class TableListView extends Component {
         return (
             <View >
                 <Text style={styles3.welcome} >
-                    {'钻位'+cell.position+'-选择数据表'}
+                    {'钻位'+cell.pointData["钻孔编号"]+'-选择数据表'}
                 </Text>
                 {this.tableArray}
+                <TouchableHighlight
+                    style={[styles3.style_view_exit,{top : 0 ,left : 0}]}
+                    onPress={this.onTest.bind(this)}
+                    underlayColor="transparent"
+                    activeOpacity={0.5}>
+                    <View >
+                        <Text style={{color:'#fff'}} >
+                            {'回到钻位图'}
+                        </Text>
+                    </View>
+                </TouchableHighlight>
             </View>
 
         );
@@ -71,6 +86,17 @@ const styles3 = StyleSheet.create({
         justifyContent: 'center',
         alignItems: 'center',
         backgroundColor: '#F5FCFF',
+    },
+    style_view_exit:{
+        marginTop:25,
+        marginLeft:10,
+        marginRight:10,
+        backgroundColor:'#63B8FF',
+        height:35,
+        //width:60,
+        //borderRadius:5,
+        justifyContent: 'center',
+        alignItems: 'center',
     },
     welcome: {
         color:'#63B8FF',

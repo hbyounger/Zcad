@@ -172,9 +172,10 @@ class WelcomeView extends Component {
         }
 
         if(this.projectList){
-            this.projectList.forEach((ele)=>{
+            this.projectList.forEach((ele,i)=>{
                 ProjectArray.push(
                     <TouchableHighlight
+                        key = {i}
                         onPress={this.onPressMap.bind(this,ele.PRIVILEGENAME)}
                         underlayColor="transparent"
                         activeOpacity={0.5}>

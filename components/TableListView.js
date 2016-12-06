@@ -33,9 +33,10 @@ class TableListView extends Component {
     }
     componentWillMount(){
         this.tableArray = [];//.bind(this,ele)
-        this.tableList.forEach((ele)=>{
+        this.tableList.forEach((ele,i)=>{
             this.tableArray.push(
                 <TouchableHighlight
+                    key = {i}
                     onPress={this.onPressTable.bind(this,ele)}
                     underlayColor="transparent"
                     activeOpacity={0.5}>

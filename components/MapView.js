@@ -80,6 +80,7 @@ class MapView extends Component {
         if(this.dotList) {
             this.dotList.forEach((ele,i)=> {
                 PList.push(<Cell
+                    key = {i}
                     Point = {ele}
                     num = {i}
                     navigator = {this.props.navigator}

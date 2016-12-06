@@ -54,7 +54,7 @@ var rightArray = [
     {name: 'kjhk', sex: 'sex', age:'age', firstName: 'firstName', seconName:'seconName', hehe:'hehe'},
 ];
 
-class GridTest extends Component{
+class Grid extends Component{
     constructor(props){
         super(props);
         let ds = new ListView.DataSource({rowHasChanged: (r1, r2) => r1 !== r2});
@@ -62,7 +62,7 @@ class GridTest extends Component{
         let offsetval = {x : 0, y: 0};
         this.state ={
             leftDataSource: ds.cloneWithRows(array),
-            rightdataSource: ds.cloneWithRows(rightArray),
+            rightdataSource: ds1.cloneWithRows(rightArray),
             leftListOffset: {x : 0, y: 0},
             loaded: false,
 
@@ -71,7 +71,7 @@ class GridTest extends Component{
             selected3: 'key1',
             color: 'red',
             mode: Picker.MODE_DIALOG,
-        }
+        };
     }
 
     /*getInitialState(){
@@ -191,7 +191,8 @@ class GridTest extends Component{
                 </View>
                 <View style = {styles.right}>
                     <ScrollView style = {styles.scrollView}
-                                showsHorizontalScrollIndicator = {false}
+                                scrollEnabled = {true}
+                                showsHorizontalScrollIndicator = {true}
                                 showsVerticalScrollIndicator = {false}
                                 horizontal = {true}>
                         <View style = {styles.contentView}>
@@ -253,27 +254,42 @@ class GridTest extends Component{
 }
 //<SvgExample/><Example/><Game2048/><Text style={styles.instructions} onPress={this.onPressWelcome}>Default view</Text>
 class DataView extends Component{
+    constructor(props) {
+        super(props);
+        let {cell,login,table} = this.props;
+        let tables = login.tables;
+        this.List = tables[table.table];
+        this.pointInfo = cell.pointData;
+        console.log(table.table);
+        console.log(List);
+        console.log(cell.pointData);
+        //cell.pointData
+    }
+
     onSubmit = ()=>{
         this.props.navigator.push({name: 'map'});
     }
 //navigator = {this.props.navigator}
 
+    /* <TouchableHighlight
+     style={[styles.style_view_commit,{top : 0 ,left : 0}]}
+     onPress={this.onSubmit}
+     underlayColor="transparent"
+     activeOpacity={0.5}>
+     <View >
+     <Text style={{color:'#fff'}} >
+     {table.table+'-提交'}
+     </Text>
+     </View>
+     </TouchableHighlight>*/
     render(){
         let {table} = this.props;
         return (
             <ScrollView>
-                <TouchableHighlight
-                    style={[styles.style_view_commit,{top : 0 ,left : 0}]}
-                    onPress={this.onSubmit}
-                    underlayColor="transparent"
-                    activeOpacity={0.5}>
-                    <View >
-                        <Text style={{color:'#fff'}} >
-                            {table.table+'-提交'}
-                        </Text>
-                    </View>
-                </TouchableHighlight>
-                <GridTest navigator = {this.props.navigator}/>
+                <Grid
+                    pointInfo = {this.pointInfo}
+                    data = {this.List}
+                    navigator = {this.props.navigator}/>
             </ScrollView>
         )
     }
@@ -405,54 +421,12 @@ var styles = StyleSheet.create({
         justifyContent: 'center',  // 垂直居中
     },
 });
-/*const styles = StyleSheet.create({
-    container: {
-        flex: 1,
-        justifyContent: 'center',
-        alignItems: 'center',
-        backgroundColor: '#F5FCFF',
-    },
-    welcome: {
-        fontSize: 20,
-        textAlign: 'center',
-        margin: 10,
-    },
-    instructions: {
-        textAlign: 'center',
-        color: '#333333',
-        marginBottom: 5,
-    },
-    cell: {
-        width: 16,
-        height: 16,
-        borderRadius: 3,
-        backgroundColor: '#7b8994',
-        margin: 2,
-        flex: 1,
-        justifyContent: 'center',
-        alignItems: 'center',
-    },
-    cellX: {
-        backgroundColor: '#72d0eb',
-    },
-    cellO: {
-        backgroundColor: '#7ebd26',
-    },
-    cellText: {
-        fontSize: 50,
-        fontFamily: 'AvenirNext-Bold',
-    },
-    cellTextX: {
-        color: '#19a9e5',
-    },
-    cellTextO: {
-        color: '#b9dc2f',
-    },
-});*/
 
 function mapStateToProps(state){
     return {
         table : state.table.toJS(),
+        login : state.login.toJS(),
+        cell : state.cell.toJS(),
     }
 }
 

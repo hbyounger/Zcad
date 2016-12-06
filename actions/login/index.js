@@ -58,8 +58,8 @@ export const userLogin = (username,userWord,callback) => {
             .then(toJSON)
             .then((json) => {
                 if (json.userid) {// === 200
-                    console.log("json");
-                    console.log(json);
+                    //console.log("json");
+                    //console.log(json);
                     dispatch({
                         type:'PLATFORM_DATA_USER_LOGIN_SUCCEED',
                         payload:json,
@@ -68,7 +68,7 @@ export const userLogin = (username,userWord,callback) => {
                     callback(json.userid);
                 }
                 else {
-                    console.log(json);
+                    //console.log(json);
                     dispatch({
                         type:'PLATFORM_DATA_USER_LOGIN_FAILURE',
                         payload:json
@@ -99,13 +99,12 @@ export const getUserPrivilege = (userid,callback) => {
     let formData = new FormData;
     formData.append("userid",userid);
     formData.append("option","getProjectNameByUser");
-    console.log(formData);
-    console.log(formData);
-    console.log("post");
+    //console.log(formData);
+    //console.log("post");
     //(formData);
     return (dispatch) => {
         // 登陆中，做禁用登陆 Button 等操作
-        console.log(env.HTTP_USER_LOGIN);
+        //console.log(env.HTTP_USER_LOGIN);
         fetch(env.HTTP_USER_LOGIN, {
             method: 'POST',
             headers: {},
@@ -125,8 +124,8 @@ export const getUserPrivilege = (userid,callback) => {
                             syncInBackground: false,//true
                         })
                         .then(ret => {
-                            console.log("load");
-                            console.log(ret);
+                            //console.log("load");
+                            //console.log(ret);
                             //TODO:比较工程队列是否需要更新
                             if(ret.length!=json.length){
                                 storage.save({
@@ -146,8 +145,8 @@ export const getUserPrivilege = (userid,callback) => {
                                 case 'NotFoundError':
                                     // TODO;
                                     //alert('未找到数据');
-                                    console.log("save");
-                                    console.log(userid);
+                                    //console.log("save");
+                                    //console.log(userid);
                                     storage.save({
                                         key: 'userid',  // 注意:请不要在key中使用_下划线符号!
                                         id:userid,
@@ -170,7 +169,7 @@ export const getUserPrivilege = (userid,callback) => {
                     callback(json);
                 }
                 else {
-                    console.log(json);
+                    //console.log(json);
                     alert('服务器打了小瞌睡，请重试～')
                 }
             })
@@ -202,8 +201,8 @@ export const getAllData = (userid,projectName,callback) => {
     formData.append("userid",userid);
     formData.append("projectName",projectName);
     formData.append("option","getAllData");
-    console.log(formData);
-    console.log("post");
+    //console.log(formData);
+    //console.log("post");
     //post(formData);
     return (dispatch) => {
         // 登陆中，做禁用登陆 Button 等操作

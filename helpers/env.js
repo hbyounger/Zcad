@@ -6,7 +6,7 @@ const env = {
   },
 
   // 静态文件根路径
-  HTTP_SCRIPT_BASEURL: 'http://192.168.1.110/',
+  HTTP_SCRIPT_BASEURL: 'http://192.168.1.112/',
 
   // 关于用户的ajax接口//ZJWeb/
   HTTP_USER_LOGIN: combine('http://192.168.1.112/ZJWeb','ajaxService/admin.ashx'),//http://192.168.191.1/ZJWebhttp://www.zcadsoft.com

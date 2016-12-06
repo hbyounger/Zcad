@@ -37,9 +37,8 @@ class Login extends Component {
 
         let {actions} = this.props;
         actions.userLogin(this.state.userName,this.state.wordValue,(userid)=>{
-            console.log(userid);
-            console.log("save user");
-            console.log(userid);
+            //console.log("save user");
+            //console.log(userid);
             storage.save({
                 key: 'user',  // 注意:请不要在key中使用_下划线符号!
                 id:'last',

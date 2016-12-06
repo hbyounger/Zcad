@@ -60,9 +60,21 @@ class Grid extends Component{
         let ds = new ListView.DataSource({rowHasChanged: (r1, r2) => r1 !== r2});
         let ds1 = new ListView.DataSource({rowHasChanged: (r1, r2) => r1 !== r2});
         let offsetval = {x : 0, y: 0};
+        let {pointInfo,data} = this.props;
+        console.log(pointInfo);
+        console.log(data);
+        this.nameArray = [];
+        this.leftArray = [];
+        for(let ele in data[0]){
+            console.log(ele);
+            this.nameArray.push(ele)
+        }
+        data.forEach((ele,i)=>{
+            this.leftArray.push(ele["ID"]?ele["ID"]:i);
+        });
         this.state ={
-            leftDataSource: ds.cloneWithRows(array),
-            rightdataSource: ds1.cloneWithRows(rightArray),
+            leftDataSource: ds.cloneWithRows(this.leftArray),
+            rightdataSource: ds1.cloneWithRows(data),
             leftListOffset: {x : 0, y: 0},
             loaded: false,
 
@@ -82,11 +94,13 @@ class Grid extends Component{
     }*/
 
     componentDidMount(){
-        this.state.loaded = true;
+        this.setState({
+            loaded : true
+        });
+        //this.state.loaded = true;
     }
     onPressWelcome(){
         this.props.navigator.push({name: 'welcome'});
-
     }
     /*let alertMessage = 'Credibly reintermediate next-generation potentialities after goal-oriented ' +
      'catalysts for change. Dynamically revolutionize.';
@@ -105,9 +119,13 @@ class Grid extends Component{
     }
 
     onScroll = ()=>{
-        if (this.state.loaded) {
+        console.log("onScroll");
+        console.log(this.state.loaded);
+        if (this.state.loaded) {//this.state.loaded
             var rightList = this.refs[RIGHT_LISTVIEW];
+            console.log(rightList)
             var y1 = rightList.scrollProperties.offset;
+            console.log(y1)
             this.setState({
                 leftListOffset :{x: 0 , y: y1}
             });
@@ -127,52 +145,107 @@ class Grid extends Component{
  onValueChange={this.onValueChange(this, 'selected1')}*/
     _rightRenderRow = (rowData: object, sectionID: number, rowID: number)=>{
         //() => Alert.alert('Alert Title',alertMessage,[{text: 'OK', onPress: () => console.log('OK Pressed!')},])  <TextInput>{rowData.name}</TextInput>
+        let list=[];
+        this.nameArray.forEach((ele,i)=>{
+            list.push(
+                <View key = {`right${i}`} style = {styles.cellView}>
+                    <TextInput>{rowData[ele]}</TextInput>
+                </View>)
+        });
+        /*<View style = {styles.cellView}>
+         <TextInput>{rowData.name}</TextInput>
+         </View>
+         <View style = {styles.cellView}>
+         <Picker
+         selectedValue={this.state.selected1}
+         onValueChange={this.onValChange.bind(this,'selected1')}
+         mode="dropdown"
+         style={styles.picker}>
+         <Item label="hello" value="key0" />
+         <Item label="world" value="key1" />
+         </Picker>
+         </View>
+         <View style = {styles.cellView}>
+         <TextInput>{rowData.name}</TextInput>
+         </View>
+         <View style = {styles.cellView}>
+         <TextInput>{rowData.name}</TextInput>
+         </View>
+         <View style = {styles.cellView}>
+         <TextInput>{rowData.name}</TextInput>
+         </View>
+         <View style = {styles.cellView}>
+         <TextInput>{rowData.name}</TextInput>
+         </View>
+         <View style = {styles.cellView}>
+         <TextInput>{rowData.name}</TextInput>
+         </View>
+         <View style = {styles.cellView}>
+         <TextInput>{rowData.name}</TextInput>
+         </View>
+         <View style = {styles.cellView}>
+         <TextInput>{rowData.name}</TextInput>
+         </View>*/
         return (
             <View style = {styles.rightListRow}>
-                <View style = {styles.cellView}>
-                    <TextInput>{rowData.name}</TextInput>
-                </View>
-                <View style = {styles.cellView}>
-                    <Picker
-                        selectedValue={this.state.selected1}
-                        onValueChange={this.onValChange.bind(this,'selected1')}
-                        mode="dropdown"
-                        style={styles.picker}>
-                        <Item label="hello" value="key0" />
-                        <Item label="world" value="key1" />
-                    </Picker>
-                </View>
-                <View style = {styles.cellView}>
-                    <TextInput>{rowData.name}</TextInput>
-                </View>
-                <View style = {styles.cellView}>
-                    <TextInput>{rowData.name}</TextInput>
-                </View>
-                <View style = {styles.cellView}>
-                    <TextInput>{rowData.name}</TextInput>
-                </View>
-                <View style = {styles.cellView}>
-                    <TextInput>{rowData.name}</TextInput>
-                </View>
-                <View style = {styles.cellView}>
-                    <TextInput>{rowData.name}</TextInput>
-                </View>
-                <View style = {styles.cellView}>
-                    <TextInput>{rowData.name}</TextInput>
-                </View>
-                <View style = {styles.cellView}>
-                    <TextInput>{rowData.name}</TextInput>
-                </View>
+                {list}
             </View>
         );
     }
+/*<View style = {styles.titleView}>
+ <Text>描述深度(m)</Text>
+ </View>
+ <TouchableHighlight
+ onPress={this.onPressPicker.bind(this,'土的名称')}//onPressPicker
+ underlayColor="transparent"
+ activeOpacity={0.5}>
+ <View style = {styles.cell}>
+ <Text>土的名称</Text>
+ </View>
+ </TouchableHighlight>
 
+ <View style = {styles.titleView}>
+ <Text>颜色</Text>
+ </View>
+ <View style = {styles.titleView}>
+ <Text>其他性质</Text>
+ </View>
+ <View style = {styles.titleView}>
+ <Text>光泽反映</Text>
+ </View>
+ <View style = {styles.titleView}>
+ <Text>摇振反应</Text>
+ </View>
+ <View style = {styles.titleView}>
+ <Text>干强度</Text>
+ </View>
+ <View style = {styles.titleView}>
+ <Text>韧性</Text>
+ </View>
+ <View style = {styles.titleView}>
+ <Text>状态</Text>
+ </View>
+ <View style = {styles.titleView}>
+ <Text>湿度</Text>
+ </View>
+ <View style = {styles.titleView}>
+ <Text>取土编号</Text>
+ </View>*/
     render() {
+        console.log(this.state.loaded);
+        let list=[];
+        this.nameArray.forEach((ele,i)=>{
+            list.push(
+                <View key = {`title${i}`} style = {styles.titleView}>
+                    <Text>{ele}</Text>
+                </View>
+            )
+        });
         return (
             <View style = {styles.container}>
                 <View style = {styles.left}>
                     <View style = {styles.mingcheng}>
-                        <Text>层序</Text>
+                        <Text>ID</Text>
                     </View>
 
                     <ListView
@@ -197,49 +270,11 @@ class Grid extends Component{
                                 horizontal = {true}>
                         <View style = {styles.contentView}>
                             <View style = {{width: 1600 , height: 40, flexDirection:'row'}}>
-                                <View style = {styles.titleView}>
-                                    <Text>描述深度(m)</Text>
-                                </View>
-                                <TouchableHighlight
-                                    onPress={this.onPressPicker.bind(this,'土的名称')}//onPressPicker
-                                    underlayColor="transparent"
-                                    activeOpacity={0.5}>
-                                    <View style = {styles.cell}>
-                                        <Text>土的名称</Text>
-                                    </View>
-                                </TouchableHighlight>
-
-                                <View style = {styles.titleView}>
-                                    <Text>颜色</Text>
-                                </View>
-                                <View style = {styles.titleView}>
-                                    <Text>其他性质</Text>
-                                </View>
-                                <View style = {styles.titleView}>
-                                    <Text>光泽反映</Text>
-                                </View>
-                                <View style = {styles.titleView}>
-                                    <Text>摇振反应</Text>
-                                </View>
-                                <View style = {styles.titleView}>
-                                    <Text>干强度</Text>
-                                </View>
-                                <View style = {styles.titleView}>
-                                    <Text>韧性</Text>
-                                </View>
-                                <View style = {styles.titleView}>
-                                    <Text>状态</Text>
-                                </View>
-                                <View style = {styles.titleView}>
-                                    <Text>湿度</Text>
-                                </View>
-                                <View style = {styles.titleView}>
-                                    <Text>取土编号</Text>
-                                </View>
+                                {list}
                             </View>
                             <ListView
                                 ref = {RIGHT_LISTVIEW}
-                                // scrollEventThrottle={500}
+                                //scrollEventThrottle={500}
                                 style = {styles.rightListView}
                                 dataSource = {this.state.rightdataSource}
                                 onScroll={this.onScroll}
@@ -261,7 +296,7 @@ class DataView extends Component{
         this.List = tables[table.table];
         this.pointInfo = cell.pointData;
         console.log(table.table);
-        console.log(List);
+        console.log(this.List);
         console.log(cell.pointData);
         //cell.pointData
     }
@@ -283,7 +318,6 @@ class DataView extends Component{
      </View>
      </TouchableHighlight>*/
     render(){
-        let {table} = this.props;
         return (
             <ScrollView>
                 <Grid

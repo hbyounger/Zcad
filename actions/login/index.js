@@ -46,8 +46,8 @@ export const userLogin = (server,username,userWord,callback) => {
         });
         console.log('http://'+server+'/ajaxService/admin.ashx');
         options = genFetchOptions('post', formData);
-        //let id;env.HTTP_USER_LOGIN
-        fetch(env.HTTP_USER_LOGIN/*'http://'+server+'/ajaxService/admin.ashx'*/, {
+        //let id;env.HTTP_USER_LOGIN//http://www.zcadsoft.com/zjweb/ajaxService/admin.ashx
+        fetch('http://'+server+'/ajaxService/admin.ashx'/*'http://'+server+'/ajaxService/admin.ashx'*/, {
             method: 'POST',
             headers: {
                 //'Accept': 'application/json',
@@ -56,10 +56,12 @@ export const userLogin = (server,username,userWord,callback) => {
             body: formData,
         })
             .then(toJSON)
+
             .then((json) => {
+                console.log(json);
                 if (json.userid) {// === 200
                     //console.log("json");
-                    console.log(json);
+                    alert("登录成功");
                     dispatch({
                         type:'PLATFORM_DATA_USER_LOGIN_SUCCEED',
                         payload:{
@@ -71,6 +73,9 @@ export const userLogin = (server,username,userWord,callback) => {
                     callback(json.userid);
                 }
                 else {
+                    if(json.code==500){
+                        alert("账号或密码错误，请重试")
+                    }
                     //console.log(json);
                     dispatch({
                         type:'PLATFORM_DATA_USER_LOGIN_FAILURE',
@@ -80,7 +85,8 @@ export const userLogin = (server,username,userWord,callback) => {
                 }
             })
             .catch((error) => {
-                console.error(error);
+                alert(error);
+                //console.error(error);
             });
     }
 };
@@ -179,7 +185,7 @@ export const getUserPrivilege = (server,userid,callback) => {
                 }
             })
             .catch((error) => {
-                console.error(error);
+                alert(error);
             })
     }
 };
@@ -236,7 +242,7 @@ export const getAllData = (server,userid,projectName,callback) => {
                 }
             })
             .catch((error) => {
-                console.error(error);
+                alert(error);
             })
     }
 };
@@ -275,7 +281,7 @@ export const setAllData = (server,userid,projectName,Data) => {
                 }
             })
             .catch((error) => {
-                console.error(error);
+                alert(error);
             })
     }
 };

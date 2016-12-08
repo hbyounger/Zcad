@@ -71,7 +71,7 @@ class MapView extends Component {
     }
     onSubmit(){
         //console.log('welcome');
-        this.props.navigator.push({name: 'welcome'});
+        this.props.navigator.pop({name: 'welcome'});
     }
     render() {
         let PList = [],
@@ -90,7 +90,7 @@ class MapView extends Component {
 
         return (
             <ScrollView >
-                <Text style = {styles2.welcome}>{project.project+'选取钻位'}</Text>
+                <Text style = {styles2.welcome}>{project.project+'选取孔位'}</Text>
                 <TouchableHighlight
                     style={[styles2.style_view_commit,{top : 0 ,left : 0}]}
                     onPress={this.onSubmit.bind(this)}

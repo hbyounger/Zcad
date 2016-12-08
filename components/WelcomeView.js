@@ -64,7 +64,7 @@ class WelcomeView extends Component {
     }
 
     onSubmit(){
-        this.props.navigator.push({name: 'login'});
+        this.props.navigator.popToTop({name: 'login'});
     }
 
     onTest(){
@@ -93,6 +93,7 @@ class WelcomeView extends Component {
         if(!login.offline){
             console.log(login.server);
             loginactions.getUserPrivilege(login.server,login.userid,(projects)=>{
+                console.log(projects);
                 projects.forEach((ele)=>{
                     //console.log(ele.PRIVILEGENAME);
                     let projectid = login.userid+'-'+ele.PRIVILEGENAME;
@@ -112,9 +113,10 @@ class WelcomeView extends Component {
                                     // TODO;
                                     //
                                     loginactions.getAllData(login.server,login.userid,ele.PRIVILEGENAME,(data)=>{
+                                        console.log(data);
                                         storage.save({
                                             key: 'projectid',  // 注意:请不要在key中使用_下划线符号!
-                                            id:projectid,
+                                            id: projectid,
                                             rawData: data,
                                             expires: null,//1000 * 3600
                                         });

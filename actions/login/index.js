@@ -288,12 +288,16 @@ export const setAllData = (server,userid,projectName,Data) => {
 
 export const updateData = (server,userid,projectName,holeNo,Data) => {
     console.log(userid);
+    console.log(projectName);
+    console.log(holeNo);
+    console.log(Data);
     let formData = new FormData;
     formData.append("userid",userid);
     formData.append("projectName",projectName);
     formData.append("holeNo",holeNo);
+    formData.append("Data",JSON.stringify(Data));//JSON.stringify(Data)
     formData.append("option","updateData");
-    formData.append("Data",Data);
+
 
     console.log(formData);
     //console.log("post");
@@ -315,6 +319,14 @@ export const updateData = (server,userid,projectName,holeNo,Data) => {
                      });*/
                     //callback(json);
                     console.log(json)
+                    if(json.result){
+                        if(json.result=="1"){
+                            alert("操作成功");
+                        }
+                        else{
+                            alert("操作失败")
+                        }
+                    }
                 }
                 else {
                     console.log(json)

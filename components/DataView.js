@@ -62,8 +62,8 @@ class Grid extends Component{
         let ds1 = new ListView.DataSource({rowHasChanged: (r1, r2) => r1 !== r2});
         let offsetval = {x : 0, y: 0};
         let {pointInfo,data} = this.props;
-        console.log(pointInfo);
-        console.log(data);
+        //console.log(pointInfo);
+        //console.log(data);
         this.nameArray = [];
         this.leftArray = [];
         this.rightArray = [];
@@ -306,21 +306,17 @@ class DataView extends Component{
         let {cell,login,table,project} = this.props;
         let tables = login.tables;
         this.List = tables[table.table];
-        console.log(tables[table.table]);
+        //console.log(tables[table.table]);
         this.Array=[];
         this.pointInfo = cell.pointData;
         this.projectid = login.userid+'-'+project.project;
-        //console.log(table.table);
-        //console.log(this.List);
-        //console.log(cell.pointData);
-        //cell.pointData
     }
 
     onSubmit = (list)=>{
         let {login,table,loginactions} = this.props;
         let tables = login.tables;
         //tables[table.table] = this.List;
-        console.log(tables[table.table]);
+        //console.log(tables[table.table]);
         loginactions.getOfflineTables(tables);
         storage.save({
             key: 'projectid',  // 注意:请不要在key中使用_下划线符号!
@@ -328,17 +324,21 @@ class DataView extends Component{
             rawData: tables,
             expires: null,//1000 * 3600
         });
+        alert("保存成功");
         //this.props.navigator.push({name: 'tablelist'});
     };
 
-    onUpload=(data)=>{
-        let {loginactions,login,project} = this.props;
-        loginactions.updateData(login.server,login.userid,project.project,this.pointInfo["钻孔编号"],this.Array);
+    onUpload=()=>{
+        let {loginactions,login,project,table} = this.props;
+        this.onSubmit();
+        let data = {};
+        data[table.table] = this.Array;
+        loginactions.updateData(login.server,login.userid,project.project,this.pointInfo["钻孔编号"],data);
     }
 //navigator = {this.props.navigator}
 
     onBack=()=>{
-        this.props.navigator.push({name: 'tablelist'});
+        this.props.navigator.pop({name: 'tablelist'});
     };
 
     render(){
@@ -347,57 +347,60 @@ class DataView extends Component{
 
         return (
             <ScrollView>
-                <View >
-                    <Text style={{color:'#fff'}} >
-                        {table.table}
-                    </Text>
-                </View>
-                <TouchableHighlight
-                    style={[styles.style_view_commit,{top : 0 ,left : 0}]}
-                    onPress={this.onBack}
-                    underlayColor="transparent"
-                    activeOpacity={0.5}>
-                    <View >
-                        <Text style={{color:'#fff'}} >
-                            {'返回'}
-                        </Text>
-                    </View>
-                </TouchableHighlight>
-                <TouchableHighlight
-                    style={[styles.style_view_commit,{top : 0 ,left : 0}]}
-                    onPress={this.onSubmit}
-                    underlayColor="transparent"
-                    activeOpacity={0.5}>
-                    <View >
-                        <Text style={{color:'#fff'}} >
-                            {'保存'}
-                        </Text>
-                    </View>
-                </TouchableHighlight>
-                {
-                    (!login.offline)&&(
-                        <TouchableHighlight
-                            style={[styles.style_view_commit,{top : 0 ,left : 0}]}
-                            onPress={this.onUpload}
-                            underlayColor="transparent"
-                            activeOpacity={0.5}>
-                            <View >
-                                <Text style={{color:'#fff'}} >
-                                    {'上传'}
-                                </Text>
-                            </View>
-                        </TouchableHighlight>
-                    )
-                }
+                <Text style={{color:'#000',alignItems: 'center'}} >
+                    {table.table}
+                </Text>
+                <View style={styles.container2}>
+                    <TouchableHighlight
+                        style={[styles.style_view_commit]}
+                        onPress={this.onBack}
+                        underlayColor="transparent"
+                        activeOpacity={0.5}>
+                        <View >
+                            <Text style={{color:'#fff'}} >
+                                {'返回'}
+                            </Text>
+                        </View>
+                    </TouchableHighlight>
+                    <TouchableHighlight
+                        style={[styles.style_view_commit]}
+                        onPress={this.onSubmit}
+                        underlayColor="transparent"
+                        activeOpacity={0.5}>
+                        <View >
+                            <Text style={{color:'#fff'}} >
+                                {'保存'}
+                            </Text>
+                        </View>
+                    </TouchableHighlight>
+                    {//{top : 0 ,left : 0}
+                        (!login.offline)&&(
+                            <TouchableHighlight
+                                style={[styles.style_view_commit]}
+                                onPress={this.onUpload}
+                                underlayColor="transparent"
+                                activeOpacity={0.5}>
+                                <View >
+                                    <Text style={{color:'#fff'}} >
+                                        {'上传'}
+                                    </Text>
+                                </View>
+                            </TouchableHighlight>
+                        )
+                    }
 
-                <Grid
-                    callback ={(list)=>{
-                    console.log(list);
+                </View>
+                <View style={styles.container3}>
+                    <Grid
+                        callback ={(list)=>{
+                    //console.log(list);
                     this.Array=list;
                     }}
-                    pointInfo = {this.pointInfo}
-                    data = {this.List}
-                    navigator = {this.props.navigator}/>
+                        pointInfo = {this.pointInfo}
+                        data = {this.List}
+                        navigator = {this.props.navigator}/>
+                </View>
+
             </ScrollView>
         )
     }
@@ -406,11 +409,13 @@ class DataView extends Component{
 var styles = StyleSheet.create({
     style_view_commit:{
         marginTop:0,
-        //marginLeft:10,
-        //marginRight:10,
+        marginLeft:1,
+        marginRight:1,
+        paddingLeft:30,
+        paddingRight:30,
         backgroundColor:'#63B8FF',
         height:35,
-        //width:60,
+        //width:(Dimensions.get('window').width/3),
         //borderRadius:5,
         justifyContent: 'center',
         alignItems: 'center',
@@ -418,6 +423,21 @@ var styles = StyleSheet.create({
     container: {
         flexDirection: 'row',
         //marginTop: 20,
+        flex: 1,
+        backgroundColor: '#F5FCFF',
+    },
+    container2: {
+        height:35,
+        flexDirection: 'row',
+        //marginTop: 20,
+        flex: 0,
+        //backgroundColor: '#F5FCFF',
+    },
+    container3: {
+        marginTop:0,
+        //height:35,
+        flexDirection: 'row',
+        //top: -200,
         flex: 1,
         backgroundColor: '#F5FCFF',
     },

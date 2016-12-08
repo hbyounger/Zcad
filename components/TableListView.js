@@ -51,7 +51,7 @@ class TableListView extends Component {
     }
 
     onTest(){
-        this.props.navigator.push({name: 'map'});
+        this.props.navigator.pop({name: 'map'});
     }
     render() {
         //let tableArray = [];
@@ -70,7 +70,7 @@ class TableListView extends Component {
                     activeOpacity={0.5}>
                     <View >
                         <Text style={{color:'#fff'}} >
-                            {'回到钻位图'}
+                            {'回到孔位图'}
                         </Text>
                     </View>
                 </TouchableHighlight>

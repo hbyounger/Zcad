@@ -285,3 +285,44 @@ export const setAllData = (server,userid,projectName,Data) => {
             })
     }
 };
+
+export const updateData = (server,userid,projectName,holeNo,Data) => {
+    console.log(userid);
+    let formData = new FormData;
+    formData.append("userid",userid);
+    formData.append("projectName",projectName);
+    formData.append("holeNo",holeNo);
+    formData.append("option","updateData");
+    formData.append("Data",Data);
+
+    console.log(formData);
+    //console.log("post");
+    //post(formData);
+    return (dispatch) => {
+        // 登陆中，做禁用登陆 Button 等操作
+        console.log('http://'+server+'/ajaxService/admin.ashx');
+        fetch('http://'+server+'/ajaxService/admin.ashx', {
+            method: 'POST',
+            headers: {},
+            body: formData,
+        })
+            .then(toJSON)
+            .then((json) => {
+                if (json) {
+                    /*dispatch({
+                     type:'PLATFORM_DATA_USER_LOGIN_TABLES',
+                     payload:json
+                     });*/
+                    //callback(json);
+                    console.log(json)
+                }
+                else {
+                    console.log(json)
+                    alert('服务器打了小瞌睡，请重试～')
+                }
+            })
+            .catch((error) => {
+                alert(error);
+            })
+    }
+};

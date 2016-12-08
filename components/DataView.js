@@ -77,6 +77,7 @@ class Grid extends Component{
                 this.rightArray.push(ele);
             }
         });
+        this.props.callback(this.rightArray);
         this.nameList=[];
         this.nameArray.forEach((ele,i)=>{
             this.nameList.push(
@@ -327,10 +328,18 @@ class DataView extends Component{
             rawData: tables,
             expires: null,//1000 * 3600
         });
-        this.props.navigator.push({name: 'tablelist'});
+        //this.props.navigator.push({name: 'tablelist'});
     };
+
+    onUpload=(data)=>{
+        let {loginactions,login,project} = this.props;
+        loginactions.updateData(login.server,login.userid,project.project,this.pointInfo["钻孔编号"],this.Array);
+    }
 //navigator = {this.props.navigator}
 
+    onBack=()=>{
+        this.props.navigator.push({name: 'tablelist'});
+    };
 
     render(){
         let {login,table} = this.props;
@@ -338,6 +347,22 @@ class DataView extends Component{
 
         return (
             <ScrollView>
+                <View >
+                    <Text style={{color:'#fff'}} >
+                        {table.table}
+                    </Text>
+                </View>
+                <TouchableHighlight
+                    style={[styles.style_view_commit,{top : 0 ,left : 0}]}
+                    onPress={this.onBack}
+                    underlayColor="transparent"
+                    activeOpacity={0.5}>
+                    <View >
+                        <Text style={{color:'#fff'}} >
+                            {'返回'}
+                        </Text>
+                    </View>
+                </TouchableHighlight>
                 <TouchableHighlight
                     style={[styles.style_view_commit,{top : 0 ,left : 0}]}
                     onPress={this.onSubmit}
@@ -345,13 +370,30 @@ class DataView extends Component{
                     activeOpacity={0.5}>
                     <View >
                         <Text style={{color:'#fff'}} >
-                            {table.table+'-点此保存'}
+                            {'保存'}
                         </Text>
                     </View>
                 </TouchableHighlight>
+                {
+                    (!login.offline)&&(
+                        <TouchableHighlight
+                            style={[styles.style_view_commit,{top : 0 ,left : 0}]}
+                            onPress={this.onUpload}
+                            underlayColor="transparent"
+                            activeOpacity={0.5}>
+                            <View >
+                                <Text style={{color:'#fff'}} >
+                                    {'上传'}
+                                </Text>
+                            </View>
+                        </TouchableHighlight>
+                    )
+                }
+
                 <Grid
                     callback ={(list)=>{
-                    console.log(tables[table.table]);
+                    console.log(list);
+                    this.Array=list;
                     }}
                     pointInfo = {this.pointInfo}
                     data = {this.List}

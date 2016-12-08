@@ -60,7 +60,7 @@ class TableListView extends Component {
         return (
             <View >
                 <Text style={styles3.welcome} >
-                    {'钻位'+cell.pointData["钻孔编号"]+'-选择数据表'}
+                    {'孔号'+cell.pointData["钻孔编号"]+'-选择数据表'}
                 </Text>
                 {this.tableArray}
                 <TouchableHighlight

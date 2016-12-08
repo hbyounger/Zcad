@@ -71,12 +71,12 @@ class WelcomeView extends Component {
         let { loginactions,login } = this.props;
         loginactions.getUserPrivilege(login.server,login.userid,(projects)=>{
             projects.forEach((ele)=>{
-                //console.log(ele.PRIVILEGENAME);
+                console.log(login);
                 let projectid = login.userid+'-'+ele.PRIVILEGENAME;
                 loginactions.getAllData(login.server,login.userid,ele.PRIVILEGENAME,(data)=>{
                     storage.save({
                         key: 'projectid',  // 注意:请不要在key中使用_下划线符号!
-                        id:projectid,
+                        id: projectid,
                         rawData: data,
                         expires: null,//1000 * 3600
                     });
@@ -103,7 +103,7 @@ class WelcomeView extends Component {
                             syncInBackground: false,//true
                         })
                         .then(ret => {
-                            alert("数据已存在");
+                            //alert("数据已存在");
                         })
                         .catch(err => {
                             console.warn(err.message);
@@ -275,32 +275,32 @@ class WelcomeView extends Component {
                     )
 
                 }
-                {
-                    (!login.offline)&&(
-                        <TouchableHighlight
-                            style={[styles.style_view_exit,{top : 0 ,left : 0}]}
-                            onPress={this.onUpload}
-                            underlayColor="transparent"
-                            activeOpacity={0.5}>
-                            <View >
-                                <Text style={{color:'#fff'}} >
-                                    {'上传数据'}
-                                </Text>
-                            </View>
-                        </TouchableHighlight>
-                    )
-                }
+
             </ScrollView>
         );
     }
 }
-
+/*{
+ (!login.offline)&&(
+ <TouchableHighlight
+ style={[styles.style_view_exit,{top : 0 ,left : 0}]}
+ onPress={this.onUpload}
+ underlayColor="transparent"
+ activeOpacity={0.5}>
+ <View >
+ <Text style={{color:'#fff'}} >
+ {'上传数据'}
+ </Text>
+ </View>
+ </TouchableHighlight>
+ )
+ }*/
 const styles = StyleSheet.create({
     style_view_exit:{
         marginTop:25,
         marginLeft:10,
         marginRight:10,
-        backgroundColor:'#63B8FF',
+        backgroundColor:'#72d0eb',//#63B8FF//#7ebd26
         height:35,
         //width:60,
         //borderRadius:5,

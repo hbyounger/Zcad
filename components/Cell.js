@@ -49,7 +49,7 @@ class Cell extends Component{
         return cell.value;
     }
     onPress(data){
-        console.log('tablelist');
+        //console.log('tablelist');
         let { actions } = this.props;
         this.props.navigator.push({name: 'tablelist'});//callback//tablelist
         actions.SetPosition({
@@ -80,7 +80,7 @@ class Cell extends Component{
                     activeOpacity={0.5}>
                     <View style={[styles.cell, this.cellStyle()]}>
                         <Text style={[styles.cellText, this.textStyle()]}>
-                            {this.props.num}
+                            {this.props.Point.data["钻孔编号"]}
                         </Text>
                     </View>
                 </TouchableHighlight>

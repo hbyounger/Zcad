@@ -286,7 +286,7 @@ export const setAllData = (server,userid,projectName,Data) => {
     }
 };
 
-export const updateData = (server,userid,projectName,holeNo,Data) => {
+export const updateData = (server,userid,projectName,holeNo,Data,DbTableName) => {
     console.log(userid);
     let formData = new FormData;
     formData.append("userid",userid);
@@ -294,6 +294,7 @@ export const updateData = (server,userid,projectName,holeNo,Data) => {
     formData.append("holeNo",holeNo);
     formData.append("option","updateData");
     formData.append("Data",Data);
+    formData.append("DbTableName",DbTableName);
 
     console.log(formData);
     //console.log("post");

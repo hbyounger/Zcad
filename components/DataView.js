@@ -332,8 +332,8 @@ class DataView extends Component{
     };
 
     onUpload=(data)=>{
-        let {loginactions,login,project} = this.props;
-        loginactions.updateData(login.server,login.userid,project.project,this.pointInfo["钻孔编号"],this.Array);
+        let {loginactions,login,table,project} = this.props;
+        loginactions.updateData(login.server,login.userid,project.project,this.pointInfo["钻孔编号"],this.Array,table.table);
     }
 //navigator = {this.props.navigator}
 

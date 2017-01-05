@@ -193,14 +193,14 @@ class Login extends Component {
                         </Text>
                     </View>
                 </TouchableHighlight>
-                <View style={{flex:1,flexDirection:'row',alignItems: 'flex-end',bottom:10}}>
-                    <Text style={styles.style_view_unlogin}>
-                        无法登录?
-                    </Text>
-                    <Text style={styles.style_view_register}>
-                        新用户
-                    </Text>
-                </View>
+                // <View style={{flex:1,flexDirection:'row',alignItems: 'flex-end',bottom:10}}>
+                //     <Text style={styles.style_view_unlogin}>
+                //         无法登录?
+                //     </Text>
+                //     <Text style={styles.style_view_register}>
+                //         新用户
+                //     </Text>
+                // </View>
             </View>
         );
     }

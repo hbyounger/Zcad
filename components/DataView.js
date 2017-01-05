@@ -24,6 +24,7 @@ import * as actions from '../redux/table';
 import Cell from './Cell'//SvgExample
 //import SvgExample from './main'
 //import Example from './Map'
+import * as loginActions from '../actions/login';
 
 const window = Dimensions.get('window');
 var RIGHT_LISTVIEW = 'right_listView';
@@ -54,15 +55,40 @@ var rightArray = [
     {name: 'kjhk', sex: 'sex', age:'age', firstName: 'firstName', seconName:'seconName', hehe:'hehe'},
 ];
 
-class GridTest extends Component{
+class Grid extends Component{
     constructor(props){
         super(props);
         let ds = new ListView.DataSource({rowHasChanged: (r1, r2) => r1 !== r2});
         let ds1 = new ListView.DataSource({rowHasChanged: (r1, r2) => r1 !== r2});
         let offsetval = {x : 0, y: 0};
+        let {pointInfo,data} = this.props;
+        console.log(pointInfo);
+        console.log(data);
+        this.nameArray = [];
+        this.leftArray = [];
+        this.rightArray = [];
+        for(let ele in data[0]){
+            //console.log(ele);
+            this.nameArray.push(ele)
+        }
+        data.forEach((ele,i)=>{
+            if((ele["钻孔编号"]===pointInfo["钻孔编号"])||(!ele["钻孔编号"])){
+                this.leftArray.push(ele["ID"]?ele["ID"]:i);
+                this.rightArray.push(ele);
+            }
+        });
+        this.props.callback(this.rightArray);
+        this.nameList=[];
+        this.nameArray.forEach((ele,i)=>{
+            this.nameList.push(
+                <View key = {`title${i}`} style = {styles.titleView}>
+                    <Text>{ele}</Text>
+                </View>
+            )
+        });
         this.state ={
-            leftDataSource: ds.cloneWithRows(array),
-            rightdataSource: ds.cloneWithRows(rightArray),
+            leftDataSource: ds.cloneWithRows(this.leftArray),
+            rightdataSource: ds1.cloneWithRows(this.rightArray),
             leftListOffset: {x : 0, y: 0},
             loaded: false,
 
@@ -71,7 +97,7 @@ class GridTest extends Component{
             selected3: 'key1',
             color: 'red',
             mode: Picker.MODE_DIALOG,
-        }
+        };
     }
 
     /*getInitialState(){
@@ -82,11 +108,13 @@ class GridTest extends Component{
     }*/
 
     componentDidMount(){
-        this.state.loaded = true;
+        this.setState({
+            loaded : true
+        });
+        //this.state.loaded = true;
     }
     onPressWelcome(){
         this.props.navigator.push({name: 'welcome'});
-
     }
     /*let alertMessage = 'Credibly reintermediate next-generation potentialities after goal-oriented ' +
      'catalysts for change. Dynamically revolutionize.';
@@ -103,11 +131,17 @@ class GridTest extends Component{
         this.setState(newState);
         //Alert.alert('Alert Title',key+','+value,[{text: 'OK', onPress: () => console.log('OK Pressed!')}]);
     }
-
+    onTableChange = (e)=>{
+        this.props.callback(this.rightArray);
+    };
     onScroll = ()=>{
-        if (this.state.loaded) {
+        //console.log("onScroll");
+        //console.log(this.state.loaded);
+        if (this.state.loaded) {//this.state.loaded
             var rightList = this.refs[RIGHT_LISTVIEW];
+            //console.log(rightList)
             var y1 = rightList.scrollProperties.offset;
+            //console.log(y1)
             this.setState({
                 leftListOffset :{x: 0 , y: y1}
             });
@@ -127,52 +161,104 @@ class GridTest extends Component{
  onValueChange={this.onValueChange(this, 'selected1')}*/
     _rightRenderRow = (rowData: object, sectionID: number, rowID: number)=>{
         //() => Alert.alert('Alert Title',alertMessage,[{text: 'OK', onPress: () => console.log('OK Pressed!')},])  <TextInput>{rowData.name}</TextInput>
+        let list=[];
+        this.nameArray.forEach((ele,i)=>{
+            list.push(
+                <View key = {`right${i}`}>
+                    <TextInput style = {styles.cellView} onChangeText ={(e)=>{rowData[ele]=e;this.onTableChange(e);}}>{rowData[ele]}</TextInput>
+                </View>)
+        });
+        /*<View style = {styles.cellView}>
+         <TextInput>{rowData.name}</TextInput>
+         </View>
+         <View style = {styles.cellView}>
+         <Picker
+         selectedValue={this.state.selected1}
+         onValueChange={this.onValChange.bind(this,'selected1')}
+         mode="dropdown"
+         style={styles.picker}>
+         <Item label="hello" value="key0" />
+         <Item label="world" value="key1" />
+         </Picker>
+         </View>
+         <View style = {styles.cellView}>
+         <TextInput>{rowData.name}</TextInput>
+         </View>
+         <View style = {styles.cellView}>
+         <TextInput>{rowData.name}</TextInput>
+         </View>
+         <View style = {styles.cellView}>
+         <TextInput>{rowData.name}</TextInput>
+         </View>
+         <View style = {styles.cellView}>
+         <TextInput>{rowData.name}</TextInput>
+         </View>
+         <View style = {styles.cellView}>
+         <TextInput>{rowData.name}</TextInput>
+         </View>
+         <View style = {styles.cellView}>
+         <TextInput>{rowData.name}</TextInput>
+         </View>
+         <View style = {styles.cellView}>
+         <TextInput>{rowData.name}</TextInput>
+         </View>*/
         return (
             <View style = {styles.rightListRow}>
-                <View style = {styles.cellView}>
-                    <TextInput>{rowData.name}</TextInput>
-                </View>
-                <View style = {styles.cellView}>
-                    <Picker
-                        selectedValue={this.state.selected1}
-                        onValueChange={this.onValChange.bind(this,'selected1')}
-                        mode="dropdown"
-                        style={styles.picker}>
-                        <Item label="hello" value="key0" />
-                        <Item label="world" value="key1" />
-                    </Picker>
-                </View>
-                <View style = {styles.cellView}>
-                    <TextInput>{rowData.name}</TextInput>
-                </View>
-                <View style = {styles.cellView}>
-                    <TextInput>{rowData.name}</TextInput>
-                </View>
-                <View style = {styles.cellView}>
-                    <TextInput>{rowData.name}</TextInput>
-                </View>
-                <View style = {styles.cellView}>
-                    <TextInput>{rowData.name}</TextInput>
-                </View>
-                <View style = {styles.cellView}>
-                    <TextInput>{rowData.name}</TextInput>
-                </View>
-                <View style = {styles.cellView}>
-                    <TextInput>{rowData.name}</TextInput>
-                </View>
-                <View style = {styles.cellView}>
-                    <TextInput>{rowData.name}</TextInput>
-                </View>
+                {list}
             </View>
         );
     }
+/*<View style = {styles.titleView}>
+ <Text>描述深度(m)</Text>
+ </View>
+ <TouchableHighlight
+ onPress={this.onPressPicker.bind(this,'土的名称')}//onPressPicker
+ underlayColor="transparent"
+ activeOpacity={0.5}>
+ <View style = {styles.cell}>
+ <Text>土的名称</Text>
+ </View>
+ </TouchableHighlight>
 
+ <View style = {styles.titleView}>
+ <Text>颜色</Text>
+ </View>
+ <View style = {styles.titleView}>
+ <Text>其他性质</Text>
+ </View>
+ <View style = {styles.titleView}>
+ <Text>光泽反映</Text>
+ </View>
+ <View style = {styles.titleView}>
+ <Text>摇振反应</Text>
+ </View>
+ <View style = {styles.titleView}>
+ <Text>干强度</Text>
+ </View>
+ <View style = {styles.titleView}>
+ <Text>韧性</Text>
+ </View>
+ <View style = {styles.titleView}>
+ <Text>状态</Text>
+ </View>
+ <View style = {styles.titleView}>
+ <Text>湿度</Text>
+ </View>
+ <View style = {styles.titleView}>
+ <Text>取土编号</Text>
+ </View>*/
     render() {
+        //console.log(this.state.loaded);
+
+
+        /*showsHorizontalScrollIndicator = {true}
+         showsVerticalScrollIndicator = {false}
+         horizontal = {true}*/
         return (
-            <View style = {styles.container}>
+            <ScrollView horizontal = {true} style = {styles.container}>
                 <View style = {styles.left}>
                     <View style = {styles.mingcheng}>
-                        <Text>层序</Text>
+                        <Text>ID</Text>
                     </View>
 
                     <ListView
@@ -190,78 +276,93 @@ class GridTest extends Component{
 
                 </View>
                 <View style = {styles.right}>
-                    <ScrollView style = {styles.scrollView}
-                                showsHorizontalScrollIndicator = {false}
-                                showsVerticalScrollIndicator = {false}
-                                horizontal = {true}>
+                    <ScrollView
+                        style = {styles.scrollView}
+                        horizontal = {true}
+                    >
                         <View style = {styles.contentView}>
-                            <View style = {{width: 1600 , height: 40, flexDirection:'row'}}>
-                                <View style = {styles.titleView}>
-                                    <Text>描述深度(m)</Text>
-                                </View>
-                                <TouchableHighlight
-                                    onPress={this.onPressPicker.bind(this,'土的名称')}//onPressPicker
-                                    underlayColor="transparent"
-                                    activeOpacity={0.5}>
-                                    <View style = {styles.cell}>
-                                        <Text>土的名称</Text>
-                                    </View>
-                                </TouchableHighlight>
-
-                                <View style = {styles.titleView}>
-                                    <Text>颜色</Text>
-                                </View>
-                                <View style = {styles.titleView}>
-                                    <Text>其他性质</Text>
-                                </View>
-                                <View style = {styles.titleView}>
-                                    <Text>光泽反映</Text>
-                                </View>
-                                <View style = {styles.titleView}>
-                                    <Text>摇振反应</Text>
-                                </View>
-                                <View style = {styles.titleView}>
-                                    <Text>干强度</Text>
-                                </View>
-                                <View style = {styles.titleView}>
-                                    <Text>韧性</Text>
-                                </View>
-                                <View style = {styles.titleView}>
-                                    <Text>状态</Text>
-                                </View>
-                                <View style = {styles.titleView}>
-                                    <Text>湿度</Text>
-                                </View>
-                                <View style = {styles.titleView}>
-                                    <Text>取土编号</Text>
-                                </View>
+                            <View style = {{width: 1000 , height: 40, flexDirection:'row'}}>
+                                {this.nameList}
                             </View>
                             <ListView
                                 ref = {RIGHT_LISTVIEW}
-                                // scrollEventThrottle={500}
+                                //scrollEventThrottle={500}
                                 style = {styles.rightListView}
                                 dataSource = {this.state.rightdataSource}
-                                onScroll={this.onScroll}
+                                //onScroll={this.onScroll}
                                 renderRow = {this._rightRenderRow}
                             />
                         </View>
                     </ScrollView>
                 </View>
-            </View>
+            </ScrollView>
         );
     }
 }
 //<SvgExample/><Example/><Game2048/><Text style={styles.instructions} onPress={this.onPressWelcome}>Default view</Text>
 class DataView extends Component{
-    onSubmit = ()=>{
-        this.props.navigator.push({name: 'map'});
+    constructor(props) {
+        super(props);
+        let {cell,login,table,project} = this.props;
+        let tables = login.tables;
+        this.List = tables[table.table];
+        console.log(tables[table.table]);
+        this.Array=[];
+        this.pointInfo = cell.pointData;
+        this.projectid = login.userid+'-'+project.project;
+        //console.log(table.table);
+        //console.log(this.List);
+        //console.log(cell.pointData);
+        //cell.pointData
+    }
+
+    onSubmit = (list)=>{
+        let {login,table,loginactions} = this.props;
+        let tables = login.tables;
+        //tables[table.table] = this.List;
+        console.log(tables[table.table]);
+        loginactions.getOfflineTables(tables);
+        storage.save({
+            key: 'projectid',  // 注意:请不要在key中使用_下划线符号!
+            id: this.projectid,
+            rawData: tables,
+            expires: null,//1000 * 3600
+        });
+        //this.props.navigator.push({name: 'tablelist'});
+    };
+
+    onUpload=(data)=>{
+        let {loginactions,login,table,project} = this.props;
+        loginactions.updateData(login.server,login.userid,project.project,this.pointInfo["钻孔编号"],this.Array,table.table);
     }
 //navigator = {this.props.navigator}
 
+    onBack=()=>{
+        this.props.navigator.push({name: 'tablelist'});
+    };
+
     render(){
-        let {table} = this.props;
+        let {login,table} = this.props;
+        let tables = login.tables;
+
         return (
             <ScrollView>
+                <View >
+                    <Text style={{color:'#fff'}} >
+                        {table.table}
+                    </Text>
+                </View>
+                <TouchableHighlight
+                    style={[styles.style_view_commit,{top : 0 ,left : 0}]}
+                    onPress={this.onBack}
+                    underlayColor="transparent"
+                    activeOpacity={0.5}>
+                    <View >
+                        <Text style={{color:'#fff'}} >
+                            {'返回'}
+                        </Text>
+                    </View>
+                </TouchableHighlight>
                 <TouchableHighlight
                     style={[styles.style_view_commit,{top : 0 ,left : 0}]}
                     onPress={this.onSubmit}
@@ -269,11 +370,34 @@ class DataView extends Component{
                     activeOpacity={0.5}>
                     <View >
                         <Text style={{color:'#fff'}} >
-                            {table.table+'-提交'}
+                            {'保存'}
                         </Text>
                     </View>
                 </TouchableHighlight>
-                <GridTest navigator = {this.props.navigator}/>
+                {
+                    (!login.offline)&&(
+                        <TouchableHighlight
+                            style={[styles.style_view_commit,{top : 0 ,left : 0}]}
+                            onPress={this.onUpload}
+                            underlayColor="transparent"
+                            activeOpacity={0.5}>
+                            <View >
+                                <Text style={{color:'#fff'}} >
+                                    {'上传'}
+                                </Text>
+                            </View>
+                        </TouchableHighlight>
+                    )
+                }
+
+                <Grid
+                    callback ={(list)=>{
+                    console.log(list);
+                    this.Array=list;
+                    }}
+                    pointInfo = {this.pointInfo}
+                    data = {this.List}
+                    navigator = {this.props.navigator}/>
             </ScrollView>
         )
     }
@@ -301,7 +425,8 @@ var styles = StyleSheet.create({
         width: 100,
     },
     left:{
-        flex: 1,
+        width: 50,
+        //flex: 1,
         // backgroundColor:'yellow',
         flexDirection: 'column',
     },
@@ -333,23 +458,24 @@ var styles = StyleSheet.create({
     },
 
     leftListRow:{
+        //width:50,
         alignItems: 'center',      // 水平局中
         justifyContent: 'center',  // 垂直居中
         height: 40,
-        // backgroundColor:'#db384c',
+        //backgroundColor:'#db384c',
         borderColor: '#DCD7CD',
         borderBottomWidth:1,
         borderRightWidth:1,
     },
 
     rightListRow:{
-        width: 1600 ,
+        width: 1000 ,
         height: 40,
         flexDirection:'row'
     },
 
     scrollView:{
-        flex: 1,
+        //flex: 1,
         marginRight:1,
         marginLeft:1,
         marginTop:0,
@@ -360,8 +486,8 @@ var styles = StyleSheet.create({
 
     contentView:{
 
-        height: window.height -50,
-        width: 1600 ,
+        //height: window.height -50,
+        width: 1000 ,
         // backgroundColor:'yellow',
         flexDirection: 'column',
     },
@@ -405,60 +531,20 @@ var styles = StyleSheet.create({
         justifyContent: 'center',  // 垂直居中
     },
 });
-/*const styles = StyleSheet.create({
-    container: {
-        flex: 1,
-        justifyContent: 'center',
-        alignItems: 'center',
-        backgroundColor: '#F5FCFF',
-    },
-    welcome: {
-        fontSize: 20,
-        textAlign: 'center',
-        margin: 10,
-    },
-    instructions: {
-        textAlign: 'center',
-        color: '#333333',
-        marginBottom: 5,
-    },
-    cell: {
-        width: 16,
-        height: 16,
-        borderRadius: 3,
-        backgroundColor: '#7b8994',
-        margin: 2,
-        flex: 1,
-        justifyContent: 'center',
-        alignItems: 'center',
-    },
-    cellX: {
-        backgroundColor: '#72d0eb',
-    },
-    cellO: {
-        backgroundColor: '#7ebd26',
-    },
-    cellText: {
-        fontSize: 50,
-        fontFamily: 'AvenirNext-Bold',
-    },
-    cellTextX: {
-        color: '#19a9e5',
-    },
-    cellTextO: {
-        color: '#b9dc2f',
-    },
-});*/
 
 function mapStateToProps(state){
     return {
         table : state.table.toJS(),
+        login : state.login.toJS(),
+        cell : state.cell.toJS(),
+        project : state.project.toJS(),
     }
 }
 
 function mapDispatchToProps(dispatch){
     return {
-        actions : bindActionCreators( actions , dispatch )
+        actions : bindActionCreators( actions , dispatch ),
+        loginactions : bindActionCreators( loginActions , dispatch )
     }
 }
 

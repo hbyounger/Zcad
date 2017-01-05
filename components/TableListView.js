@@ -15,6 +15,17 @@ import * as actions from '../redux/table';
 
 var tableList = ['勘探点数据表','波速表','剖线数据表','静探表','动探表'];
 class TableListView extends Component {
+    constructor(props) {
+        super(props);
+        let {login} = this.props;
+        let table = login.tables,
+            List = table["项目_表"];//表名
+        List.forEach(ele=>{
+            //console.log(ele["表名"]);
+            this.tableList.push(ele["表名"]);
+        })
+    }
+    tableList = [];
     onPressTable(value){
         let {actions} = this.props;
         this.props.navigator.push({name: 'data'});
@@ -22,9 +33,10 @@ class TableListView extends Component {
     }
     componentWillMount(){
         this.tableArray = [];//.bind(this,ele)
-        tableList.forEach((ele)=>{
+        this.tableList.forEach((ele,i)=>{
             this.tableArray.push(
                 <TouchableHighlight
+                    key = {i}
                     onPress={this.onPressTable.bind(this,ele)}
                     underlayColor="transparent"
                     activeOpacity={0.5}>
@@ -37,18 +49,31 @@ class TableListView extends Component {
             )
         });
     }
+
+    onTest(){
+        this.props.navigator.push({name: 'map'});
+    }
     render() {
         //let tableArray = [];
         let {cell} = this.props;
-        console.log(this.props);
-
 
         return (
             <View >
                 <Text style={styles3.welcome} >
-                    {'钻位'+cell.position+'-选择数据表'}
+                    {'孔号'+cell.pointData["钻孔编号"]+'-选择数据表'}
                 </Text>
                 {this.tableArray}
+                <TouchableHighlight
+                    style={[styles3.style_view_exit,{top : 0 ,left : 0}]}
+                    onPress={this.onTest.bind(this)}
+                    underlayColor="transparent"
+                    activeOpacity={0.5}>
+                    <View >
+                        <Text style={{color:'#fff'}} >
+                            {'回到钻位图'}
+                        </Text>
+                    </View>
+                </TouchableHighlight>
             </View>
 
         );
@@ -61,6 +86,17 @@ const styles3 = StyleSheet.create({
         justifyContent: 'center',
         alignItems: 'center',
         backgroundColor: '#F5FCFF',
+    },
+    style_view_exit:{
+        marginTop:25,
+        marginLeft:10,
+        marginRight:10,
+        backgroundColor:'#63B8FF',
+        height:35,
+        //width:60,
+        //borderRadius:5,
+        justifyContent: 'center',
+        alignItems: 'center',
     },
     welcome: {
         color:'#63B8FF',
@@ -113,7 +149,8 @@ const styles3 = StyleSheet.create({
 
 function mapStateToProps(state){
     return {
-        cell : state.cell.toJS()
+        cell : state.cell.toJS(),
+        login : state.login.toJS(),
     }
 }
 

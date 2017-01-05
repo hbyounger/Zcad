@@ -25,7 +25,7 @@ export const toJSON = response => {
     }
   }
   const code = response.status;
-  console.log(json);
+  //console.log(json);
   return json;
 }
 

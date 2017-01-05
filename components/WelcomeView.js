@@ -8,6 +8,7 @@ import {
     Text,
     TouchableHighlight,
     View,
+    ScrollView,
     ListView
 } from 'react-native';
 import { connect } from 'react-redux';
@@ -16,127 +17,8 @@ import { bindActionCreators } from 'redux';
 import * as projectActions from '../redux/project';
 import * as loginActions from '../actions/login';
 import Cell from './Cell';
-//import Realm from 'realm';
 
-const CarSchema = {
-  name: 'Car',
-  properties: {
-    make:  'string',
-    model: 'string',
-    miles: {type: 'int', default: 0},
-  }
-};
 
-const PersonSchema = {
-  name: 'Person',
-  properties: {
-    name:     'string',
-    birthday: 'date',
-    cars:     {type: 'list', objectType: 'Car'},
-    picture:  {type: 'data', optional: true}, // optional property
-  }
-};
-//工程表
-const ProjectSchema = {
-    name : 'Projects',
-    properties: {
-        projectID :'int',
-        projectName : 'string',
-        tablesListID : {
-            type: 'list',
-            objectType: 'Tables',
-        }
-    }
-};
-//表表
-const TableSchema = {
-    name : 'Tables',
-    properties: {
-        tableID :'int',
-        projectID :'int',
-        tableType : 'string',
-        fieldsID : {
-            type : 'list',
-            objectType : 'Field'
-        },
-    }
-}
-//字段表
-const FieldSchema = {
-    name : 'Field',
-    properties: {
-        fieldID :'int',
-        tableID :'int',
-        fieldName : 'string',
-        typeName : 'string',
-        typeID : 'int',
-    }
-}
-//标贯表:ID 钻孔编号 试验点的底深度 杆长 标贯击数 试验编号
-const BGSchema = {
-    name : 'biaoguan',
-    properties :　{
-        ID : 'int',
-        holeIndex : 'int',
-
-    }
-}
-//波速表：钻孔编号 试验点的深度 横波波速 纵波波速 ID
-const BSSchema ={
-    name : 'bosu',
-    properties : {
-        ID : 'int',
-        holeIndex : 'int',
-        pointDepth : 'float',
-        HWSpeed : 'float',
-        VWSpeed : 'float',
-    }
-}
-
-//场地地层表：
-//主地层编号 亚地层编号 地质时代 成因 岩土类名 岩土名称 亚岩土名称 颜色 密实度 湿度 可塑性 浑圆度 均匀性
-//风化程度 岩石倾向 岩石倾角 矿物成分 结构构造 包含物 气味 描述 压缩模量 ID
-const layerSchema = {
-    name : 'string',
-    properties : {
-        ID : 'int',
-        mainLayerInx : 'int',
-        subLayerInx : 'int',
-        GeoTime : 'string',
-        reason : 'string',
-        rockType : 'string',
-        rockName : 'string',
-        subRockName : 'string',
-        color : 'string',
-        density : 'string',
-        humidity :'string',
-        plasticity : 'string',
-        circular : 'string',
-        evenness : 'string',
-        weathing : 'string',
-        rockOrientation :'float',
-        rockAngle : 'float',
-        materialIngredient : 'string',
-        structure : 'string',
-
-    }
-}
-//动探表：钻孔编号 试验点的底深度 动探类型 杆长 动探击数 ID
-
-//静探表：钻孔编号 实验点底深度 静探类型 锥头阻力 侧壁摩阻力 磨阻比 ID
-
-//勘探点数据表：钻孔编号 孔口标高 勘探深度 坐标X 坐标Y 勘探点类型 探井深度 勘探日期 ID 钻孔直径 水位高程
-
-//剖线数据表： 剖线编号 剖线孔号 ID
-
-//取样表: 钻孔编号 取样编号 取样类型 取样深度 取样长度 ID
-
-//土层表 钻孔编号 层底深度 主地层编号  亚地层编号 地质时代 成因 地层厚度 岩土类名 岩土名称  土名代号 亚岩土名称 颜色 
-//密实度 湿度 可塑性 压缩性 浑圆度 均匀性 风化程度 包含物 气味 描述 ID
-
-//岩心采取率、RQD表： ID 钻孔编号 深度 岩心采取率 RQD 备注
-
-//字段类型：
 const FieldType = {
     typeID : 'int',
     typeName : 'string',
@@ -145,118 +27,133 @@ const FieldType = {
 class WelcomeView extends Component {
     constructor(props){
         super(props);
-        // Initialize a Realm with Car and Person models
-        /*let realm = new Realm({
-            schema: [
-                ProjectSchema, 
-                TableSchema,
-                FieldSchema,
-                BGSchema,
-                BSSchema]
-            });*/
-        let { loginactions,login } = this.props;
-        //console.log(login);
-        loginactions.getUserPrivilege(login.userid,(projects)=>{
-            //console.log(projects);
-            /*storage.remove({
-                key: 'userid',
-                id: login.userid,
-            });*/
-            storage.load({
-                    key: 'userid',
-                    id:login.userid,
-                    // autoSync(默认为true)意味着在没有找到数据或数据过期时自动调用相应的sync方法
-                    autoSync: false,//true,
+        this.projectList = [];
+        //console.log("loadData");
+        this.loadData();
+    }
 
-                    // syncInBackground(默认为true)意味着如果数据过期，
-                    // 在调用sync方法的同时先返回已经过期的数据。
-                    // 设置为false的话，则始终强制返回sync方法提供的最新数据(当然会需要更多等待时间)。
-                    syncInBackground: false,//true
-                })
-                .then(ret => {
-                    // 如果找到数据，则在then方法中返回
-                    // 注意：这是异步返回的结果（不了解异步请自行搜索学习）
-                    // 你只能在then这个方法内继续处理ret数据
-                    // 而不能在then以外处理
-                    // 也没有办法“变成”同步返回
-                    // 你也可以使用“看似”同步的async/await语法
-                    console.log("load");
-                    console.log(ret);
-                    //this.setState({ user: ret });
-                })
-                .catch(err => {
-                    //如果没有找到数据且没有sync方法，
-                    //或者有其他异常，则在catch中返回
-                    console.warn(err.message);
-                    switch (err.name) {
-                        case 'NotFoundError':
-                            // TODO;
-                            //alert('未找到数据');
-                            console.log("save");
-                            console.log(login.userid);
-                            storage.save({
-                                key: 'userid',  // 注意:请不要在key中使用_下划线符号!
-                                id:login.userid,
-                                rawData: projects,
-                                // 如果不指定过期时间，则会使用defaultExpires参数
-                                // 如果设为null，则永不过期
-                                expires: null,//1000 * 3600
-                            });
-                            break;
-                        case 'ExpiredError':
-                            // TODO
-                            alert('出错了');
-                            break;
-                    }
-                });
+    onPressMap(value){
+        let {loginactions,login,projectActions} = this.props;
+        let projectid = login.userid+'-'+value;
+        //console.log(login);
+        projectActions.SetProject(value);
+
+        storage.load({
+                key: 'projectid',
+                id:projectid,
+                autoSync: false,//true,
+                syncInBackground: false,//true
+            })
+            .then(ret => {
+                loginactions.getOfflineTables(ret);
+                this.props.navigator.push({name: 'map'});
+            })
+            .catch(err => {
+                console.warn(err.message);
+                switch (err.name) {
+                    case 'NotFoundError':
+                        // TODO;
+                        alert("没有数据");
+                        break;
+                    case 'ExpiredError':
+                        // TODO
+                        alert('出错了');
+                        break;
+                }
+            });
+    }
+
+    onSubmit(){
+        this.props.navigator.push({name: 'login'});
+    }
+
+    onTest(){
+        let { loginactions,login } = this.props;
+        loginactions.getUserPrivilege(login.server,login.userid,(projects)=>{
             projects.forEach((ele)=>{
-                //console.log(ele.PRIVILEGENAME);
+                console.log(login);
                 let projectid = login.userid+'-'+ele.PRIVILEGENAME;
+                loginactions.getAllData(login.server,login.userid,ele.PRIVILEGENAME,(data)=>{
+                    storage.save({
+                        key: 'projectid',  // 注意:请不要在key中使用_下划线符号!
+                        id: projectid,
+                        rawData: data,
+                        expires: null,//1000 * 3600
+                    });
+
+                });
+            });
+            alert("操作成功");
+            //console.log(login.projects)
+        });
+    }
+
+    loadData = ()=>{
+        let { loginactions,login } = this.props;
+        if(!login.offline){
+            console.log(login.server);
+            loginactions.getUserPrivilege(login.server,login.userid,(projects)=>{
+                projects.forEach((ele)=>{
+                    //console.log(ele.PRIVILEGENAME);
+                    let projectid = login.userid+'-'+ele.PRIVILEGENAME;
+                    storage.load({
+                            key: 'projectid',
+                            id:projectid,
+                            autoSync: false,//true,
+                            syncInBackground: false,//true
+                        })
+                        .then(ret => {
+                            //alert("数据已存在");
+                        })
+                        .catch(err => {
+                            console.warn(err.message);
+                            switch (err.name) {
+                                case 'NotFoundError':
+                                    // TODO;
+                                    //
+                                    loginactions.getAllData(login.server,login.userid,ele.PRIVILEGENAME,(data)=>{
+                                        storage.save({
+                                            key: 'projectid',  // 注意:请不要在key中使用_下划线符号!
+                                            id:projectid,
+                                            rawData: data,
+                                            expires: null,//1000 * 3600
+                                        });
+                                    });
+                                    break;
+                                case 'ExpiredError':
+                                    // TODO
+                                    alert('出错了');
+                                    break;
+                            }
+                        });
+                    //console.log(ele);
+                });
+                //console.log(login.projects)
+            });
+        }
+        else {
+            //console.log("offline")
+            if(!login.projects){
                 storage.load({
-                        key: 'projectid',
-                        id:projectid,
+                        key: 'userid',
+                        id:login.userid,
                         // autoSync(默认为true)意味着在没有找到数据或数据过期时自动调用相应的sync方法
                         autoSync: false,//true,
-
-                        // syncInBackground(默认为true)意味着如果数据过期，
-                        // 在调用sync方法的同时先返回已经过期的数据。
-                        // 设置为false的话，则始终强制返回sync方法提供的最新数据(当然会需要更多等待时间)。
                         syncInBackground: false,//true
                     })
                     .then(ret => {
-                        // 如果找到数据，则在then方法中返回
-                        // 注意：这是异步返回的结果（不了解异步请自行搜索学习）
-                        // 你只能在then这个方法内继续处理ret数据
-                        // 而不能在then以外处理
-                        // 也没有办法“变成”同步返回
-                        // 你也可以使用“看似”同步的async/await语法
-                        console.log("load prj");
-                        console.log(ret);
+                        /*console.log("load");
+                        console.log(ret);*/
+                        //TODO:比较工程队列是否需要更新
+                        loginactions.getOfflineData(ret);
                         //this.setState({ user: ret });
                     })
                     .catch(err => {
-                        //如果没有找到数据且没有sync方法，
-                        //或者有其他异常，则在catch中返回
                         console.warn(err.message);
                         switch (err.name) {
                             case 'NotFoundError':
                                 // TODO;
-                                //alert('未找到数据');
-                                console.log("save prj");
-                                console.log(projectid);
-                                loginactions.getAllData(login.userid,ele.PRIVILEGENAME,(data)=>{
-                                    console.log("getAllData");
-                                    console.log(data);
-                                    //console.log(login.projects)
-                                    storage.save({
-                                        key: 'projectid',  // 注意:请不要在key中使用_下划线符号!
-                                        id:projectid,
-                                        rawData: data,
-                                        // 如果不指定过期时间，则会使用defaultExpires参数
-                                        // 如果设为null，则永不过期
-                                        expires: null,//1000 * 3600
-                                    });
-                                });
+                                alert('未找到数据');
                                 break;
                             case 'ExpiredError':
                                 // TODO
@@ -264,31 +161,10 @@ class WelcomeView extends Component {
                                 break;
                         }
                     });
-                console.log(ele);
-            });
-            //console.log(login.projects)
-        });
-        this.projectList = [];
-    }
-    onPressMap(value){
-        let {projectActions} = this.props;
+            }
+        }
+    };
 
-        let { loginactions,login } = this.props;
-        //console.log(login);
-        loginactions.getAllData(login.userid,value,()=>{
-            //console.log(login)
-            //console.log(login.projects)
-            this.props.navigator.push({name: 'map'});
-            projectActions.SetProject(value);
-        });
-    }
-    onSubmit(){
-        this.props.navigator.push({name: 'login'});
-    }
-    onTest(){
-        //loginactions.getAllData();
-        //this.props.navigator.push({name: 'realm'});//callback//promise
-    }
     renderProgressEntry = (entry)=>{
         //styles.style_view_commit
         //listStyles.li
@@ -305,37 +181,53 @@ class WelcomeView extends Component {
             </TouchableHighlight>
         )
     }
-    /*<TouchableHighlight
-     onPress={this.onPressMap.bind(this,entry)}
-     underlayColor="transparent"
-     activeOpacity={0.5}>
 
-     </TouchableHighlight>*/
+    onUpload = ()=>{
+        let {loginactions,login} = this.props;
+        if(this.projectList){
+            this.projectList.forEach((ele,i)=>{
+                let projectid = login.userid+'-'+ele.PRIVILEGENAME;
+                storage.load({
+                        key: 'projectid',
+                        id:projectid,
+                        autoSync: false,//true,
+                        syncInBackground: false,//true
+                    })
+                    .then(ret => {
+                        loginactions.setAllData(login.server,login.userid,ele.PRIVILEGENAME,ret);
+                    })
+                    .catch(err => {
+                        console.warn(err.message);
+                        switch (err.name) {
+                            case 'NotFoundError':
+                                // TODO;
+                                //
+                                break;
+                            case 'ExpiredError':
+                                // TODO
+                                alert('出错了');
+                                break;
+                        }
+                    });
+
+            })
+        }
+    };
+
     render() {
-        /*var rows = this.state.board.grid.map((cells, row) =>
-         <View key={'row' + row} style={styles.row}>
-         {cells.map((player, col) =>
-         <Cell
-         key={'cell' + col}
-         player={player}
-         onPress={this.handleCellPress.bind(this, row, col)}
-         />
-         )}
-         </View>
 
-         );*/
         let { loginactions,login } = this.props;
         let ProjectArray = [];//.bind(this,ele)
-        //let ds = new ListView.DataSource({rowHasChanged: (r1, r2) => r1 !== r2});
-        //console.log(login.projects);
+
         if(login.projects){
             this.projectList = login.projects;
         }
 
         if(this.projectList){
-            this.projectList.forEach((ele)=>{
+            this.projectList.forEach((ele,i)=>{
                 ProjectArray.push(
                     <TouchableHighlight
+                        key = {i}
                         onPress={this.onPressMap.bind(this,ele.PRIVILEGENAME)}
                         underlayColor="transparent"
                         activeOpacity={0.5}>
@@ -348,13 +240,10 @@ class WelcomeView extends Component {
                 )
             })
         }
-        /*<ListView
-         dataSource={ds.cloneWithRows(this.projectList)}
-         renderRow={this.renderProgressEntry}
-         style={listStyles.liContainer}/>*/
-        return (
 
-            <View >
+        console.log(!login.offline);
+        return (
+            <ScrollView >
                 <Text style={styles.welcome} >
                     选择项目
                 </Text>
@@ -370,52 +259,48 @@ class WelcomeView extends Component {
                         </Text>
                     </View>
                 </TouchableHighlight>
-                <TouchableHighlight
-                    style={[styles.style_view_exit,{top : 0 ,left : 0}]}
-                    onPress={this.onTest.bind(this)}
-                    underlayColor="transparent"
-                    activeOpacity={0.5}>
-                    <View >
-                        <Text style={{color:'#fff'}} >
-                            {'加载数据'}
-                        </Text>
-                    </View>
-                </TouchableHighlight>
-            </View>
+                {
+                    (!login.offline)&&(
+                        <TouchableHighlight
+                            style={[styles.style_view_exit,{top : 0 ,left : 0}]}
+                            onPress={this.onTest.bind(this)}
+                            underlayColor="transparent"
+                            activeOpacity={0.5}>
+                            <View >
+                                <Text style={{color:'#fff'}} >
+                                    {'重新加载数据并覆盖本地数据'}
+                                </Text>
+                            </View>
+                        </TouchableHighlight>
+                    )
 
+                }
+
+            </ScrollView>
         );
     }
 }
-/*const listStyles = StyleSheet.create({
-    li: {
-        borderBottomColor: '#c8c7cc',
-        borderBottomWidth: 0.5,
-        paddingTop: 15,
-        paddingRight: 15,
-        paddingBottom: 15,
-    },
-    liContainer: {
-        backgroundColor: '#fff',
-        flex: 1,
-        paddingLeft: 15,
-    },
-    liIndent: {
-        flex: 1,
-    },
-    liText: {
-        color: '#333',
-        fontSize: 17,
-        fontWeight: '400',
-        marginBottom: -3.5,
-        marginTop: -3.5,
-    },
-});*/
+/*{
+ (!login.offline)&&(
+ <TouchableHighlight
+ style={[styles.style_view_exit,{top : 0 ,left : 0}]}
+ onPress={this.onUpload}
+ underlayColor="transparent"
+ activeOpacity={0.5}>
+ <View >
+ <Text style={{color:'#fff'}} >
+ {'上传数据'}
+ </Text>
+ </View>
+ </TouchableHighlight>
+ )
+ }*/
 const styles = StyleSheet.create({
     style_view_exit:{
         marginTop:25,
         marginLeft:10,
         marginRight:10,
-        backgroundColor:'#63B8FF',
+        backgroundColor:'#72d0eb',//#63B8FF//#7ebd26
         height:35,
         //width:60,
         //borderRadius:5,

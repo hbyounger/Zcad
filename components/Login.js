@@ -31,22 +31,35 @@ class Login extends Component {
             userName : '',
             wordValue : '',
         };
+        this.serverList = [];
+
         //console.log(this.state);
+        storage.load({
+                key: 'server',
+                id:'login',
+                // autoSync(默认为true)意味着在没有找到数据或数据过期时自动调用相应的sync方法
+                autoSync: false,//true,
+                syncInBackground: false,//true
+            })
+            .then(ret => {
+                /*console.log("load");
+                 */
+                let dom = React.findDOMNode(this.refs['server']);
+                console.log(ret);
+                console.log(dom);
+                //TODO:比较工程队列是否需要更新
+                this.refs['server'].text=ret;
+                //this.setState({ user: ret });
+            })
+            .catch(err => {
+            });
     }
     onPress = ()=>{
-        /*let { actions } = this.props;
-        this.props.navigator.push({name: 'welcome'});*/
-        //actions.test(this.props.num);
-        //let { loginActions } = this.props;
-        //e.preventDefault();
-        let {actions} = this.props;
-        //console.log('收到表单值：', this.props.form.getFieldsValue());
-        //
 
-        actions.userLogin(this.state.userName,this.state.wordValue,(userid)=>{
-            console.log(userid);
-            console.log("save user");
-            console.log(userid);
+        let {actions} = this.props;
+        actions.userLogin(this.state.server,this.state.userName,this.state.wordValue,(userid)=>{
+            //console.log("save user");
+            //console.log(userid);
             storage.save({
                 key: 'user',  // 注意:请不要在key中使用_下划线符号!
                 id:'last',
@@ -56,9 +69,9 @@ class Login extends Component {
                 expires: null,//1000 * 3600
             });
             storage.save({
-                key: 'user',  // 注意:请不要在key中使用_下划线符号!
+                key: 'server',  // 注意:请不要在key中使用_下划线符号!
                 id:'login',
-                rawData: "online",
+                rawData: this.state.server,
                 // 如果不指定过期时间，则会使用defaultExpires参数
                 // 如果设为null，则永不过期
                 expires: null,//1000 * 3600
@@ -81,14 +94,15 @@ class Login extends Component {
             .then(ret => {
                 console.log("load user");
                 console.log(ret);
-                storage.save({
+                actions.userOfflineLogin(ret);
+                /*storage.save({
                     key: 'user',  // 注意:请不要在key中使用_下划线符号!
                     id:'login',
                     rawData: "offline",
                     // 如果不指定过期时间，则会使用defaultExpires参数
                     // 如果设为null，则永不过期
                     expires: null,//1000 * 3600
-                });
+                });*/
                 this.props.navigator.push({name: 'welcome'});
                 //this.setState({ user: ret });
             })
@@ -107,8 +121,6 @@ class Login extends Component {
                         break;
                 }
             });
-
-        //actions.test(this.props.num);
     };
 
     handleServerChange = (e)=>{
@@ -142,10 +154,11 @@ class Login extends Component {
                     underlineColorAndroid={'transparent'}
                     textAlign='center'
                     onChangeText ={this.handleServerChange}
+                    ref = {'server'}
                 />
                 <TextInput
                     style={styles.style_user_input}
-                    placeholder='用户名/手机号/邮箱'
+                    placeholder='用户名'
                     numberOfLines={1}
                     autoFocus={true}
                     underlineColorAndroid={'transparent'}
@@ -194,12 +207,7 @@ class Login extends Component {
                     </View>
                 </TouchableHighlight>
                 <View style={{flex:1,flexDirection:'row',alignItems: 'flex-end',bottom:10}}>
-                    <Text style={styles.style_view_unlogin}>
-                        无法登录?
-                    </Text>
-                    <Text style={styles.style_view_register}>
-                        新用户
-                    </Text>
+
                 </View>
             </View>
         );

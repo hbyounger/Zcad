@@ -76,6 +76,15 @@ class Login extends Component {
                 // 如果设为null，则永不过期
                 expires: null,//1000 * 3600
             });
+           storage.save({
+                key: 'userid',  // 注意:请不要在key中使用_下划线符号!
+                id:'last',
+                rawData: userid,
+                // 如果不指定过期时间，则会使用defaultExpires参数
+                // 如果设为null，则永不过期
+                expires: null,//1000 * 3600
+            });
+
             storage.save({
                 key: 'server',  // 注意:请不要在key中使用_下划线符号!
                 id:'login',
@@ -91,41 +100,35 @@ class Login extends Component {
         Alert.alert('alert',alertMessage,[{text: 'OK', onPress: () => console.log('OK Pressed!')},]);*/
     }
 
-    onOfflinePress = ()=>{
-        let { actions } = this.props;
+    onOfflinePress = () => {
+        let {
+            actions
+        } = this.props;
         storage.load({
-                key: 'user',
-                id:'last',
-                autoSync: false,//true,
-                syncInBackground: false,//true
+                key: 'userid',
+                id: 'last',
+                autoSync: false, //true,
+                syncInBackground: false, //true
             })
             .then(ret => {
-                console.log("load user");
-                console.log(ret);
+                console.log("load userid " + ret);
                 actions.userOfflineLogin(ret);
-                /*storage.save({
-                    key: 'user',  // 注意:请不要在key中使用_下划线符号!
-                    id:'login',
-                    rawData: "offline",
-                    // 如果不指定过期时间，则会使用defaultExpires参数
-                    // 如果设为null，则永不过期
-                    expires: null,//1000 * 3600
-                });*/
-                this.props.navigator.push({name: 'welcome'});
-                //this.setState({ user: ret });
+                this.props.navigator.push({
+                    name: 'welcome'
+                });
             })
             .catch(err => {
-                //如果没有找到数据且没有sync方法，
-                //或者有其他异常，则在catch中返回
                 console.warn(err.message);
                 switch (err.name) {
                     case 'NotFoundError':
-                        // TODO;
                         alert('未找到之前登录数据');
                         break;
                     case 'ExpiredError':
-                        // TODO
                         alert('出错了');
+                        break;
+                    default:
+                        alert(err.name);
+
                         break;
                 }
             });

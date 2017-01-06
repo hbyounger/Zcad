@@ -7,7 +7,6 @@ import { toJSON, genAction, genFetchOptions } from '../../helpers/util';
 
 export function modalclose(){
     return function(dispatch){
-        //console.log('MODAL_CLOSE');
         dispatch({
             type : 'MODAL_CLOSE'
         });
@@ -16,7 +15,6 @@ export function modalclose(){
 
 export function modalopen(){
     return function(dispatch){
-        //console.log('MODAL_OPEN');
         dispatch({
             type : 'MODAL_OPEN'
         });
@@ -25,7 +23,6 @@ export function modalopen(){
 
 export function onchange(name,value){
     return function(dispatch){
-        //console.log('MODAL_OPEN');
         dispatch({
             type : 'ONCHANGE',
             name : name,

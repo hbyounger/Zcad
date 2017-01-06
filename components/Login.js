@@ -24,46 +24,54 @@ class Login extends Component {
     constructor(props){
         super(props);
         // Initialize a Realm with Car and Person models
-        //this.state
-        //console.log(this);
-        //console.log(this.state);
         this.state = {
             userName : '',
-            wordValue : '',
+            passWord : '',
+            urlServer:''
         };
-        this.serverList = [];
+        //this.serverList = [];
 
-        //console.log(this.state);
+        console.log('storage.load');
+        //读取服务器地址
         storage.load({
-                key: 'server',
+                key:'server',
                 id:'login',
-                // autoSync(默认为true)意味着在没有找到数据或数据过期时自动调用相应的sync方法
                 autoSync: false,//true,
                 syncInBackground: false,//true
             })
             .then(ret => {
-                /*console.log("load");
-                 */
-                let dom = React.findDOMNode(this.refs['server']);
-                console.log(ret);
-                console.log(dom);
-                //TODO:比较工程队列是否需要更新
-                this.refs['server'].text=ret;
-                //this.setState({ user: ret });
+                console.log("load:" + ret);
+                this.setState({ urlServer: ret });
             })
             .catch(err => {
+                console.log("storage.load server " + err);
             });
+
+        //读取用户名称
+        storage.load({
+                key: 'user',
+                id:'last',
+                autoSync: false,//true,
+                syncInBackground: false,//true
+            })
+            .then(ret => {
+                console.log("load:" + ret);
+                this.setState({ userName: ret });
+            })
+            .catch(err => {
+                console.log("storage.load user " + err);
+            });      
     }
     onPress = ()=>{
 
         let {actions} = this.props;
-        actions.userLogin(this.state.server,this.state.userName,this.state.wordValue,(userid)=>{
+        actions.userLogin(this.state.urlServer,this.state.userName,this.state.passWord,(userid)=>{
             //console.log("save user");
             //console.log(userid);
             storage.save({
                 key: 'user',  // 注意:请不要在key中使用_下划线符号!
                 id:'last',
-                rawData: userid,
+                rawData: this.state.userName,
                 // 如果不指定过期时间，则会使用defaultExpires参数
                 // 如果设为null，则永不过期
                 expires: null,//1000 * 3600
@@ -71,7 +79,7 @@ class Login extends Component {
             storage.save({
                 key: 'server',  // 注意:请不要在key中使用_下划线符号!
                 id:'login',
-                rawData: this.state.server,
+                rawData: this.state.urlServer,
                 // 如果不指定过期时间，则会使用defaultExpires参数
                 // 如果设为null，则永不过期
                 expires: null,//1000 * 3600
@@ -125,11 +133,11 @@ class Login extends Component {
 
     handleServerChange = (e)=>{
         this.setState({
-            server: e,
+            urlServer: e,
         });
     };
     
-    handleUserChange (e){
+    handleUserChange =(e)=>{
         this.setState({
             userName: e,
         });
@@ -137,7 +145,7 @@ class Login extends Component {
 
     handlePasswordChange = (e)=>{
         this.setState({
-            wordValue: e,
+            passWord: e,
         });
     };
     render() {
@@ -154,7 +162,8 @@ class Login extends Component {
                     underlineColorAndroid={'transparent'}
                     textAlign='center'
                     onChangeText ={this.handleServerChange}
-                    ref = {'server'}
+                    //ref = {'server'}
+                    value={this.state.urlServer}
                 />
                 <TextInput
                     style={styles.style_user_input}
@@ -164,6 +173,7 @@ class Login extends Component {
                     underlineColorAndroid={'transparent'}
                     textAlign='center'
                     onChangeText ={this.handleUserChange.bind(this)}
+                    value={this.state.userName}
                 />
                 <View
                     style={{height:1,backgroundColor:'#f4f4f4'}}

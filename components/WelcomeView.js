@@ -52,11 +52,9 @@ class WelcomeView extends Component {
                 console.warn(err.message);
                 switch (err.name) {
                     case 'NotFoundError':
-                        // TODO;
                         alert("没有数据");
                         break;
                     case 'ExpiredError':
-                        // TODO
                         alert('出错了');
                         break;
                 }
@@ -109,8 +107,6 @@ class WelcomeView extends Component {
                             console.warn(err.message);
                             switch (err.name) {
                                 case 'NotFoundError':
-                                    // TODO;
-                                    //
                                     loginactions.getAllData(login.server,login.userid,ele.PRIVILEGENAME,(data)=>{
                                         storage.save({
                                             key: 'projectid',  // 注意:请不要在key中使用_下划线符号!
@@ -152,11 +148,9 @@ class WelcomeView extends Component {
                         console.warn(err.message);
                         switch (err.name) {
                             case 'NotFoundError':
-                                // TODO;
                                 alert('未找到数据');
                                 break;
                             case 'ExpiredError':
-                                // TODO
                                 alert('出错了');
                                 break;
                         }

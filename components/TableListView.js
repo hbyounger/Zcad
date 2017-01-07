@@ -70,7 +70,7 @@ class TableListView extends Component {
                     activeOpacity={0.5}>
                     <View >
                         <Text style={{color:'#fff'}} >
-                            {'回到钻位图'}
+                            {'回到钻孔图'}
                         </Text>
                     </View>
                 </TouchableHighlight>

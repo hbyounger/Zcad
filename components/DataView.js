@@ -25,7 +25,7 @@ import Cell from './Cell'//SvgExample
 //import SvgExample from './main'
 //import Example from './Map'
 import * as loginActions from '../actions/login';
-var Button = require('rn-bootstrap-buttons');
+
 
 const window = Dimensions.get('window');
 var RIGHT_LISTVIEW = 'right_listView';
@@ -63,8 +63,8 @@ class Grid extends Component{
         let ds1 = new ListView.DataSource({rowHasChanged: (r1, r2) => r1 !== r2});
         let offsetval = {x : 0, y: 0};
         let {pointInfo,data} = this.props;
-        console.log(pointInfo);
-        console.log(data);
+        console.log("pointInfo : " + pointInfo);
+        console.log("data : " + data);
         this.nameArray = [];
         this.leftArray = [];
         this.rightArray = [];
@@ -100,13 +100,6 @@ class Grid extends Component{
             mode: Picker.MODE_DIALOG,
         };
     }
-
-    /*getInitialState(){
-
-        return{
-
-        };
-    }*/
 
     componentDidMount(){
         this.setState({
@@ -158,8 +151,7 @@ class Grid extends Component{
             </View>
         );
     }
-/*selectedValue={this.state.selected1}
- onValueChange={this.onValueChange(this, 'selected1')}*/
+
     _rightRenderRow = (rowData: object, sectionID: number, rowID: number)=>{
         //() => Alert.alert('Alert Title',alertMessage,[{text: 'OK', onPress: () => console.log('OK Pressed!')},])  <TextInput>{rowData.name}</TextInput>
         let list=[];
@@ -169,92 +161,16 @@ class Grid extends Component{
                     <TextInput style = {styles.cellView} onChangeText ={(e)=>{rowData[ele]=e;this.onTableChange(e);}}>{rowData[ele]}</TextInput>
                 </View>)
         });
-        /*<View style = {styles.cellView}>
-         <TextInput>{rowData.name}</TextInput>
-         </View>
-         <View style = {styles.cellView}>
-         <Picker
-         selectedValue={this.state.selected1}
-         onValueChange={this.onValChange.bind(this,'selected1')}
-         mode="dropdown"
-         style={styles.picker}>
-         <Item label="hello" value="key0" />
-         <Item label="world" value="key1" />
-         </Picker>
-         </View>
-         <View style = {styles.cellView}>
-         <TextInput>{rowData.name}</TextInput>
-         </View>
-         <View style = {styles.cellView}>
-         <TextInput>{rowData.name}</TextInput>
-         </View>
-         <View style = {styles.cellView}>
-         <TextInput>{rowData.name}</TextInput>
-         </View>
-         <View style = {styles.cellView}>
-         <TextInput>{rowData.name}</TextInput>
-         </View>
-         <View style = {styles.cellView}>
-         <TextInput>{rowData.name}</TextInput>
-         </View>
-         <View style = {styles.cellView}>
-         <TextInput>{rowData.name}</TextInput>
-         </View>
-         <View style = {styles.cellView}>
-         <TextInput>{rowData.name}</TextInput>
-         </View>*/
+
         return (
             <View style = {styles.rightListRow}>
                 {list}
             </View>
         );
     }
-/*<View style = {styles.titleView}>
- <Text>描述深度(m)</Text>
- </View>
- <TouchableHighlight
- onPress={this.onPressPicker.bind(this,'土的名称')}//onPressPicker
- underlayColor="transparent"
- activeOpacity={0.5}>
- <View style = {styles.cell}>
- <Text>土的名称</Text>
- </View>
- </TouchableHighlight>
 
- <View style = {styles.titleView}>
- <Text>颜色</Text>
- </View>
- <View style = {styles.titleView}>
- <Text>其他性质</Text>
- </View>
- <View style = {styles.titleView}>
- <Text>光泽反映</Text>
- </View>
- <View style = {styles.titleView}>
- <Text>摇振反应</Text>
- </View>
- <View style = {styles.titleView}>
- <Text>干强度</Text>
- </View>
- <View style = {styles.titleView}>
- <Text>韧性</Text>
- </View>
- <View style = {styles.titleView}>
- <Text>状态</Text>
- </View>
- <View style = {styles.titleView}>
- <Text>湿度</Text>
- </View>
- <View style = {styles.titleView}>
- <Text>取土编号</Text>
- </View>*/
     render() {
-        //console.log(this.state.loaded);
 
-
-        /*showsHorizontalScrollIndicator = {true}
-         showsVerticalScrollIndicator = {false}
-         horizontal = {true}*/
         return (
             <ScrollView horizontal = {true} style = {styles.container}>
                 <View style = {styles.left}>

@@ -9,6 +9,7 @@ import {
     TouchableHighlight,
     View,
     ScrollView,
+    Alert,
     ListView
 } from 'react-native';
 import { connect } from 'react-redux';
@@ -17,7 +18,7 @@ import { bindActionCreators } from 'redux';
 import * as projectActions from '../redux/project';
 import * as loginActions from '../actions/login';
 import Cell from './Cell';
-var Button = require('rn-bootstrap-buttons');
+
 
 const FieldType = {
     typeID : 'int',
@@ -107,7 +108,7 @@ class WelcomeView extends Component {
 
                 });
         
-            alert("下载数据成功");
+             Alert.alert('成功',"下载数据成功",[{text: '确定', onPress: () => console.log('下载数据成功')},]);
             //console.log(login.projects)
     
     }

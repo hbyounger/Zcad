@@ -71,14 +71,14 @@ export const userLogin = (server,username,userWord,callback) => {
                 }
                 else {
                     if(json.code==500){
-                        alert("账号或密码错误，请重试")
+                        alert("账号或密码错误，请重试");
                     }
-                    //console.log(json);
+                    console.log('登录失败，请重试～' + json);
                     dispatch({
                         type:'PLATFORM_DATA_USER_LOGIN_FAILURE',
                         payload:json
                     });
-                    alert('登录失败，请重试～')
+                    alert('登录失败，请重试～' + json);
                 }
             })
             .catch((error) => {

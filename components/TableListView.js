@@ -91,7 +91,7 @@ const styles3 = StyleSheet.create({
         marginTop:25,
         marginLeft:10,
         marginRight:10,
-        backgroundColor:'#63B8FF',
+        backgroundColor:'#72d0eb',
         height:35,
         //width:60,
         //borderRadius:5,

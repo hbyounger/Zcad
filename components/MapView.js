@@ -17,19 +17,18 @@ import * as actions from '../redux/project';
 import Cell from './Cell'
 
 class MapView extends Component {
-    /*onPressFeed = ()=> {
-        this.props.navigator.push({name: 'feed'});
-    };*/
+
     //勘探点数据表
     constructor(props){
         super(props);
         let { login } = this.props,//project
             table = login.tables,
             list = table["勘探点数据表"],
-            minX = list[0]["坐标X"],
-            minY = list[0]["坐标Y"],
-            maxX = list[0]["坐标X"],
-            maxY = list[0]["坐标Y"],
+            tableEarth = table["土层表"],
+            minX = 9999999,//list[0]["坐标X"],
+            minY = 9999999,//list[0]["坐标Y"],
+            maxX = -9999999,//list[0]["坐标X"],
+            maxY = -9999999,//list[0]["坐标Y"],
             array=[];
         list.forEach((ele)=>{
             let x = ele["坐标X"],
@@ -58,9 +57,22 @@ class MapView extends Component {
         console.log(yScale);
         console.log(Scale);*/
         list.forEach((ele)=>{
+
+            let earthHole = ele["钻孔编号"];
+            //在土层表中找有没有数据
+            let isFindData = 0;
+            for (let index = 0; index < tableEarth.length; index++) {
+                let eleEarth = tableEarth[index];
+                 if (earthHole === eleEarth["钻孔编号"]){
+                    isFindData = 1;
+                    break;
+                }
+            }
+      
             array.push({
                 x:10+(ele["坐标X"]-minX)/Scale,
                 y:10+(ele["坐标Y"]-minY)/Scale,
+                isWorking:isFindData,   //是否已经开始工作
                 data:ele,
             })
         });
@@ -69,8 +81,7 @@ class MapView extends Component {
         });*/
         this.dotList = array;
     }
-    onSubmit(){
-        //console.log('welcome');
+    onBack(){
         this.props.navigator.push({name: 'welcome'});
     }
     render() {
@@ -83,6 +94,7 @@ class MapView extends Component {
                     key = {i}
                     Point = {ele}
                     num = {i}
+                    isWorking = {ele.isWorking}
                     navigator = {this.props.navigator}
                 />)//<TicTacToeApp/>
             })
@@ -90,10 +102,10 @@ class MapView extends Component {
 
         return (
             <ScrollView >
-                <Text style = {styles2.welcome}>{project.project+'选取钻位'}</Text>
+                <Text style = {styles2.welcome}>{project.project+' 选取钻孔'}</Text>
                 <TouchableHighlight
                     style={[styles2.style_view_commit,{top : 0 ,left : 0}]}
-                    onPress={this.onSubmit.bind(this)}
+                    onPress={this.onBack.bind(this)}
                     underlayColor="transparent"
                     activeOpacity={0.5}>
                     <View >

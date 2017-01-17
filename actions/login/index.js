@@ -44,7 +44,7 @@ export const userLogin = (server,username,userWord,callback) => {
         console.log('http://'+server+'/ajaxService/admin.ashx');
         options = genFetchOptions('post', formData);
         //let id;env.HTTP_USER_LOGIN//http://www.zcadsoft.com/zjweb/ajaxService/admin.ashx
-        fetch('http://'+server+'/ajaxService/admin.ashx'/*'http://'+server+'/ajaxService/admin.ashx'*/, {
+        fetch('http://'+server+'/ajaxService/admin.ashx', {
             method: 'POST',
             headers: {
                 //'Accept': 'application/json',
@@ -212,9 +212,6 @@ export const getAllData = (server,userid,projectName,callback) => {
     formData.append("userid",userid);
     formData.append("projectName",projectName);
     formData.append("option","getAllData");
-    //console.log(formData);
-    //console.log("post");
-    //post(formData);
     return (dispatch) => {
         // 登陆中，做禁用登陆 Button 等操作
         console.log('http://'+server+'/ajaxService/admin.ashx');
@@ -252,8 +249,6 @@ export const setAllData = (server,userid,projectName,Data) => {
     formData.append("Data",Data);
     formData.append("option","setAllData");
     console.log(formData);
-    //console.log("post");
-    //post(formData);
     return (dispatch) => {
         // 登陆中，做禁用登陆 Button 等操作
         console.log('http://'+server+'/ajaxService/admin.ashx');
@@ -265,11 +260,6 @@ export const setAllData = (server,userid,projectName,Data) => {
             .then(toJSON)
             .then((json) => {
                 if (json) {
-                    /*dispatch({
-                        type:'PLATFORM_DATA_USER_LOGIN_TABLES',
-                        payload:json
-                    });*/
-                    //callback(json);
                     console.log(json)
                 }
                 else {
@@ -292,12 +282,7 @@ export const updateData = (server,userid,projectName,holeNo,Data,DbTableName) =>
     formData.append("option","updateData");
     formData.append("Data",Data);
     formData.append("DbTableName",DbTableName);
-
-    console.log(formData);
-    //console.log("post");
-    //post(formData);
     return (dispatch) => {
-        // 登陆中，做禁用登陆 Button 等操作
         console.log('http://'+server+'/ajaxService/admin.ashx');
         fetch('http://'+server+'/ajaxService/admin.ashx', {
             method: 'POST',

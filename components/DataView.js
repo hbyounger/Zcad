@@ -25,6 +25,7 @@ import Cell from './Cell'//SvgExample
 //import SvgExample from './main'
 //import Example from './Map'
 import * as loginActions from '../actions/login';
+var Button = require('rn-bootstrap-buttons');
 
 const window = Dimensions.get('window');
 var RIGHT_LISTVIEW = 'right_listView';
@@ -346,14 +347,16 @@ class DataView extends Component{
         let tables = login.tables;
 
         return (
-            <ScrollView>
+            <View >
                 <View >
-                    <Text style={{color:'#fff'}} >
+                    <Text style = {styles.welcome} >
                         {table.table}
                     </Text>
                 </View>
+
+                <View style={{flex: 1, flexDirection: 'row'}}>
                 <TouchableHighlight
-                    style={[styles.style_view_commit,{top : 0 ,left : 0}]}
+                    style={[styles.style_view_commit,{flex: 1,top : 0 ,left : 0}]}
                     onPress={this.onBack}
                     underlayColor="transparent"
                     activeOpacity={0.5}>
@@ -364,7 +367,7 @@ class DataView extends Component{
                     </View>
                 </TouchableHighlight>
                 <TouchableHighlight
-                    style={[styles.style_view_commit,{top : 0 ,left : 0}]}
+                    style={[styles.style_view_commit,{flex: 1,top : 0 ,left : 0}]}
                     onPress={this.onSubmit}
                     underlayColor="transparent"
                     activeOpacity={0.5}>
@@ -377,7 +380,7 @@ class DataView extends Component{
                 {
                     (!login.offline)&&(
                         <TouchableHighlight
-                            style={[styles.style_view_commit,{top : 0 ,left : 0}]}
+                            style={[styles.style_view_commit,{flex: 1,top : 0 ,left : 0,}]}
                             onPress={this.onUpload}
                             underlayColor="transparent"
                             activeOpacity={0.5}>
@@ -389,7 +392,9 @@ class DataView extends Component{
                         </TouchableHighlight>
                     )
                 }
-
+                </View>
+                <View style={{top : 10 }}>
+            <ScrollView >
                 <Grid
                     callback ={(list)=>{
                     console.log(list);
@@ -399,6 +404,8 @@ class DataView extends Component{
                     data = {this.List}
                     navigator = {this.props.navigator}/>
             </ScrollView>
+            </View>
+            </View>
         )
     }
 }
@@ -406,14 +413,20 @@ class DataView extends Component{
 var styles = StyleSheet.create({
     style_view_commit:{
         marginTop:0,
-        //marginLeft:10,
-        //marginRight:10,
+        marginLeft:10,
+        marginRight:10,
         backgroundColor:'#63B8FF',
         height:35,
         //width:60,
-        //borderRadius:5,
+        borderRadius:5,
         justifyContent: 'center',
         alignItems: 'center',
+    },
+    welcome: {
+        color: '#19a9e5',
+        fontSize: 18,
+        textAlign: 'center',
+        margin: 10,
     },
     container: {
         flexDirection: 'row',

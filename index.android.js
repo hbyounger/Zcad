@@ -90,8 +90,7 @@ class Zcad extends Component {
         this._navigator = navigator;
         switch(router.name){
             case "welcome":
-                Component = <WelcomeView
-                    navigator = {navigator} />;
+                Component = <WelcomeView navigator = {navigator} />;
                 break;
             case "feed":
                 Component = <FeedView navigator = {navigator} />;

@@ -14,12 +14,12 @@ import * as actions from '../actions/cell';
 import PointData from './PointData'
 
 class Cell extends Component{
-    cellStyle() {
+    cellStyle(isWorking) {
         switch (1) {
+            case 0:
+                return styles.cellO;    //没有数据的钻孔颜色
             case 1:
-                return styles.cellO;
-            case 2:
-                return styles.cellX;
+                return styles.cellX;    //有数据的钻孔颜色
             default:
                 return null;
         }
@@ -78,7 +78,7 @@ class Cell extends Component{
                     onPress={this.onPress.bind(this,this.props.Point.data)}
                     underlayColor="transparent"
                     activeOpacity={0.5}>
-                    <View style={[styles.cell, this.cellStyle()]}>
+                    <View style={[styles.cell, this.cellStyle(this.props.isWorking)]}>
                         <Text style={[styles.cellText, this.textStyle()]}>
                             {this.props.Point.data["钻孔编号"]}
                         </Text>

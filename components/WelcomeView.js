@@ -17,7 +17,7 @@ import { bindActionCreators } from 'redux';
 import * as projectActions from '../redux/project';
 import * as loginActions from '../actions/login';
 import Cell from './Cell';
-
+var Button = require('rn-bootstrap-buttons');
 
 const FieldType = {
     typeID : 'int',
@@ -32,6 +32,8 @@ class WelcomeView extends Component {
         this.loadData();
     }
 
+
+    //点击工程
     onPressMap(value){
         let {loginactions,login,projectActions} = this.props;
         let projectid = login.userid+'-'+value;
@@ -52,24 +54,48 @@ class WelcomeView extends Component {
                 console.warn(err.message);
                 switch (err.name) {
                     case 'NotFoundError':
-                        alert("没有数据");
+                        alert("onPressMap:没有数据");
                         break;
                     case 'ExpiredError':
-                        alert('出错了');
+                        alert('onPressMap:出错了');
+                        break;
+                    default:
+                        alert('onPressMap:' + err.name);
                         break;
                 }
             });
     }
 
-    onSubmit(){
+    onPressBack = ()=>{
         this.props.navigator.push({name: 'login'});
-    }
+    };
 
-    onTest(){
+    // //下载数据
+    // onTest(){
+    //     let { loginactions,login } = this.props;
+    //     loginactions.getUserPrivilege(login.server,login.userid,(projects)=>{
+    //         projects.forEach((ele)=>{
+    //             console.log(login);
+    //             let projectid = login.userid+'-'+ele.PRIVILEGENAME;
+    //             loginactions.getAllData(login.server,login.userid,ele.PRIVILEGENAME,(data)=>{
+    //                 storage.save({
+    //                     key: 'projectid',  // 注意:请不要在key中使用_下划线符号!
+    //                     id: projectid,
+    //                     rawData: data,
+    //                     expires: null,//1000 * 3600
+    //                 });
+
+    //             });
+    //         });
+    //         alert("操作成功");
+    //         //console.log(login.projects)
+    //     });
+    // }
+    //下载数据
+    onDownLoadData(ele){
         let { loginactions,login } = this.props;
-        loginactions.getUserPrivilege(login.server,login.userid,(projects)=>{
-            projects.forEach((ele)=>{
-                console.log(login);
+
+                console.log('onDownLoadData' + ele);
                 let projectid = login.userid+'-'+ele.PRIVILEGENAME;
                 loginactions.getAllData(login.server,login.userid,ele.PRIVILEGENAME,(data)=>{
                     storage.save({
@@ -80,10 +106,10 @@ class WelcomeView extends Component {
                     });
 
                 });
-            });
-            alert("操作成功");
+        
+            alert("下载数据成功");
             //console.log(login.projects)
-        });
+    
     }
 
     loadData = ()=>{
@@ -117,7 +143,6 @@ class WelcomeView extends Component {
                                     });
                                     break;
                                 case 'ExpiredError':
-                                    // TODO
                                     alert('出错了');
                                     break;
                             }
@@ -128,21 +153,15 @@ class WelcomeView extends Component {
             });
         }
         else {
-            //console.log("offline")
             if(!login.projects){
                 storage.load({
                         key: 'userid',
                         id:login.userid,
-                        // autoSync(默认为true)意味着在没有找到数据或数据过期时自动调用相应的sync方法
-                        autoSync: false,//true,
+                        autoSync: false,//true, // autoSync(默认为true)意味着在没有找到数据或数据过期时自动调用相应的sync方法
                         syncInBackground: false,//true
                     })
                     .then(ret => {
-                        /*console.log("load");
-                        console.log(ret);*/
-                        //TODO:比较工程队列是否需要更新
                         loginactions.getOfflineData(ret);
-                        //this.setState({ user: ret });
                     })
                     .catch(err => {
                         console.warn(err.message);
@@ -159,54 +178,53 @@ class WelcomeView extends Component {
         }
     };
 
-    renderProgressEntry = (entry)=>{
-        //styles.style_view_commit
-        //listStyles.li
-        return (
-            <TouchableHighlight
-                onPress={this.onPressMap.bind(this,entry)}
-                underlayColor="transparent"
-                activeOpacity={0.5}>
-                <View style={styles.style_view_commit}>
-                    <View>
-                        <Text style={{color:'#fff'}}>{entry}</Text>
-                    </View>
-                </View>
-            </TouchableHighlight>
-        )
-    }
+    // renderProgressEntry = (entry)=>{
+    //     //styles.style_view_commit
+    //     //listStyles.li
+    //     return (
+    //         <TouchableHighlight
+    //             onPress={this.onPressMap.bind(this,entry)}
+    //             underlayColor="transparent"
+    //             activeOpacity={0.5}>
+    //             <View style={styles.style_view_commit}>
+    //                 <View>
+    //                     <Text style={{color:'#fff'}}>{entry}</Text>
+    //                 </View>
+    //             </View>
+    //         </TouchableHighlight>
+    //     )
+    // }
 
-    onUpload = ()=>{
-        let {loginactions,login} = this.props;
-        if(this.projectList){
-            this.projectList.forEach((ele,i)=>{
-                let projectid = login.userid+'-'+ele.PRIVILEGENAME;
-                storage.load({
-                        key: 'projectid',
-                        id:projectid,
-                        autoSync: false,//true,
-                        syncInBackground: false,//true
-                    })
-                    .then(ret => {
-                        loginactions.setAllData(login.server,login.userid,ele.PRIVILEGENAME,ret);
-                    })
-                    .catch(err => {
-                        console.warn(err.message);
-                        switch (err.name) {
-                            case 'NotFoundError':
-                                // TODO;
-                                //
-                                break;
-                            case 'ExpiredError':
-                                // TODO
-                                alert('出错了');
-                                break;
-                        }
-                    });
+    // onUpload = ()=>{
+    //     let {loginactions,login} = this.props;
+    //     if(this.projectList){
+    //         this.projectList.forEach((ele,i)=>{
+    //             let projectid = login.userid+'-'+ele.PRIVILEGENAME;
+    //             storage.load({
+    //                     key: 'projectid',
+    //                     id:projectid,
+    //                     autoSync: false,//true,
+    //                     syncInBackground: false,//true
+    //                 })
+    //                 .then(ret => {
+    //                     loginactions.setAllData(login.server,login.userid,ele.PRIVILEGENAME,ret);
+    //                 })
+    //                 .catch(err => {
+    //                     console.warn(err.message);
+    //                     switch (err.name) {
+    //                         case 'NotFoundError':
+    //                             break;
+    //                         case 'ExpiredError':
+    //                             alert('出错了');
+    //                             break;
+    //                         default:
+    //                             break;
+    //                     }
+    //                 });
 
-            })
-        }
-    };
+    //         })
+    //     }
+    // };
 
     render() {
 
@@ -217,20 +235,43 @@ class WelcomeView extends Component {
             this.projectList = login.projects;
         }
 
-        if(this.projectList){
+        if(this.projectList && this.projectList.length > 0){
             this.projectList.forEach((ele,i)=>{
+               
                 ProjectArray.push(
-                    <TouchableHighlight
-                        key = {i}
-                        onPress={this.onPressMap.bind(this,ele.PRIVILEGENAME)}
-                        underlayColor="transparent"
-                        activeOpacity={0.5}>
-                        <View style={styles.style_view_commit}>
-                            <Text style={{color:'#fff'}} >
-                                {ele.PRIVILEGENAME}
-                            </Text>
-                        </View>
-                    </TouchableHighlight>
+
+                <View style={{flex: 1, flexDirection: 'row'}}>
+                <TouchableHighlight
+                style={{flex: 6}}
+                    key = {i}
+                    onPress={this.onPressMap.bind(this,ele.PRIVILEGENAME)}
+                    underlayColor="transparent"
+                    activeOpacity={0.5}>
+                    <View style={{marginTop:15,marginLeft:10,marginRight:10,backgroundColor:'#63B8FF',height:35,borderRadius:5, justifyContent: 'center', alignItems: 'center'}}>
+                        <Text style={{color:'#fff'}} >
+                           {ele.PRIVILEGENAME}
+                        </Text>
+                    </View>
+                </TouchableHighlight>
+
+{
+    (!login.offline)&&(
+                <TouchableHighlight
+                style={{flex: 2}}
+                    key = {"a"+i}
+                    onPress={this.onDownLoadData.bind(this,ele.PRIVILEGENAME)}
+                    underlayColor="transparent"
+                    activeOpacity={0.5}>
+                    <View style={{marginTop:15,marginLeft:10,marginRight:10,backgroundColor:'#03B8FF',height:35,borderRadius:5, justifyContent: 'center', alignItems: 'center'}}>
+                        <Text style={{color:'#fff'}} >
+                            {'下载数据'}
+                        </Text>
+                    </View>
+                </TouchableHighlight>
+)
+}
+
+                </View>
                 )
             })
         }
@@ -242,9 +283,11 @@ class WelcomeView extends Component {
                     选择项目
                 </Text>
                 {ProjectArray}
+
+
                 <TouchableHighlight
                     style={[styles.style_view_exit,{top : 0 ,left : 0}]}
-                    onPress={this.onSubmit.bind(this)}
+                    onPress={this.onPressBack}
                     underlayColor="transparent"
                     activeOpacity={0.5}>
                     <View >
@@ -253,42 +296,13 @@ class WelcomeView extends Component {
                         </Text>
                     </View>
                 </TouchableHighlight>
-                {
-                    (!login.offline)&&(
-                        <TouchableHighlight
-                            style={[styles.style_view_exit,{top : 0 ,left : 0}]}
-                            onPress={this.onTest.bind(this)}
-                            underlayColor="transparent"
-                            activeOpacity={0.5}>
-                            <View >
-                                <Text style={{color:'#fff'}} >
-                                    {'重新加载数据并覆盖本地数据'}
-                                </Text>
-                            </View>
-                        </TouchableHighlight>
-                    )
-
-                }
 
             </ScrollView>
         );
+
     }
 }
-/*{
- (!login.offline)&&(
- <TouchableHighlight
- style={[styles.style_view_exit,{top : 0 ,left : 0}]}
- onPress={this.onUpload}
- underlayColor="transparent"
- activeOpacity={0.5}>
- <View >
- <Text style={{color:'#fff'}} >
- {'上传数据'}
- </Text>
- </View>
- </TouchableHighlight>
- )
- }*/
+
 const styles = StyleSheet.create({
     style_view_exit:{
         marginTop:25,
@@ -309,7 +323,8 @@ const styles = StyleSheet.create({
     },
     welcome: {
         color:'#63B8FF',
-        fontSize: 16,
+        fontSize: 32,
+        fontWeight: 'bold',
         textAlign: 'center',
         margin: 10,
     },
@@ -354,6 +369,28 @@ const styles = StyleSheet.create({
         justifyContent: 'center',
         alignItems: 'center',
     },
+    style_view_Left:{
+        flex: 1,
+        marginTop:15,
+        marginLeft:10,
+        marginRight:10,
+        backgroundColor:'#63B8FF',
+        height:35,
+        width:150,
+        borderRadius:5,
+        justifyContent: 'center',
+        alignItems: 'center',
+    },
+    style_view_Right:{
+        marginTop:15,
+        marginLeft:10,
+        marginRight:10,
+        backgroundColor:'#63B8FF',
+        height:35,
+        borderRadius:5,
+        justifyContent: 'center',
+        alignItems: 'center',
+    }
 });
 
 function mapStateToProps(state){

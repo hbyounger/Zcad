@@ -63,7 +63,6 @@ class Login extends Component {
             });      
     }
     onPress = ()=>{
-
         let {actions} = this.props;
         actions.userLogin(this.state.urlServer,this.state.userName,this.state.passWord,(userid)=>{
             //console.log("save user");
@@ -72,16 +71,12 @@ class Login extends Component {
                 key: 'user',  // 注意:请不要在key中使用_下划线符号!
                 id:'last',
                 rawData: this.state.userName,
-                // 如果不指定过期时间，则会使用defaultExpires参数
-                // 如果设为null，则永不过期
-                expires: null,//1000 * 3600
+                expires: null,//1000 * 3600 // 如果不指定过期时间，则会使用defaultExpires参数 // 如果设为null，则永不过期
             });
            storage.save({
                 key: 'userid',  // 注意:请不要在key中使用_下划线符号!
                 id:'last',
                 rawData: userid,
-                // 如果不指定过期时间，则会使用defaultExpires参数
-                // 如果设为null，则永不过期
                 expires: null,//1000 * 3600
             });
 
@@ -89,15 +84,11 @@ class Login extends Component {
                 key: 'server',  // 注意:请不要在key中使用_下划线符号!
                 id:'login',
                 rawData: this.state.urlServer,
-                // 如果不指定过期时间，则会使用defaultExpires参数
-                // 如果设为null，则永不过期
                 expires: null,//1000 * 3600
             });
 
             this.props.navigator.push({name: 'welcome'});
         });
-        /*const alertMessage =  '登录失败';
-        Alert.alert('alert',alertMessage,[{text: 'OK', onPress: () => console.log('OK Pressed!')},]);*/
     }
 
     onOfflinePress = () => {
@@ -121,14 +112,13 @@ class Login extends Component {
                 console.warn(err.message);
                 switch (err.name) {
                     case 'NotFoundError':
-                        alert('未找到之前登录数据');
+                        alert('onOfflinePress:未找到之前登录数据');
                         break;
                     case 'ExpiredError':
-                        alert('出错了');
+                        alert('onOfflinePress:出错了');
                         break;
                     default:
-                        alert(err.name);
-
+                        alert('onOfflinePress:' + err.name);
                         break;
                 }
             });

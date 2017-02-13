@@ -27,7 +27,7 @@ class Login extends Component {
         this.state = {
             userName : '',
             passWord : '',
-            urlServer:''
+            urlServer: ''
         };
         //this.serverList = [];
 
@@ -62,11 +62,12 @@ class Login extends Component {
                 console.log("storage.load user " + err);
             });      
     }
+
+    //点击登录
     onPress = ()=>{
         let {actions} = this.props;
+        //得到userid
         actions.userLogin(this.state.urlServer,this.state.userName,this.state.passWord,(userid)=>{
-            //console.log("save user");
-            //console.log(userid);
             storage.save({
                 key: 'user',  // 注意:请不要在key中使用_下划线符号!
                 id:'last',
@@ -91,10 +92,9 @@ class Login extends Component {
         });
     }
 
+    //登录离线登录
     onOfflinePress = () => {
-        let {
-            actions
-        } = this.props;
+        let {actions} = this.props;
         storage.load({
                 key: 'userid',
                 id: 'last',
@@ -104,18 +104,13 @@ class Login extends Component {
             .then(ret => {
                 console.log("load userid " + ret);
                 actions.userOfflineLogin(ret);
-                this.props.navigator.push({
-                    name: 'welcome'
-                });
+                this.props.navigator.push({ name: 'welcome'});
             })
             .catch(err => {
                 console.warn(err.message);
                 switch (err.name) {
                     case 'NotFoundError':
                         alert('onOfflinePress:未找到之前登录数据');
-                        break;
-                    case 'ExpiredError':
-                        alert('onOfflinePress:出错了');
                         break;
                     default:
                         alert('onOfflinePress:' + err.name);
@@ -141,6 +136,7 @@ class Login extends Component {
             passWord: e,
         });
     };
+
     render() {
         //autoFocus={true}
         return (
@@ -184,27 +180,18 @@ class Login extends Component {
                     onPress={this.onPress}
                     underlayColor="transparent"
                     activeOpacity={0.5}>
-                    <View
-                        style={styles.style_view_commit}
-                    >
-                        <Text
-                            style={{color:'#fff'}}
-                        >
+                    <View  style={styles.style_view_commit} >
+                        <Text style={{color:'#fff'}} >
                             登录
                         </Text>
-
                     </View>
                 </TouchableHighlight>
                 <TouchableHighlight
                     onPress={this.onOfflinePress}
                     underlayColor="transparent"
                     activeOpacity={0.5}>
-                    <View
-                        style={styles.style_view_commit}
-                    >
-                        <Text
-                            style={{color:'#fff'}}
-                        >
+                    <View  style={styles.style_view_commit} >
+                        <Text  style={{color:'#fff'}} >
                             离线登录
                         </Text>
                     </View>

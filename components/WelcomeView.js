@@ -29,17 +29,78 @@ class WelcomeView extends Component {
     constructor(props){
         super(props);
         this.projectList = [];
-        //console.log("loadData");
-        this.loadData();
+ 
+        let { loginactions,login } = this.props;
+
+        if(!login.offline){//在线状态
+            //获得所有的工程名称
+            loginactions.getProjectNameByUser(login.server,login.userid,(projects)=>{
+                // projects.forEach((ele)=>{
+                //     let projectid = login.userid+'-'+ele.PRIVILEGENAME;
+                //     //读取工程的数据
+                //     storage.load({
+                //             key: 'projectid',
+                //             id:projectid,
+                //             autoSync: false,//true,
+                //             syncInBackground: false,//true
+                //         })
+                //         .then(ret => {//如果本机已经有工程数据了,什么也不做
+                //             console.log(ele.PRIVILEGENAME + '数据已经存在!');
+                //         })
+                //         .catch(err => {
+                //             console.log(err.message);
+                //             switch (err.name) {
+                //                 case 'NotFoundError'://如果本机没有工程数据了,下载工程并保存到本机
+                //                     loginactions.getAllData(login.server,login.userid,ele.PRIVILEGENAME,(data)=>{
+                //                         storage.save({
+                //                             key: 'projectid',  // 注意:请不要在key中使用_下划线符号!
+                //                             id:projectid,
+                //                             rawData: data,
+                //                             expires: null,//1000 * 3600
+                //                         });
+                //                     });
+                //                     break;
+                //                 default:
+                //                     alert(err.name);
+                //                     break;
+                //             }
+                //         });
+                // });
+            });
+        }
+        else {//离线状态
+            if(!login.projects){
+                storage.load({
+                        key: 'userid',
+                        id:login.userid,
+                        autoSync: false,//true, // autoSync(默认为true)意味着在没有找到数据或数据过期时自动调用相应的sync方法
+                        syncInBackground: false,//true
+                    })
+                    .then(ret => {//获得离线数据
+                        loginactions.getOfflineData(ret);//login.projects
+                    })
+                    .catch(err => {
+                        console.warn(err.message);
+                        switch (err.name) {
+                            case 'NotFoundError':
+                                alert('未找到数据');
+                                break;
+                            default:
+                                alert(err.name);
+                                break;
+                        }
+                    });
+            }
+        }
     }
 
 
     //点击工程
-    onPressMap(value){
+    onPressMap(projectName){
         let {loginactions,login,projectActions} = this.props;
-        let projectid = login.userid+'-'+value;
-        //console.log(login);
-        projectActions.SetProject(value);
+        let projectid = login.userid+'-'+projectName;
+        
+        projectActions.SetProject(projectName);//??
 
         storage.load({
                 key: 'projectid',
@@ -52,13 +113,10 @@ class WelcomeView extends Component {
                 this.props.navigator.push({name: 'map'});
             })
             .catch(err => {
-                console.warn(err.message);
+                console.log(err.message);
                 switch (err.name) {
                     case 'NotFoundError':
-                        alert("onPressMap:没有数据");
-                        break;
-                    case 'ExpiredError':
-                        alert('onPressMap:出错了');
+                        alert("onPressMap:" + projectName + " 没有数据!");
                         break;
                     default:
                         alert('onPressMap:' + err.name);
@@ -67,6 +125,7 @@ class WelcomeView extends Component {
             });
     }
 
+    //退到登录界面
     onPressBack = ()=>{
         this.props.navigator.push({name: 'login'});
     };
@@ -109,75 +168,10 @@ class WelcomeView extends Component {
                 });
         
              Alert.alert('成功',"下载数据成功",[{text: '确定', onPress: () => console.log('下载数据成功')},]);
-            //console.log(login.projects)
+
     
     }
 
-    loadData = ()=>{
-        let { loginactions,login } = this.props;
-        if(!login.offline){
-            console.log(login.server);
-            loginactions.getUserPrivilege(login.server,login.userid,(projects)=>{
-                projects.forEach((ele)=>{
-                    //console.log(ele.PRIVILEGENAME);
-                    let projectid = login.userid+'-'+ele.PRIVILEGENAME;
-                    storage.load({
-                            key: 'projectid',
-                            id:projectid,
-                            autoSync: false,//true,
-                            syncInBackground: false,//true
-                        })
-                        .then(ret => {
-                            //alert("数据已存在");
-                        })
-                        .catch(err => {
-                            console.warn(err.message);
-                            switch (err.name) {
-                                case 'NotFoundError':
-                                    loginactions.getAllData(login.server,login.userid,ele.PRIVILEGENAME,(data)=>{
-                                        storage.save({
-                                            key: 'projectid',  // 注意:请不要在key中使用_下划线符号!
-                                            id:projectid,
-                                            rawData: data,
-                                            expires: null,//1000 * 3600
-                                        });
-                                    });
-                                    break;
-                                case 'ExpiredError':
-                                    alert('出错了');
-                                    break;
-                            }
-                        });
-                    //console.log(ele);
-                });
-                //console.log(login.projects)
-            });
-        }
-        else {
-            if(!login.projects){
-                storage.load({
-                        key: 'userid',
-                        id:login.userid,
-                        autoSync: false,//true, // autoSync(默认为true)意味着在没有找到数据或数据过期时自动调用相应的sync方法
-                        syncInBackground: false,//true
-                    })
-                    .then(ret => {
-                        loginactions.getOfflineData(ret);
-                    })
-                    .catch(err => {
-                        console.warn(err.message);
-                        switch (err.name) {
-                            case 'NotFoundError':
-                                alert('未找到数据');
-                                break;
-                            case 'ExpiredError':
-                                alert('出错了');
-                                break;
-                        }
-                    });
-            }
-        }
-    };
 
     // renderProgressEntry = (entry)=>{
     //     //styles.style_view_commit

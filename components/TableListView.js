@@ -13,7 +13,7 @@ import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 import * as actions from '../redux/table';
 
-var tableList = ['勘探点数据表','波速表','剖线数据表','静探表','动探表'];
+var tableList = [];
 class TableListView extends Component {
     constructor(props) {
         super(props);
@@ -50,9 +50,10 @@ class TableListView extends Component {
         });
     }
 
-    onTest(){
+    onBack(){
         this.props.navigator.push({name: 'map'});
     }
+    
     render() {
         //let tableArray = [];
         let {cell} = this.props;
@@ -65,7 +66,7 @@ class TableListView extends Component {
                 {this.tableArray}
                 <TouchableHighlight
                     style={[styles3.style_view_exit,{top : 0 ,left : 0}]}
-                    onPress={this.onTest.bind(this)}
+                    onPress={this.onBack.bind(this)}
                     underlayColor="transparent"
                     activeOpacity={0.5}>
                     <View >

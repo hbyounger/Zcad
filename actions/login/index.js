@@ -89,7 +89,6 @@ export const userLogin = (server,username,userWord,callback) => {
 };
 
 export const userOfflineLogin = (userid) => {
-    //console.log(userid);
     return (dispatch) => {
         // 登陆中，做禁用登陆 Button 等操作
         dispatch({
@@ -102,17 +101,13 @@ export const userOfflineLogin = (userid) => {
     }
 };
 
-export const getUserPrivilege = (server,userid,callback) => {
-    //console.log(userid);
+//得到用户的项目名称
+export const getProjectNameByUser = (server,userid,callback) => {
     let formData = new FormData;
     formData.append("userid",userid);
     formData.append("option","getProjectNameByUser");
-    //console.log(formData);
-    //console.log("post");
-    //(formData);
     return (dispatch) => {
         // 登陆中，做禁用登陆 Button 等操作
-        //console.log('http://'+server+'/ajaxService/admin.ashx');
         fetch('http://'+server+'/ajaxService/admin.ashx', {
             method: 'POST',
             headers: {},
@@ -123,44 +118,32 @@ export const getUserPrivilege = (server,userid,callback) => {
             })
             .then((json) => {
                 if (json) {
-                    //console.log(json);
                     storage.load({
                             key: 'userid',
                             id:userid,
-                            // autoSync(默认为true)意味着在没有找到数据或数据过期时自动调用相应的sync方法
-                            autoSync: false,//true,
+                            autoSync: false,//true, autoSync(默认为true)意味着在没有找到数据或数据过期时自动调用相应的sync方法
                             syncInBackground: false,//true
                         })
                         .then(ret => {
-                            //console.log("load");
-                            //console.log(ret);
-                            //TODO:比较工程队列是否需要更新
+                            //比较工程队列是否需要更新
                             if(ret.length!=json.length){
                                 storage.save({
                                     key: 'userid',  // 注意:请不要在key中使用_下划线符号!
                                     id:userid,
                                     rawData: json,
-                                    // 如果不指定过期时间，则会使用defaultExpires参数
-                                    // 如果设为null，则永不过期
                                     expires: null,//1000 * 3600
                                 });
                             }
                             //this.setState({ user: ret });
                         })
                         .catch(err => {
-                            console.warn(err.message);
+                            console.log(err.message);
                             switch (err.name) {
                                 case 'NotFoundError':
-                                    // TODO;
-                                    //alert('未找到数据');
-                                    //console.log("save");
-                                    //console.log(userid);
                                     storage.save({
                                         key: 'userid',  // 注意:请不要在key中使用_下划线符号!
                                         id:userid,
                                         rawData: json,
-                                        // 如果不指定过期时间，则会使用defaultExpires参数
-                                        // 如果设为null，则永不过期
                                         expires: null,//1000 * 3600
                                     });
                                     break;
@@ -171,13 +154,12 @@ export const getUserPrivilege = (server,userid,callback) => {
                             }
                         });
                      dispatch({
-                     type:'PLATFORM_DATA_USER_LOGIN_PRJS',
+                        type:'PLATFORM_DATA_USER_LOGIN_PRJS',
                          projects:json
                      });
                     callback(json);
                 }
                 else {
-                    //console.log(json);
                     alert('服务器打了小瞌睡，请重试～')
                 }
             })
@@ -187,6 +169,7 @@ export const getUserPrivilege = (server,userid,callback) => {
     }
 };
 
+//获得离线数据
 export const getOfflineData = (data)=>{
     return(dispatch)=>{
         dispatch({
@@ -206,8 +189,9 @@ export const getOfflineTables = (data) => {
     }
 };
 
+//得到工程下的所有表
 export const getAllData = (server,userid,projectName,callback) => {
-    console.log(userid);
+    console.log('getAllData  ' + userid);
     let formData = new FormData;
     formData.append("userid",userid);
     formData.append("projectName",projectName);

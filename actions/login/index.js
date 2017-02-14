@@ -78,7 +78,7 @@ export const userLogin = (server,username,userWord,callback) => {
                         type:'PLATFORM_DATA_USER_LOGIN_FAILURE',
                         payload:json
                     });
-                    alert('登录失败，请重试～' + json);
+                    alert('登录失败，请重试～' + json.code);
                 }
             })
             .catch((error) => {

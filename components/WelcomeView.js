@@ -127,7 +127,7 @@ class WelcomeView extends Component {
 
     //退到登录界面
     onPressBack = ()=>{
-        this.props.navigator.push({name: 'login'});
+        this.props.navigator.pop({name: 'login'});
     };
 
     // //下载数据
@@ -235,10 +235,10 @@ class WelcomeView extends Component {
                
                 ProjectArray.push(
 
-                <View style={{flex: 1, flexDirection: 'row'}}>
+                <View key ={`prj${i}`} style={{flex: 1, flexDirection: 'row'}}>
                 <TouchableHighlight
                 style={{flex: 6}}
-                    key = {i}
+                    key = {`prjn${i}`}
                     onPress={this.onPressMap.bind(this,ele.PRIVILEGENAME)}
                     underlayColor="transparent"
                     activeOpacity={0.5}>
@@ -253,7 +253,7 @@ class WelcomeView extends Component {
     (!login.offline)&&(
                 <TouchableHighlight
                 style={{flex: 2}}
-                    key = {"a"+i}
+                    key = {`down${i}`}
                     onPress={this.onDownLoadData.bind(this,ele.PRIVILEGENAME)}
                     underlayColor="transparent"
                     activeOpacity={0.5}>

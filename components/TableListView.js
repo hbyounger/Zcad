@@ -51,7 +51,7 @@ class TableListView extends Component {
     }
 
     onBack(){
-        this.props.navigator.push({name: 'map'});
+        this.props.navigator.pop({name: 'map'});
     }
     
     render() {

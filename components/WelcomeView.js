@@ -119,7 +119,7 @@ class WelcomeView extends Component {
                         alert("onPressMap:" + projectName + " 没有数据!");
                         break;
                     default:
-                        alert('onPressMap:' + err.name);
+                        alert('onPressMap:' + err.name + err.message);
                         break;
                 }
             });
@@ -156,8 +156,8 @@ class WelcomeView extends Component {
         let { loginactions,login } = this.props;
 
                 console.log('onDownLoadData' + ele);
-                let projectid = login.userid+'-'+ele.PRIVILEGENAME;
-                loginactions.getAllData(login.server,login.userid,ele.PRIVILEGENAME,(data)=>{
+                let projectid = login.userid+'-'+ele;
+                loginactions.getAllData(login.server,login.userid,ele,(data)=>{
                     storage.save({
                         key: 'projectid',  // 注意:请不要在key中使用_下划线符号!
                         id: projectid,

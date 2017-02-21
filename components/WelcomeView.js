@@ -154,9 +154,8 @@ class WelcomeView extends Component {
     //下载数据
     onDownLoadData(ele){
         let { loginactions,login } = this.props;
-
-                console.log('onDownLoadData' + ele);
                 let projectid = login.userid+'-'+ele;
+                console.log('onDownLoadData ' + projectid);
                 loginactions.getAllData(login.server,login.userid,ele,(data)=>{
                     storage.save({
                         key: 'projectid',  // 注意:请不要在key中使用_下划线符号!

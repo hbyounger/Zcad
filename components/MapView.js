@@ -82,7 +82,7 @@ class MapView extends Component {
         this.dotList = array;
     }
     onBack(){
-        this.props.navigator.push({name: 'welcome'});
+        this.props.navigator.pop({name: 'welcome'});
     }
     render() {
         let PList = [],
@@ -91,7 +91,7 @@ class MapView extends Component {
         if(this.dotList) {
             this.dotList.forEach((ele,i)=> {
                 PList.push(<Cell
-                    key = {i}
+                    key = {`point${i}`}
                     Point = {ele}
                     num = {i}
                     isWorking = {ele.isWorking}

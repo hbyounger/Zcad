@@ -97,7 +97,7 @@ class Grid extends Component{
         Alert.alert('Alert Title',alertMessage,[{text: 'OK', onPress: () => console.log('OK Pressed!')},]);
         this.props.navigator.push({name: 'picker'});
     }
-
+ 
     onValChange = (key: string, value: string)=>{
         const newState = {};
         newState[key] = value;
@@ -235,7 +235,7 @@ class DataView extends Component{
 //navigator = {this.props.navigator}
 
     onBack=()=>{
-        this.props.navigator.push({name: 'tablelist'});
+        this.props.navigator.pop({name: 'tablelist'});
     };
 
     render(){

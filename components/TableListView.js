@@ -18,8 +18,8 @@ class TableListView extends Component {
     constructor(props) {
         super(props);
         let {login} = this.props;
-        let table = login.tables,
-            List = table["项目_表"];//表名
+        let table = login.tables;
+        let List = table["项目_表"];//表名
         List.forEach(ele=>{
             //console.log(ele["表名"]);
             this.tableList.push(ele["表名"]);
@@ -61,7 +61,7 @@ class TableListView extends Component {
         return (
             <View >
                 <Text style={styles3.welcome} >
-                    {'孔号'+cell.pointData["钻孔编号"]+'-选择数据表'}
+                    {'钻孔编号'+cell.pointData["钻孔编号"]+'-选择数据表'}
                 </Text>
                 {this.tableArray}
                 <TouchableHighlight

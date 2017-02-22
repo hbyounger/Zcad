@@ -41,16 +41,27 @@ class Grid extends Component{
         let ds = new ListView.DataSource({rowHasChanged: (r1, r2) => r1 !== r2});
         let ds1 = new ListView.DataSource({rowHasChanged: (r1, r2) => r1 !== r2});
         let offsetval = {x : 0, y: 0};
-        let {pointInfo,data} = this.props;
+        let {login,table,pointInfo,data} = this.props;
         console.log("pointInfo : " + pointInfo);
         console.log("data : " + data);
+
+        //要显示什么字段
         this.nameArray = [];
+
+        let tables = login.tables;
+        let List = tables["表_字段"];//表名
+        List.forEach(ele=>{
+            if(ele["表名"]===table.table){
+                this.nameArray.push(ele["字段名"]);}
+        })
+
+ 
         this.leftArray = [];
         this.rightArray = [];
-        for(let ele in data[0]){
-            //console.log(ele);
-            this.nameArray.push(ele)
-        }
+        // for(let ele in data[0]){
+        //     console.log(ele);
+        //     this.nameArray.push(ele)
+        // }
         data.forEach((ele,i)=>{
             if((ele["钻孔编号"]===pointInfo["钻孔编号"])||(!ele["钻孔编号"])){
                 this.leftArray.push(ele["ID"]?ele["ID"]:i);
@@ -86,9 +97,7 @@ class Grid extends Component{
         });
         //this.state.loaded = true;
     }
-    onPressWelcome(){
-        this.props.navigator.push({name: 'welcome'});
-    }
+
     /*let alertMessage = 'Credibly reintermediate next-generation potentialities after goal-oriented ' +
      'catalysts for change. Dynamically revolutionize.';
      Alert.alert('Alert Title',alertMessage,[{text: 'OK', onPress: () => console.log('OK Pressed!')},]);*/
@@ -195,7 +204,7 @@ class Grid extends Component{
         );
     }
 }
-//<SvgExample/><Example/><Game2048/><Text style={styles.instructions} onPress={this.onPressWelcome}>Default view</Text>
+
 class DataView extends Component{
     constructor(props) {
         super(props);
@@ -228,6 +237,7 @@ class DataView extends Component{
         //this.props.navigator.push({name: 'tablelist'});
     };
 
+    //上传
     onUpload=(data)=>{
         let {loginactions,login,table,project} = this.props;
         loginactions.updateData(login.server,login.userid,project.project,this.pointInfo["钻孔编号"],this.Array,table.table);
@@ -296,6 +306,8 @@ class DataView extends Component{
                     console.log(list);
                     this.Array=list;
                     }}
+                    login = {this.login}
+                    table = {this.table}
                     pointInfo = {this.pointInfo}
                     data = {this.List}
                     navigator = {this.props.navigator}/>

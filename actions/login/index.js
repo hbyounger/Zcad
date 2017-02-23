@@ -181,6 +181,8 @@ export const getAllData = (server,userid,projectName,callback) => {
             .then((json) => {
                 if (json) {
                     //保存起来
+                    let projectid = userid+'-'+projectName;
+                    console.log('下载数据 ' + projectid);
                     storage.save({
                         key: 'projectid',  // 注意:请不要在key中使用_下划线符号!
                         id: projectid,

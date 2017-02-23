@@ -215,6 +215,8 @@ class DataView extends Component{
         this.Array=[];
         this.pointInfo = cell.pointData;
         this.projectid = login.userid+'-'+project.project;
+        this.login = login;
+        this.table = table;
         //console.log(table.table);
         //console.log(this.List);
         //console.log(cell.pointData);

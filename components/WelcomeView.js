@@ -98,8 +98,6 @@ class WelcomeView extends Component {
     //下载数据
     onDownLoadData(ele){
         let { loginactions,login } = this.props;
-        let projectid = login.userid+'-'+ele;
-        console.log('下载数据 ' + projectid);
         loginactions.getAllData(login.server,login.userid,ele,(data)=>{
         });
         
@@ -157,7 +155,7 @@ class WelcomeView extends Component {
                 <Text style={styles.welcome} >
                     选择项目
                 </Text>
-                
+
                 {ProjectArray}
 
                 <TouchableHighlight

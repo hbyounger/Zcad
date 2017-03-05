@@ -17,7 +17,6 @@ import {
     Alert,
     Picker
 } from 'react-native';
-const Item = Picker.Item;
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 import * as actions from '../redux/table';
@@ -26,175 +25,9 @@ import Cell from './Cell'//SvgExample
 //import Example from './Map'
 import * as loginActions from '../actions/login';
 
-
+import Grid from './DataGrid';
 const window = Dimensions.get('window');
-var RIGHT_LISTVIEW = 'right_listView';
-var LEFT_LISTVIEW = 'left_listView';
 
-var array = [];
-var titleArray = [];
-var rightArray = [];
-
-class Grid extends Component{
-    constructor(props){
-        super(props);
-        let ds = new ListView.DataSource({rowHasChanged: (r1, r2) => r1 !== r2});
-        let ds1 = new ListView.DataSource({rowHasChanged: (r1, r2) => r1 !== r2});
-        let offsetval = {x : 0, y: 0};
-        let {pointInfo,data} = this.props;
-        console.log("pointInfo : " + pointInfo);
-        console.log("data : " + data);
-        this.nameArray = [];
-        this.leftArray = [];
-        this.rightArray = [];
-        for(let ele in data[0]){
-            //console.log(ele);
-            this.nameArray.push(ele)
-        }
-        data.forEach((ele,i)=>{
-            if((ele["钻孔编号"]===pointInfo["钻孔编号"])||(!ele["钻孔编号"])){
-                this.leftArray.push(ele["ID"]?ele["ID"]:i);
-                this.rightArray.push(ele);
-            }
-        });
-        this.props.callback(this.rightArray);
-        this.nameList=[];
-        this.nameArray.forEach((ele,i)=>{
-            this.nameList.push(
-                <View key = {`title${i}`} style = {styles.titleView}>
-                    <Text>{ele}</Text>
-                </View>
-            )
-        });
-        this.state ={
-            leftDataSource: ds.cloneWithRows(this.leftArray),
-            rightdataSource: ds1.cloneWithRows(this.rightArray),
-            leftListOffset: {x : 0, y: 0},
-            loaded: false,
-
-            selected1: 'key1',
-            selected2: 'key1',
-            selected3: 'key1',
-            color: 'red',
-            mode: Picker.MODE_DIALOG,
-        };
-    }
-
-    componentDidMount(){
-        this.setState({
-            loaded : true
-        });
-        //this.state.loaded = true;
-    }
-    onPressWelcome(){
-        this.props.navigator.push({name: 'welcome'});
-    }
-    /*let alertMessage = 'Credibly reintermediate next-generation potentialities after goal-oriented ' +
-     'catalysts for change. Dynamically revolutionize.';
-     Alert.alert('Alert Title',alertMessage,[{text: 'OK', onPress: () => console.log('OK Pressed!')},]);*/
-    onPressPicker(value){
-        let alertMessage = value;
-        Alert.alert('Alert Title',alertMessage,[{text: 'OK', onPress: () => console.log('OK Pressed!')},]);
-        this.props.navigator.push({name: 'picker'});
-    }
- 
-    onValChange = (key: string, value: string)=>{
-        const newState = {};
-        newState[key] = value;
-        this.setState(newState);
-        //Alert.alert('Alert Title',key+','+value,[{text: 'OK', onPress: () => console.log('OK Pressed!')}]);
-    }
-    onTableChange = (e)=>{
-        this.props.callback(this.rightArray);
-    };
-    onScroll = ()=>{
-        //console.log("onScroll");
-        //console.log(this.state.loaded);
-        if (this.state.loaded) {//this.state.loaded
-            var rightList = this.refs[RIGHT_LISTVIEW];
-            //console.log(rightList)
-            var y1 = rightList.scrollProperties.offset;
-            //console.log(y1)
-            this.setState({
-                leftListOffset :{x: 0 , y: y1}
-            });
-        }
-    }
-
-    _leftRenderRow = (rowData: string, sectionID: number, rowID: number)=>{
-        return (
-            <View style={styles.leftListRow}>
-                <Text >
-                    {rowData}
-                </Text>
-            </View>
-        );
-    }
-
-    _rightRenderRow = (rowData: object, sectionID: number, rowID: number)=>{
-        //() => Alert.alert('Alert Title',alertMessage,[{text: 'OK', onPress: () => console.log('OK Pressed!')},])  <TextInput>{rowData.name}</TextInput>
-        let list=[];
-        this.nameArray.forEach((ele,i)=>{
-            list.push(
-                <View key = {`right${i}`}>
-                    <TextInput style = {styles.cellView} onChangeText ={(e)=>{rowData[ele]=e;this.onTableChange(e);}}>{rowData[ele]}</TextInput>
-                </View>)
-        });
-
-        return (
-            <View style = {styles.rightListRow}>
-                {list}
-            </View>
-        );
-    }
-
-    render() {
-
-        return (
-            <ScrollView horizontal = {true} style = {styles.container}>
-                <View style = {styles.left}>
-                    <View style = {styles.mingcheng}>
-                        <Text>ID</Text>
-                    </View>
-
-                    <ListView
-                        ref = {LEFT_LISTVIEW}
-                        style = {styles.leftListView}
-                        contentOffset = {this.state.leftListOffset}
-                        showsHorizontalScrollIndicator = {false}
-                        showsVerticalScrollIndicator = {false}
-                        scrollEnabled = {false}
-                        bounces={false}
-                        // scrollEventThrottle={500}
-                        dataSource = {this.state.leftDataSource}
-                        renderRow = {this._leftRenderRow}
-                    />
-
-                </View>
-                <View style = {styles.right}>
-                    <ScrollView
-                        style = {styles.scrollView}
-                        horizontal = {true}
-                    >
-                        <View style = {styles.contentView}>
-                            <View style = {{width: 1000 , height: 40, flexDirection:'row'}}>
-                                {this.nameList}
-                            </View>
-                            <ListView
-                                ref = {RIGHT_LISTVIEW}
-                                //scrollEventThrottle={500}
-                                style = {styles.rightListView}
-                                dataSource = {this.state.rightdataSource}
-                                //onScroll={this.onScroll}
-                                renderRow = {this._rightRenderRow}
-                            />
-                        </View>
-                    </ScrollView>
-                </View>
-            </ScrollView>
-        );
-    }
-}
 //<SvgExample/><Example/><Game2048/><Text style={styles.instructions} onPress={this.onPressWelcome}>Default view</Text>
 class DataView extends Component{
     constructor(props) {
@@ -202,7 +35,7 @@ class DataView extends Component{
         let {cell,login,table,project} = this.props;
         let tables = login.tables;
         this.List = tables[table.table];
-        console.log(tables[table.table]);
+        //console.log(tables[table.table]);
         this.Array=[];
         this.pointInfo = cell.pointData;
         this.projectid = login.userid+'-'+project.project;
@@ -306,7 +139,7 @@ class DataView extends Component{
     }
 }
 
-var styles = StyleSheet.create({
+const styles = StyleSheet.create({
     style_view_commit:{
         marginTop:0,
         marginLeft:10,
@@ -378,7 +211,7 @@ var styles = StyleSheet.create({
     },
 
     rightListRow:{
-        width: 1000 ,
+        //width: 1000 ,
         height: 40,
         flexDirection:'row'
     },
@@ -390,13 +223,15 @@ var styles = StyleSheet.create({
         marginTop:0,
         marginBottom:1,
         // backgroundColor: 'red',
-        flexDirection:'column'
+        flexDirection:'column',
+        //height:Dimensions.get('window').height-110,
+        //height: window.height -50,
     },
 
     contentView:{
 
-        //height: window.height -50,
-        width: 1000 ,
+        height: window.height -120,
+        //width: 900 ,
         // backgroundColor:'yellow',
         flexDirection: 'column',
     },

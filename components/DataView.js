@@ -43,6 +43,15 @@ class DataView extends Component{
         //console.log(this.List);
         //console.log(cell.pointData);
         //cell.pointData
+        tables[table.table].forEach((ele,i)=>{
+            if((ele["钻孔编号"]===this.pointInfo["钻孔编号"])||(!ele["钻孔编号"])){
+                //this.leftArray.push(ele["ID"]?ele["ID"]:i);
+                this.Array.push(ele);
+            }
+        });
+        this.state ={
+            List:this.Array,
+        }
     }
 
     //保存
@@ -70,7 +79,26 @@ class DataView extends Component{
     onBack=()=>{
         this.props.navigator.pop({name: 'tablelist'});
     };
+    onAdd = ()=>{
+        console.log(this.state.List.length,'----->this.state.List.length')
+        let newItem = Object.assign({},this.state.List[this.state.List.length-1]);
+        newItem['ID'] += 1;
+        console.log(newItem,'----->newItem')
+        let newArray = [];
+        newArray.push(newItem);
+        this.state.List.map((item,index)=>{
+            newArray.push(item);
+        })
+        this.setState({
+            List:newArray,
+        })
+    };
+    onInsert = ()=>{
 
+    };
+    onDelete = ()=>{
+
+    };
     render(){
         let {login,table} = this.props;
         let tables = login.tables;
@@ -84,56 +112,91 @@ class DataView extends Component{
                 </View>
 
                 <View style={{flex: 1, flexDirection: 'row'}}>
-                <TouchableHighlight
-                    style={[styles.style_view_commit,{flex: 1,top : 0 ,left : 0}]}
-                    onPress={this.onBack}
-                    underlayColor="transparent"
-                    activeOpacity={0.5}>
-                    <View >
-                        <Text style={{color:'#fff'}} >
-                            {'返回'}
-                        </Text>
-                    </View>
-                </TouchableHighlight>
-                <TouchableHighlight
-                    style={[styles.style_view_commit,{flex: 1,top : 0 ,left : 0}]}
-                    onPress={this.onSubmit}
-                    underlayColor="transparent"
-                    activeOpacity={0.5}>
-                    <View >
-                        <Text style={{color:'#fff'}} >
-                            {'保存'}
-                        </Text>
-                    </View>
-                </TouchableHighlight>
-                {
-                    (!login.offline)&&(
-                        <TouchableHighlight
-                            style={[styles.style_view_commit,{flex: 1,top : 0 ,left : 0,}]}
-                            onPress={this.onUpload}
-                            underlayColor="transparent"
-                            activeOpacity={0.5}>
-                            <View >
-                                <Text style={{color:'#fff'}} >
-                                    {'上传'}
-                                </Text>
-                            </View>
-                        </TouchableHighlight>
-                    )
-                }
+                    <TouchableHighlight
+                        style={[styles.style_view_commit,{flex: 1,top : 0 ,left : 0}]}
+                        onPress={this.onBack}
+                        underlayColor="transparent"
+                        activeOpacity={0.5}>
+                        <View >
+                            <Text style={{color:'#fff'}} >
+                                {'返回'}
+                            </Text>
+                        </View>
+                    </TouchableHighlight>
+                    <TouchableHighlight
+                        style={[styles.style_view_commit,{flex: 1,top : 0 ,left : 0}]}
+                        onPress={this.onSubmit}
+                        underlayColor="transparent"
+                        activeOpacity={0.5}>
+                        <View >
+                            <Text style={{color:'#fff'}} >
+                                {'保存'}
+                            </Text>
+                        </View>
+                    </TouchableHighlight>
+                    {
+                        (!login.offline)&&(
+                            <TouchableHighlight
+                                style={[styles.style_view_commit,{flex: 1,top : 0 ,left : 0,}]}
+                                onPress={this.onUpload}
+                                underlayColor="transparent"
+                                activeOpacity={0.5}>
+                                <View >
+                                    <Text style={{color:'#fff'}} >
+                                        {'上传'}
+                                    </Text>
+                                </View>
+                            </TouchableHighlight>
+                        )
+                    }
+                    <TouchableHighlight
+                        style={[styles.style_view_commit,{flex: 1,top : 0 ,left : 0}]}
+                        onPress={this.onAdd}
+                        underlayColor="transparent"
+                        activeOpacity={0.5}>
+                        <View >
+                            <Text style={{color:'#fff'}} >
+                                {'新增'}
+                            </Text>
+                        </View>
+                    </TouchableHighlight>
+                    <TouchableHighlight
+                        style={[styles.style_view_commit,{flex: 1,top : 0 ,left : 0}]}
+                        onPress={this.onInsert}
+                        underlayColor="transparent"
+                        activeOpacity={0.5}>
+                        <View >
+                            <Text style={{color:'#fff'}} >
+                                {'插入'}
+                            </Text>
+                        </View>
+                    </TouchableHighlight>
+                    <TouchableHighlight
+                        style={[styles.style_view_commit,{flex: 1,top : 0 ,left : 0}]}
+                        onPress={this.onDelete}
+                        underlayColor="transparent"
+                        activeOpacity={0.5}>
+                        <View >
+                            <Text style={{color:'#fff'}} >
+                                {'删除'}
+                            </Text>
+                        </View>
+                    </TouchableHighlight>
                 </View>
                 <View style={{top : 10 }}>
-            <ScrollView >
-                <Grid
-                    callback ={(list)=>{
-                    console.log(list);
+                    <ScrollView >
+                        <Grid
+                            callback ={(list)=>{
                     this.Array=list;
+                    this.setState({
+                    List:list,
+                    })
                     }}
-                    pointInfo = {this.pointInfo}
-                    data = {this.List}
-                    navigator = {this.props.navigator}/>
-            </ScrollView>
-            </View>
+                            pointInfo = {this.pointInfo}
+                            data = {this.state.List}
+                            navigator = {this.props.navigator}/>
+                    </ScrollView>
+                </View>
             </View>
         )
     }

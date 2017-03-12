@@ -30,44 +30,50 @@ const Item = Picker.Item;
 class Grid extends Component{
     constructor(props){
         super(props);
-        let ds = new ListView.DataSource({rowHasChanged: (r1, r2) => r1 !== r2});
+        this.ds = new ListView.DataSource({rowHasChanged: (r1, r2) => r1 !== r2});
         let ds1 = new ListView.DataSource({rowHasChanged: (r1, r2) => r1 !== r2});
         let offsetval = {x : 0, y: 0};
         let {pointInfo,data,table,login} = this.props;
         //console.log("pointInfo : " + pointInfo);
         //console.log("data : " + data);
-        console.log(login.tables['表_字段'],'------------------->login.tables[表_字段]');//选择值//表_字段
+        //console.log(login.tables['表_字段'],'------------------->login.tables[表_字段]');//选择值//表_字段
+        let fields = [],
+            fieldNameMap = {};
         if(login.tables['表_字段']){
-            this.argumentList = {};
             login.tables['表_字段'].forEach((item,index)=>{
-                console.log(item,'------------------->表_字段');//选择值//表_字段
-                console.log(item['字段名'],'------------------->字段名');//选择值//表_字段
-                console.log(item['ID'],'------------------->ID');//选择值//表_字段
-                this.argumentList[item['字段名']] = item['ID'];
+                //console.log(item,'------------------->表_字段');//选择值//表_字段
+                //console.log(item['字段名'],'------------------->字段名');//选择值//表_字段
+                //console.log(item['ID'],'------------------->ID');//选择值//表_字段
+                //console.log(table.table,'------------------->table.table');//选择值//表_字段
+                if(item['表名']===table.table){
+                    fieldNameMap[item['ID']] = item['字段名'];
+                    fields.push(item['ID']);
+                }
             })//字段ID
         }
+        //console.log(fieldNameMap,'------------------->fieldNameMap');//选择值//表_字段
 
         if(login.tables['选择值']){
             this.optionList = {};
             this.optionIndexList = {};
             this.optionValueList = {};
+            this.fieldList = {};
             login.tables['选择值'].forEach((item,index)=>{
-                console.log(item,'------------------->选择值');//选择值//表_字段
-                console.log(item['字段ID'],'------------------->字段ID');//选择值//表_字段
-                console.log(item['值'],'------------------->值');//选择值//表_字段
-
-                if(this.optionList[item['字段ID']]){
-                    this.optionList[item['字段ID']].push(<Item key = {index} label={item} value={`${index}`} />);
-                    //this.optionValueArrayList[item['字段ID']].push(item['值']);
-                    this.optionIndexList[item['值']] = `${index}`;
-                    this.optionValueList[index] = item['值'];
-                }
-                else {
-                    this.optionList[item['字段ID']]=[];
-                    this.optionList[item['字段ID']].push(<Item key = {index} label={item} value={`${index}`} />);
-                    //this.optionValueArrayList[item['字段ID']].push(item['值']);
-                    this.optionIndexList[item['值']] = `${index}`;
-                    this.optionValueList[index] = item['值'];
+                let field = item['字段ID'],
+                    value = item['值'];
+                //console.log(item,'------------------->选择值');//选择值//表_字段
+                //console.log(field,'------------------->字段ID');//选择值//表_字段
+                //console.log(value,'------------------->值');//选择值//表_字段
+                if(-1!==fields.indexOf(field)){
+                    if(!this.optionList[field]){
+                        this.optionList[field]=[];
+                        this.optionList[field].push(<Item key = {-1} label={''} value={`${-1}`} />);
+                    }
+                    this.optionList[field].push(<Item key = {index} label={value} value={`${index}`} />);
+                    //this.optionValueArrayList[field].push(value);
+                    this.optionIndexList[value] = `${index}`;
+                    this.optionValueList[index] = value;
+                    this.fieldList[fieldNameMap[field]] = field;//item['字段名']
                 }
             })
         }
@@ -106,6 +112,7 @@ class Grid extends Component{
             color: 'red',
             mode: Picker.MODE_DIALOG,
         };
+        this.changedRowIndex = -1;
     }
 
     componentDidMount(){
@@ -135,6 +142,9 @@ class Grid extends Component{
     }
     onTableChange = (e)=>{
         this.props.callback(this.rightArray);
+        /*this.setState({
+            rightdataSource:this.ds.cloneWithRows(this.rightArray),
+        })*/
     };
     onScroll = ()=>{
         //console.log("onScroll");
@@ -159,48 +169,110 @@ class Grid extends Component{
      </View>
      );
      }*/
+    componentWillUpdate(nextProps : object, nextState: object){
+        console.log(nextState.rightdataSource,'------------------->nextState.rightdataSource');
+        let {pointInfo,data} = this.props;
+        if(nextProps.data!==data){
+            this.rightArray = [];
+            console.log(nextProps.data!==data,'nextProps.data!==data')
+            nextProps.data.forEach((ele,i)=>{
+                if((ele["钻孔编号"]===pointInfo["钻孔编号"])||(!ele["钻孔编号"])){
+                    //this.leftArray.push(ele["ID"]?ele["ID"]:i);
+                    this.rightArray.push(ele);
+                }
+                this.setState({
+                    rightdataSource: this.ds.cloneWithRows(this.rightArray),
+                })
+            });
+        }
+        else {
+            if(this.changedRowIndex!=-1){
+                console.log(this.changedRowIndex,'------------------->this.changedRowIndex');
+                //this.getPicker(this.changedSelectName,this.rightArray[this.changedRowIndex],this.changedRowIndex);
+                this.setState({
+                    rightdataSource: this.ds.cloneWithRows(this.rightArray),
+                })
+                //this.forceUpdate();
+            }
+        }
+    };
+    getPicker = (ele,rowData,i)=>{
+        if(!this.Picker){
+            this.Picker = {};
+        }
+        if(!this.Picker[ele]){
+            this.Picker[ele] = {};
+        }
+        if(!this.Picker[ele][i]){
+            this.Picker[ele][i] = {};
+        }
+        let optionIndex = this.fieldList[ele];
+        //console.log(rowData,'====================>rowData');
+        //console.log(rowData[ele],'====================>rowData[ele]');
+        //console.log(this.optionIndexList[rowData[ele]],'====================>this.optionIndexList[rowData[ele]]');
 
-    _rightRenderRow = (rowData: object, sectionID: number, rowID: number)=>{
-        //() => Alert.alert('Alert Title',alertMessage,[{text: 'OK', onPress: () => console.log('OK Pressed!')},])  <TextInput>{rowData.name}</TextInput>
-        let list=[];
-        let {table,login} = this.props;
-
-
-        this.nameArray.forEach((ele,i)=>{
-            if(this.optionList[this.argumentList[ele]]){
-                let optioList = [],
-                    optionIndex = this.argumentList[ele];
-                console.log(login,'------------------->login');//选择值//表_字段//字段名
-                console.log(ele,'------------------->ele');
-                console.log(this.argumentList[ele],'------------------->this.argumentList[ele]');
-
-                list.push(
-                    <View key = {`right${i}`}>
-                        <Picker
-                            style={styles.cellView}
-                            selectedValue={this.optionIndexList[rowData[ele]]}
-                            onValueChange={(e)=>{
+        this.Picker[ele][i]=(<View key = {`right${i}`}>
+            <Picker
+                style={styles.cellView}
+                //prompt = {rowData[ele]}
+                selectedValue={this.optionIndexList[rowData[ele]]?this.optionIndexList[rowData[ele]]:-1}
+                onValueChange={(e)=>{
                             let value = this.optionValueList[e];
                             rowData[ele]=value;
                             this.onTableChange(value);
+                            this.changedRowIndex = i;
+                            this.changedSelectName = ele;
+                            //this.setState({});
+                            /*this.setState({
+                            ,
+                            })*/
                             }}
-                            mode="dropdown">
-                            {this.optionList[this.argumentList[ele]]}
-                        </Picker>
-                    </View>)
+                mode="dropdown">
+                {this.optionList[optionIndex]}
+            </Picker>
+        </View>);
+
+        this.changedRowIndex = -1
+        return this.Picker[ele][i];
+    }
+    getList = (rowData)=>{
+        this.list=[];
+        let {table,login} = this.props;
+        //console.log(rowData,'------------------->rowData');
+        this.nameArray.forEach((ele,i)=>{
+            if(this.fieldList[ele]){
+                let optioList = [],
+                    optionIndex = this.fieldList[ele];
+                if(this.optionList[optionIndex]){
+                    //
+                    //console.log(this.optionIndexList,'------------------->this.optionIndexList');
+                    //console.log(this.optionIndexList[rowData[ele]],'------------------->this.optionIndexList[rowData[ele]]');
+                    this.list.push(this.getPicker(ele,rowData,i));
+                    /*()=>{
+                     console.log(this.optionIndexList[rowData[ele]],'------------------->this.optionIndexList[rowData[ele]]');
+                     return this.optionIndexList[rowData[ele]]}*/
+                }
+                else {
+                    this.list.push(
+                        <View key = {`right${i}`}>
+                            <TextInput style = {styles.cellView} onChangeText ={(e)=>{rowData[ele]=e;this.onTableChange(e);}}>{rowData[ele]}</TextInput>
+                        </View>)
+                }
             }
             else {
-                list.push(
+                this.list.push(
                     <View key = {`right${i}`}>
                         <TextInput style = {styles.cellView} onChangeText ={(e)=>{rowData[ele]=e;this.onTableChange(e);}}>{rowData[ele]}</TextInput>
                     </View>)
             }
-
         });
-
+        return this.list;
+    }
+    _rightRenderRow = (rowData: object, sectionID: number, rowID: number)=>{
+        //() => Alert.alert('Alert Title',alertMessage,[{text: 'OK', onPress: () => console.log('OK Pressed!')},])  <TextInput>{rowData.name}</TextInput>
         return (
             <View style = {styles.rightListRow}>
-                {list}
+                {this.getList(rowData)}
             </View>
         );
     }
@@ -225,9 +297,11 @@ class Grid extends Component{
 
          </View>
          */
+        //let _rightRenderRow = this.rightRenderRow(this.state.rightdataSource)
+        //console.log(this.state.rightdataSource,'------------------->this.state.rightdataSource');
+
         return (
             <ScrollView horizontal = {true} style = {styles.container}>
-
                 <View style = {styles.right}>
                     <ScrollView
                         style = {styles.scrollView}

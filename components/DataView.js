@@ -17,7 +17,6 @@ import {
     Alert,
     Picker
 } from 'react-native';
-const Item = Picker.Item;
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 import * as actions from '../redux/table';
@@ -26,7 +25,7 @@ import Cell from './Cell'//SvgExample
 //import Example from './Map'
 import * as loginActions from '../actions/login';
 
-
+import Grid from './DataGrid';
 const window = Dimensions.get('window');
 var RIGHT_LISTVIEW = 'right_listView';
 var LEFT_LISTVIEW = 'left_listView';
@@ -211,7 +210,7 @@ class DataView extends Component{
         let {cell,login,table,project} = this.props;
         let tables = login.tables;
         this.List = tables[table.table];
-        console.log(tables[table.table]);
+        //console.log(tables[table.table]);
         this.Array=[];
         this.pointInfo = cell.pointData;
         this.projectid = login.userid+'-'+project.project;
@@ -221,6 +220,15 @@ class DataView extends Component{
         //console.log(this.List);
         //console.log(cell.pointData);
         //cell.pointData
+        tables[table.table].forEach((ele,i)=>{
+            if((ele["钻孔编号"]===this.pointInfo["钻孔编号"])||(!ele["钻孔编号"])){
+                //this.leftArray.push(ele["ID"]?ele["ID"]:i);
+                this.Array.push(ele);
+            }
+        });
+        this.state ={
+            List:this.Array,
+        }
     }
 
     //保存
@@ -249,7 +257,26 @@ class DataView extends Component{
     onBack=()=>{
         this.props.navigator.pop({name: 'tablelist'});
     };
+    onAdd = ()=>{
+        console.log(this.state.List.length,'----->this.state.List.length')
+        let newItem = Object.assign({},this.state.List[this.state.List.length-1]);
+        newItem['ID'] += 1;
+        console.log(newItem,'----->newItem')
+        let newArray = [];
+        newArray.push(newItem);
+        this.state.List.map((item,index)=>{
+            newArray.push(item);
+        })
+        this.setState({
+            List:newArray,
+        })
+    };
+    onInsert = ()=>{
 
+    };
+    onDelete = ()=>{
+
+    };
     render(){
         let {login,table} = this.props;
         let tables = login.tables;
@@ -263,64 +290,99 @@ class DataView extends Component{
                 </View>
 
                 <View style={{flex: 1, flexDirection: 'row'}}>
-                <TouchableHighlight
-                    style={[styles.style_view_commit,{flex: 1,top : 0 ,left : 0}]}
-                    onPress={this.onBack}
-                    underlayColor="transparent"
-                    activeOpacity={0.5}>
-                    <View >
-                        <Text style={{color:'#fff'}} >
-                            {'返回'}
-                        </Text>
-                    </View>
-                </TouchableHighlight>
-                <TouchableHighlight
-                    style={[styles.style_view_commit,{flex: 1,top : 0 ,left : 0}]}
-                    onPress={this.onSubmit}
-                    underlayColor="transparent"
-                    activeOpacity={0.5}>
-                    <View >
-                        <Text style={{color:'#fff'}} >
-                            {'保存'}
-                        </Text>
-                    </View>
-                </TouchableHighlight>
-                {
-                    (!login.offline)&&(
-                        <TouchableHighlight
-                            style={[styles.style_view_commit,{flex: 1,top : 0 ,left : 0,}]}
-                            onPress={this.onUpload}
-                            underlayColor="transparent"
-                            activeOpacity={0.5}>
-                            <View >
-                                <Text style={{color:'#fff'}} >
-                                    {'上传'}
-                                </Text>
-                            </View>
-                        </TouchableHighlight>
-                    )
-                }
+                    <TouchableHighlight
+                        style={[styles.style_view_commit,{flex: 1,top : 0 ,left : 0}]}
+                        onPress={this.onBack}
+                        underlayColor="transparent"
+                        activeOpacity={0.5}>
+                        <View >
+                            <Text style={{color:'#fff'}} >
+                                {'返回'}
+                            </Text>
+                        </View>
+                    </TouchableHighlight>
+                    <TouchableHighlight
+                        style={[styles.style_view_commit,{flex: 1,top : 0 ,left : 0}]}
+                        onPress={this.onSubmit}
+                        underlayColor="transparent"
+                        activeOpacity={0.5}>
+                        <View >
+                            <Text style={{color:'#fff'}} >
+                                {'保存'}
+                            </Text>
+                        </View>
+                    </TouchableHighlight>
+                    {
+                        (!login.offline)&&(
+                            <TouchableHighlight
+                                style={[styles.style_view_commit,{flex: 1,top : 0 ,left : 0,}]}
+                                onPress={this.onUpload}
+                                underlayColor="transparent"
+                                activeOpacity={0.5}>
+                                <View >
+                                    <Text style={{color:'#fff'}} >
+                                        {'上传'}
+                                    </Text>
+                                </View>
+                            </TouchableHighlight>
+                        )
+                    }
+                    <TouchableHighlight
+                        style={[styles.style_view_commit,{flex: 1,top : 0 ,left : 0}]}
+                        onPress={this.onAdd}
+                        underlayColor="transparent"
+                        activeOpacity={0.5}>
+                        <View >
+                            <Text style={{color:'#fff'}} >
+                                {'新增'}
+                            </Text>
+                        </View>
+                    </TouchableHighlight>
+                    <TouchableHighlight
+                        style={[styles.style_view_commit,{flex: 1,top : 0 ,left : 0}]}
+                        onPress={this.onInsert}
+                        underlayColor="transparent"
+                        activeOpacity={0.5}>
+                        <View >
+                            <Text style={{color:'#fff'}} >
+                                {'插入'}
+                            </Text>
+                        </View>
+                    </TouchableHighlight>
+                    <TouchableHighlight
+                        style={[styles.style_view_commit,{flex: 1,top : 0 ,left : 0}]}
+                        onPress={this.onDelete}
+                        underlayColor="transparent"
+                        activeOpacity={0.5}>
+                        <View >
+                            <Text style={{color:'#fff'}} >
+                                {'删除'}
+                            </Text>
+                        </View>
+                    </TouchableHighlight>
                 </View>
                 <View style={{top : 10 }}>
-            <ScrollView >
-                <Grid
-                    callback ={(list)=>{
-                    console.log(list);
+                    <ScrollView >
+                        <Grid
+                            callback ={(list)=>{
                     this.Array=list;
+                    this.setState({
+                    List:list,
+                    })
                     }}
                     login = {this.login}
                     table = {this.table}
                     pointInfo = {this.pointInfo}
                     data = {this.List}
                     navigator = {this.props.navigator}/>
-            </ScrollView>
-            </View>
+                    </ScrollView>
+                </View>
             </View>
         )
     }
 }
 
-var styles = StyleSheet.create({
+const styles = StyleSheet.create({
     style_view_commit:{
         marginTop:0,
         marginLeft:10,
@@ -392,7 +454,7 @@ var styles = StyleSheet.create({
     },
 
     rightListRow:{
-        width: 1000 ,
+        //width: 1000 ,
         height: 40,
         flexDirection:'row'
     },
@@ -404,13 +466,15 @@ var styles = StyleSheet.create({
         marginTop:0,
         marginBottom:1,
         // backgroundColor: 'red',
-        flexDirection:'column'
+        flexDirection:'column',
+        //height:Dimensions.get('window').height-110,
+        //height: window.height -50,
     },
 
     contentView:{
 
-        //height: window.height -50,
-        width: 1000 ,
+        height: window.height -120,
+        //width: 900 ,
         // backgroundColor:'yellow',
         flexDirection: 'column',
     },

@@ -96,11 +96,37 @@ class Grid extends Component{
         this.nameList=[];
         this.nameArray.forEach((ele,i)=>{
             this.rowNum = i;
-            this.nameList.push(
-                <View key = {`title${i}`} style = {styles.titleView}>
-                    <Text>{ele}</Text>
-                </View>
-            )
+            if(this.fieldList[ele]){
+                let optioList = [],
+                    optionIndex = this.fieldList[ele];
+                if(this.optionList[optionIndex]){
+                    this.nameList.push(//style={[styles.style_view_exit,{top : 0 ,left : 0}]}
+                        <TouchableHighlight
+                            key={`title${i}`}
+                            onPress={this.onPressPicker}
+                            underlayColor="transparent"
+                            activeOpacity={0.5}>
+                            <View  style={styles.darkTitleView}>
+                                <Text>{ele}</Text>
+                            </View>
+                        </TouchableHighlight>
+                    )
+                }
+                else {
+                    this.nameList.push(
+                        <View key={`title${i}`} style={styles.titleView}>
+                            <Text>{ele}</Text>
+                        </View>
+                    )
+                }
+            }
+            else {
+                this.nameList.push(
+                    <View key={`title${i}`} style={styles.titleView}>
+                        <Text>{ele}</Text>
+                    </View>
+                )
+            }
         });
         this.state ={
             //leftDataSource: ds.cloneWithRows(this.leftArray),
@@ -129,9 +155,9 @@ class Grid extends Component{
     /*let alertMessage = 'Credibly reintermediate next-generation potentialities after goal-oriented ' +
      'catalysts for change. Dynamically revolutionize.';
      Alert.alert('Alert Title',alertMessage,[{text: 'OK', onPress: () => console.log('OK Pressed!')},]);*/
-    onPressPicker(value){
+    onPressPicker = (value)=>{
         let alertMessage = value;
-        Alert.alert('Alert Title',alertMessage,[{text: 'OK', onPress: () => console.log('OK Pressed!')},]);
+        //Alert.alert('Alert Title',alertMessage,[{text: 'OK', onPress: () => console.log('OK Pressed!')},]);
         this.props.navigator.push({name: 'picker'});
     }
 
@@ -172,32 +198,24 @@ class Grid extends Component{
      );
      }*/
     componentWillUpdate(nextProps : object, nextState: object){
-        console.log(nextState.rightdataSource,'------------------->nextState.rightdataSource');
-        //let {pointInfo,data} = this.props;
-        /*if(nextProps.data!==data){
+        //console.log(nextState.rightdataSource,'------------------->nextState.rightdataSource');
+        let {pointInfo,data} = this.props;
+        if(nextProps.data!==data){
             this.rightArray = [];
             console.log(nextProps.data!==data,'nextProps.data!==data')
             nextProps.data.forEach((ele,i)=>{
                 if((ele["钻孔编号"]===pointInfo["钻孔编号"])||(!ele["钻孔编号"])){
-                    //this.leftArray.push(ele["ID"]?ele["ID"]:i);
                     this.rightArray.push(ele);
                 }
             });
-            this.setState({
-                rightdataSource: this.ds.cloneWithRows(this.rightArray),
-            })
+            this.state.rightdataSource = this.ds.cloneWithRows(this.rightArray);
         }
-        else {*/
-            if(this.changedRowIndex!=-1){
-                console.log(this.changedRowIndex,'------------------->this.changedRowIndex');
-                //this.getPicker(this.changedSelectName,this.rightArray[this.changedRowIndex],this.changedRowIndex);
-                /*this.setState({
-
-                })*/
+        else {
+            if (this.changedRowIndex != -1) {
+                //console.log(this.changedRowIndex,'------------------->this.changedRowIndex');
                 this.state.rightdataSource = this.ds.cloneWithRows(this.rightArray);
-                //this.forceUpdate();
             }
-        //}
+        }
     };
     getPicker = (ele,rowData,i)=>{
         if(!this.Picker){
@@ -225,10 +243,6 @@ class Grid extends Component{
                             this.onTableChange(value,i);
                             this.changedRowIndex = i;
                             this.changedSelectName = ele;
-                            //this.setState({});
-                            /*this.setState({
-                            ,
-                            })*/
                             }}
                 mode="dropdown">
                 {this.optionList[optionIndex]}
@@ -465,6 +479,17 @@ const styles = StyleSheet.create({
         width:100,
         height:40,
         backgroundColor:'#F5FCFF',
+        borderColor: '#DCD7CD',
+        borderTopWidth: 1,
+        borderRightWidth:1,
+        borderBottomWidth:1,
+        alignItems: 'center',      // 水平局中
+        justifyContent: 'center',  // 垂直居中
+    },
+    darkTitleView:{
+        width:100,
+        height:40,
+        backgroundColor:'#db384c',
         borderColor: '#DCD7CD',
         borderTopWidth: 1,
         borderRightWidth:1,

@@ -236,13 +236,20 @@ class DataView extends Component{
         }
     }
 
-    //保存
-    onSubmit = (list)=>{
+    //todo:保存---存在问题，还需要修改
+    onSubmit = ()=>{
         let {login,table,loginactions} = this.props;
         let tables = login.tables;
         //tables[table.table] = this.List;
         console.log(tables[table.table]);
         loginactions.getOfflineTables(tables);
+        /*this.state.List.forEach((ele,i)=>{
+         if((ele["钻孔编号"]===this.pointInfo["钻孔编号"])||(!ele["钻孔编号"])){
+         //this.leftArray.push(ele["ID"]?ele["ID"]:i);
+         ele['check'] = i;
+         this.Array.push(ele);
+         }
+         });*/
         storage.save({
             key: 'projectid',  // 注意:请不要在key中使用_下划线符号!
             id: this.projectid,
@@ -255,7 +262,7 @@ class DataView extends Component{
     //上传
     onUpload=(data)=>{
         let {loginactions,login,table,project} = this.props;
-        loginactions.updateData(login.server,login.userid,project.project,this.pointInfo["钻孔编号"],this.Array,table.table);
+        loginactions.updateData(login.server,login.userid,project.project,this.pointInfo["钻孔编号"],this.state.List,table.table);
     }
 //navigator = {this.props.navigator}
 
@@ -271,6 +278,7 @@ class DataView extends Component{
         newArray.push(newItem); 
         this.state.List.map((item,index)=>{
             newArray.push(item);
+            item.check = false;
         })
         this.setState({
             List:newArray,
@@ -278,13 +286,15 @@ class DataView extends Component{
     };
     onInsert = ()=>{
         console.log(this.state.List.length,'----->this.state.List.length')
-        let newItem = Object.assign({},this.state.List[this.state.List.length-1]);
-        newItem['ID'] += 1;
-        console.log(newItem,'----->newItem')
         let newArray = [];
-        newArray.push(newItem);
         this.state.List.map((item,index)=>{
-            item.
+            if(item.check) {
+                let newItem = Object.assign({},this.state.List[this.state.List.length-1]);
+                newItem['ID'] += 1;
+                console.log(newItem,'----->newItem')
+                newArray.push(newItem);
+                item.check = false;
+            }
             newArray.push(item);
         })
         this.setState({
@@ -293,13 +303,14 @@ class DataView extends Component{
     };
     onDelete = ()=>{
         console.log(this.state.List.length,'----->this.state.List.length')
-        let newItem = Object.assign({},this.state.List[this.state.List.length-1]);
-        newItem['ID'] += 1;
-        console.log(newItem,'----->newItem')
         let newArray = [];
-        newArray.push(newItem);
         this.state.List.map((item,index)=>{
-            newArray.push(item);
+            if(!item.check){
+                newArray.push(item);
+            }
+            else {
+                item.check = false;
+            }
         })
         this.setState({
             List:newArray,

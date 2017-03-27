@@ -47,7 +47,7 @@ export default class PickerExample extends Component{
     }
 
     onSubmit = ()=>{
-        this.props.navigator.push({name: 'data'});
+        this.props.navigator.pop({name: 'data'});
     }
     render() {
         return (

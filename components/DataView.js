@@ -29,6 +29,7 @@ import * as loginActions from '../actions/login';
 
 import Grid from './DataGrid';
 const window = Dimensions.get('window');
+/*
 var RIGHT_LISTVIEW = 'right_listView';
 var LEFT_LISTVIEW = 'left_listView';
 
@@ -99,9 +100,9 @@ class Grid extends Component{
         //this.state.loaded = true;
     }
 
-    /*let alertMessage = 'Credibly reintermediate next-generation potentialities after goal-oriented ' +
+    /!*let alertMessage = 'Credibly reintermediate next-generation potentialities after goal-oriented ' +
      'catalysts for change. Dynamically revolutionize.';
-     Alert.alert('Alert Title',alertMessage,[{text: 'OK', onPress: () => console.log('OK Pressed!')},]);*/
+     Alert.alert('Alert Title',alertMessage,[{text: 'OK', onPress: () => console.log('OK Pressed!')},]);*!/
     onPressPicker(value){
         let alertMessage = value;
         Alert.alert('Alert Title',alertMessage,[{text: 'OK', onPress: () => console.log('OK Pressed!')},]);
@@ -205,6 +206,7 @@ class Grid extends Component{
         );
     }
 }
+*/
 
 class DataView extends Component{
     constructor(props) {
@@ -399,7 +401,7 @@ class DataView extends Component{
                     login = {this.login}
                     table = {this.table}
                     pointInfo = {this.pointInfo}
-                    data = {this.List}
+                    data = {this.state.List}
                     navigator = {this.props.navigator}/>
                     </ScrollView>
                 </View>

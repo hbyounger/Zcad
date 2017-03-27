@@ -82,13 +82,14 @@ class Grid extends Component{
         this.rightArray = [];
 
         for(let ele in data[0]){
-            //console.log(ele);
+            console.log(ele);
             this.nameArray.push(ele)
         }
         data.forEach((ele,i)=>{
             if((ele["钻孔编号"]===pointInfo["钻孔编号"])||(!ele["钻孔编号"])){
                 //this.leftArray.push(ele["ID"]?ele["ID"]:i);
                 ele['check'] = false;
+                //console.log(ele);
                 this.rightArray.push(ele);
             }
         });
@@ -213,7 +214,7 @@ class Grid extends Component{
         //console.log(rowData[ele],'====================>rowData[ele]');
         //console.log(this.optionIndexList[rowData[ele]],'====================>this.optionIndexList[rowData[ele]]');
 
-        this.Picker[ele][i]=(<View key = {`right${i}`}>
+        this.Picker[ele][i]=(<View style={styles.cellView} key = {`right${i}`}>
             <Picker
                 style={styles.cellView}
                 //prompt = {rowData[ele]}
@@ -242,6 +243,7 @@ class Grid extends Component{
         let {table,login} = this.props;
         //console.log(rowData,'------------------->rowData');
         this.nameArray.forEach((ele,i)=>{
+            //console.log(ele,'------------------->ele');
             if(this.fieldList[ele]){
                 let optioList = [],
                     optionIndex = this.fieldList[ele];
@@ -262,17 +264,17 @@ class Grid extends Component{
                 }
             }
             else {
+
                 if(ele !== 'check'){
                     this.list.push(
-                        <View key = {`right${i}`}>
-                            <TextInput style = {styles.cellView} onChangeText ={(e)=>{rowData[ele]=e;this.onTableChange(e);}}>{rowData[ele]}</TextInput>
+                        <View style = {styles.cellView} key = {`right${i}`}>
+                            <TextInput style={styles.cellView} onChangeText ={(e)=>{rowData[ele]=e;this.onTableChange(e);}}>{rowData[ele]}</TextInput>
                         </View>)
                 }
                 else{
                     this.list.push(
-                        <View key = {`right${i}`}>
+                        <View style = {styles.cellView} key = {`right${i}`}>
                             <CheckBox
-                                style = {styles.cellView}
                                 label=''
                                 checked={rowData[ele]}
                                 onChange={(e) => {

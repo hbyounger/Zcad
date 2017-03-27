@@ -20,56 +20,20 @@ import * as loginActions from '../actions/login';
 import Cell from './Cell';
 
 
-const FieldType = {
-    typeID : 'int',
-    typeName : 'string',
-} 
-
 class WelcomeView extends Component {
     constructor(props){
         super(props);
-        this.projectList = [];
  
         let { loginactions,login } = this.props;
 
         if(!login.offline){//在线状态
             //获得所有的工程名称
             loginactions.getProjectNameByUser(login.server,login.userid,(projects)=>{
-                // projects.forEach((ele)=>{
-                //     let projectid = login.userid+'-'+ele.PRIVILEGENAME;
-                //     //读取工程的数据
-                //     storage.load({
-                //             key: 'projectid',
-                //             id:projectid,
-                //             autoSync: false,//true,
-                //             syncInBackground: false,//true
-                //         })
-                //         .then(ret => {//如果本机已经有工程数据了,什么也不做
-                //             console.log(ele.PRIVILEGENAME + '数据已经存在!');
-                //         })
-                //         .catch(err => {
-                //             console.log(err.message);
-                //             switch (err.name) {
-                //                 case 'NotFoundError'://如果本机没有工程数据了,下载工程并保存到本机
-                //                     loginactions.getAllData(login.server,login.userid,ele.PRIVILEGENAME,(data)=>{
-                //                         storage.save({
-                //                             key: 'projectid',  // 注意:请不要在key中使用_下划线符号!
-                //                             id:projectid,
-                //                             rawData: data,
-                //                             expires: null,//1000 * 3600
-                //                         });
-                //                     });
-                //                     break;
-                //                 default:
-                //                     alert(err.name);
-                //                     break;
-                //             }
-                //         });
-                // });
             });
         }
         else {//离线状态
             if(!login.projects){
+                //读取 项目名称
                 storage.load({
                         key: 'userid',
                         id:login.userid,
@@ -77,7 +41,7 @@ class WelcomeView extends Component {
                         syncInBackground: false,//true
                     })
                     .then(ret => {//获得离线数据
-                        loginactions.getOfflineData(ret);//login.projects
+                        loginactions.getOfflineProjectName(ret);//所有的工程名称
                     })
                     .catch(err => {
                         console.warn(err.message);
@@ -102,6 +66,7 @@ class WelcomeView extends Component {
         
         projectActions.SetProject(projectName);//??
 
+        //得到工程的所有表格
         storage.load({
                 key: 'projectid',
                 id:projectid,
@@ -109,7 +74,7 @@ class WelcomeView extends Component {
                 syncInBackground: false,//true
             })
             .then(ret => {
-                loginactions.getOfflineTables(ret);
+                loginactions.getOfflineTables(ret);//工程的所有表格
                 this.props.navigator.push({name: 'map'});
             })
             .catch(err => {
@@ -119,7 +84,7 @@ class WelcomeView extends Component {
                         alert("onPressMap:" + projectName + " 没有数据!");
                         break;
                     default:
-                        alert('onPressMap:' + err.name);
+                        alert('onPressMap:' + err.name + err.message);
                         break;
                 }
             });
@@ -130,108 +95,22 @@ class WelcomeView extends Component {
         this.props.navigator.pop({name: 'login'});
     };
 
-    // //下载数据
-    // onTest(){
-    //     let { loginactions,login } = this.props;
-    //     loginactions.getUserPrivilege(login.server,login.userid,(projects)=>{
-    //         projects.forEach((ele)=>{
-    //             console.log(login);
-    //             let projectid = login.userid+'-'+ele.PRIVILEGENAME;
-    //             loginactions.getAllData(login.server,login.userid,ele.PRIVILEGENAME,(data)=>{
-    //                 storage.save({
-    //                     key: 'projectid',  // 注意:请不要在key中使用_下划线符号!
-    //                     id: projectid,
-    //                     rawData: data,
-    //                     expires: null,//1000 * 3600
-    //                 });
-
-    //             });
-    //         });
-    //         alert("操作成功");
-    //         //console.log(login.projects)
-    //     });
-    // }
     //下载数据
     onDownLoadData(ele){
         let { loginactions,login } = this.props;
-
-                console.log('onDownLoadData' + ele);
-                let projectid = login.userid+'-'+ele.PRIVILEGENAME;
-                loginactions.getAllData(login.server,login.userid,ele.PRIVILEGENAME,(data)=>{
-                    storage.save({
-                        key: 'projectid',  // 注意:请不要在key中使用_下划线符号!
-                        id: projectid,
-                        rawData: data,
-                        expires: null,//1000 * 3600
-                    });
-
-                });
+        loginactions.getAllData(login.server,login.userid,ele,(data)=>{
+        });
         
-             Alert.alert('成功',"下载数据成功",[{text: '确定', onPress: () => console.log('下载数据成功')},]);
-
-    
+        Alert.alert('成功',"下载数据成功",[{text: '确定', onPress: () => console.log('下载数据成功')},]);
     }
 
 
-    // renderProgressEntry = (entry)=>{
-    //     //styles.style_view_commit
-    //     //listStyles.li
-    //     return (
-    //         <TouchableHighlight
-    //             onPress={this.onPressMap.bind(this,entry)}
-    //             underlayColor="transparent"
-    //             activeOpacity={0.5}>
-    //             <View style={styles.style_view_commit}>
-    //                 <View>
-    //                     <Text style={{color:'#fff'}}>{entry}</Text>
-    //                 </View>
-    //             </View>
-    //         </TouchableHighlight>
-    //     )
-    // }
-
-    // onUpload = ()=>{
-    //     let {loginactions,login} = this.props;
-    //     if(this.projectList){
-    //         this.projectList.forEach((ele,i)=>{
-    //             let projectid = login.userid+'-'+ele.PRIVILEGENAME;
-    //             storage.load({
-    //                     key: 'projectid',
-    //                     id:projectid,
-    //                     autoSync: false,//true,
-    //                     syncInBackground: false,//true
-    //                 })
-    //                 .then(ret => {
-    //                     loginactions.setAllData(login.server,login.userid,ele.PRIVILEGENAME,ret);
-    //                 })
-    //                 .catch(err => {
-    //                     console.warn(err.message);
-    //                     switch (err.name) {
-    //                         case 'NotFoundError':
-    //                             break;
-    //                         case 'ExpiredError':
-    //                             alert('出错了');
-    //                             break;
-    //                         default:
-    //                             break;
-    //                     }
-    //                 });
-
-    //         })
-    //     }
-    // };
-
     render() {
-
         let { loginactions,login } = this.props;
-        let ProjectArray = [];//.bind(this,ele)
+        let ProjectArray = [];
 
-        if(login.projects){
-            this.projectList = login.projects;
-        }
-
-        if(this.projectList && this.projectList.length > 0){
-            this.projectList.forEach((ele,i)=>{
+        if(login.projects && login.projects.length > 0){
+            login.projects.forEach((ele,i)=>{
                
                 ProjectArray.push(
 
@@ -249,36 +128,35 @@ class WelcomeView extends Component {
                     </View>
                 </TouchableHighlight>
 
-{
-    (!login.offline)&&(
-                <TouchableHighlight
-                style={{flex: 2}}
-                    key = {`down${i}`}
-                    onPress={this.onDownLoadData.bind(this,ele.PRIVILEGENAME)}
-                    underlayColor="transparent"
-                    activeOpacity={0.5}>
-                    <View style={{marginTop:15,marginLeft:10,marginRight:10,backgroundColor:'#03B8FF',height:35,borderRadius:5, justifyContent: 'center', alignItems: 'center'}}>
-                        <Text style={{color:'#fff'}} >
-                            {'下载数据'}
-                        </Text>
-                    </View>
-                </TouchableHighlight>
-)
-}
+                {
+                    (!login.offline)&&(
+                                <TouchableHighlight
+                                style={{flex: 2}}
+                                    key = {`down${i}`}
+                                    onPress={this.onDownLoadData.bind(this,ele.PRIVILEGENAME)}
+                                    underlayColor="transparent"
+                                    activeOpacity={0.5}>
+                                    <View style={{marginTop:15,marginLeft:10,marginRight:10,backgroundColor:'#03B8FF',height:35,borderRadius:5, justifyContent: 'center', alignItems: 'center'}}>
+                                        <Text style={{color:'#fff'}} >
+                                            {'下载数据'}
+                                        </Text>
+                                    </View>
+                                </TouchableHighlight>
+                    )
+                }
 
                 </View>
                 )
             })
         }
 
-        console.log(!login.offline);
         return (
             <ScrollView >
                 <Text style={styles.welcome} >
                     选择项目
                 </Text>
-                {ProjectArray}
 
+                {ProjectArray}
 
                 <TouchableHighlight
                     style={[styles.style_view_exit,{top : 0 ,left : 0}]}

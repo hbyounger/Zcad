@@ -29,8 +29,183 @@ import * as loginActions from '../actions/login';
 
 import Grid from './DataGrid';
 const window = Dimensions.get('window');
+var RIGHT_LISTVIEW = 'right_listView';
+var LEFT_LISTVIEW = 'left_listView';
 
-//<SvgExample/><Example/><Game2048/><Text style={styles.instructions} onPress={this.onPressWelcome}>Default view</Text>
+var array = [];
+var titleArray = [];
+var rightArray = [];
+
+class Grid extends Component{
+    constructor(props){
+        super(props);
+        let ds = new ListView.DataSource({rowHasChanged: (r1, r2) => r1 !== r2});
+        let ds1 = new ListView.DataSource({rowHasChanged: (r1, r2) => r1 !== r2});
+        let offsetval = {x : 0, y: 0};
+        let {login,table,pointInfo,data} = this.props;
+        console.log("pointInfo : " + pointInfo);
+        console.log("data : " + data);
+
+        //要显示什么字段
+        this.nameArray = [];
+
+        let tables = login.tables;
+        let List = tables["表_字段"];//表名
+        List.forEach(ele=>{
+            if(ele["表名"]===table.table){
+                this.nameArray.push(ele["字段名"]);}
+        })
+
+ 
+        this.leftArray = [];
+        this.rightArray = [];
+        // for(let ele in data[0]){
+        //     console.log(ele);
+        //     this.nameArray.push(ele)
+        // }
+        data.forEach((ele,i)=>{
+            if((ele["钻孔编号"]===pointInfo["钻孔编号"])||(!ele["钻孔编号"])){
+                this.leftArray.push(ele["ID"]?ele["ID"]:i);
+                this.rightArray.push(ele);
+            }
+        });
+        this.props.callback(this.rightArray);
+        this.nameList=[];
+        this.nameArray.forEach((ele,i)=>{
+            this.nameList.push(
+                <View key = {`title${i}`} style = {styles.titleView}>
+                    <Text>{ele}</Text>
+                </View>
+            )
+        });
+        this.state ={
+            leftDataSource: ds.cloneWithRows(this.leftArray),
+            rightdataSource: ds1.cloneWithRows(this.rightArray),
+            leftListOffset: {x : 0, y: 0},
+            loaded: false,
+
+            selected1: 'key1',
+            selected2: 'key1',
+            selected3: 'key1',
+            color: 'red',
+            mode: Picker.MODE_DIALOG,
+        };
+    }
+
+    componentDidMount(){
+        this.setState({
+            loaded : true
+        });
+        //this.state.loaded = true;
+    }
+
+    /*let alertMessage = 'Credibly reintermediate next-generation potentialities after goal-oriented ' +
+     'catalysts for change. Dynamically revolutionize.';
+     Alert.alert('Alert Title',alertMessage,[{text: 'OK', onPress: () => console.log('OK Pressed!')},]);*/
+    onPressPicker(value){
+        let alertMessage = value;
+        Alert.alert('Alert Title',alertMessage,[{text: 'OK', onPress: () => console.log('OK Pressed!')},]);
+        this.props.navigator.push({name: 'picker'});
+    }
+ 
+    onValChange = (key: string, value: string)=>{
+        const newState = {};
+        newState[key] = value;
+        this.setState(newState);
+        //Alert.alert('Alert Title',key+','+value,[{text: 'OK', onPress: () => console.log('OK Pressed!')}]);
+    }
+    onTableChange = (e)=>{
+        this.props.callback(this.rightArray);
+    };
+    onScroll = ()=>{
+        //console.log("onScroll");
+        //console.log(this.state.loaded);
+        if (this.state.loaded) {//this.state.loaded
+            var rightList = this.refs[RIGHT_LISTVIEW];
+            //console.log(rightList)
+            var y1 = rightList.scrollProperties.offset;
+            //console.log(y1)
+            this.setState({
+                leftListOffset :{x: 0 , y: y1}
+            });
+        }
+    }
+
+    _leftRenderRow = (rowData: string, sectionID: number, rowID: number)=>{
+        return (
+            <View style={styles.leftListRow}>
+                <Text >
+                    {rowData}
+                </Text>
+            </View>
+        );
+    }
+
+    _rightRenderRow = (rowData: object, sectionID: number, rowID: number)=>{
+        //() => Alert.alert('Alert Title',alertMessage,[{text: 'OK', onPress: () => console.log('OK Pressed!')},])  <TextInput>{rowData.name}</TextInput>
+        let list=[];
+        this.nameArray.forEach((ele,i)=>{
+            list.push(
+                <View key = {`right${i}`}>
+                    <TextInput style = {styles.cellView} onChangeText ={(e)=>{rowData[ele]=e;this.onTableChange(e);}}>{rowData[ele]}</TextInput>
+                </View>)
+        });
+
+        return (
+            <View style = {styles.rightListRow}>
+                {list}
+            </View>
+        );
+    }
+
+    render() {
+
+        return (
+            <ScrollView horizontal = {true} style = {styles.container}>
+                <View style = {styles.left}>
+                    <View style = {styles.mingcheng}>
+                        <Text>ID</Text>
+                    </View>
+
+                    <ListView
+                        ref = {LEFT_LISTVIEW}
+                        style = {styles.leftListView}
+                        contentOffset = {this.state.leftListOffset}
+                        showsHorizontalScrollIndicator = {false}
+                        showsVerticalScrollIndicator = {false}
+                        scrollEnabled = {false}
+                        bounces={false}
+                        // scrollEventThrottle={500}
+                        dataSource = {this.state.leftDataSource}
+                        renderRow = {this._leftRenderRow}
+                    />
+
+                </View>
+                <View style = {styles.right}>
+                    <ScrollView
+                        style = {styles.scrollView}
+                        horizontal = {true}
+                    >
+                        <View style = {styles.contentView}>
+                            <View style = {{width: 1000 , height: 40, flexDirection:'row'}}>
+                                {this.nameList}
+                            </View>
+                            <ListView
+                                ref = {RIGHT_LISTVIEW}
+                                //scrollEventThrottle={500}
+                                style = {styles.rightListView}
+                                dataSource = {this.state.rightdataSource}
+                                //onScroll={this.onScroll}
+                                renderRow = {this._rightRenderRow}
+                            />
+                        </View>
+                    </ScrollView>
+                </View>
+            </ScrollView>
+        );
+    }
+}
+
 class DataView extends Component{
     constructor(props) {
         super(props);
@@ -41,6 +216,8 @@ class DataView extends Component{
         this.Array=[];
         this.pointInfo = cell.pointData;
         this.projectid = login.userid+'-'+project.project;
+        this.login = login;
+        this.table = table;
         //console.log(table.table);
         //console.log(this.List);
         //console.log(cell.pointData);
@@ -73,6 +250,7 @@ class DataView extends Component{
         //this.props.navigator.push({name: 'tablelist'});
     };
 
+    //上传
     onUpload=(data)=>{
         let {loginactions,login,table,project} = this.props;
         loginactions.updateData(login.server,login.userid,project.project,this.pointInfo["钻孔编号"],this.Array,table.table);
@@ -218,9 +396,11 @@ class DataView extends Component{
                     List:list,
                     })
                     }}
-                            pointInfo = {this.pointInfo}
-                            data = {this.state.List}
-                            navigator = {this.props.navigator}/>
+                    login = {this.login}
+                    table = {this.table}
+                    pointInfo = {this.pointInfo}
+                    data = {this.List}
+                    navigator = {this.props.navigator}/>
                     </ScrollView>
                 </View>
             </View>

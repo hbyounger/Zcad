@@ -13,6 +13,7 @@ import { bindActionCreators } from 'redux';
 import * as actions from '../actions/cell';
 import PointData from './PointData'
 
+//钻孔
 class Cell extends Component{
     cellStyle(isWorking) {
         switch (1) {

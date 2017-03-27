@@ -64,7 +64,7 @@ export const userLogin = (server,username,userWord,callback) => {
                         payload:{
                             userid: json.userid,
                             offline : false,
-                            server:server,
+                            server:server
                         }
                     });
                     callback(json.userid);
@@ -78,7 +78,7 @@ export const userLogin = (server,username,userWord,callback) => {
                         type:'PLATFORM_DATA_USER_LOGIN_FAILURE',
                         payload:json
                     });
-                    alert('登录失败，请重试～' + json);
+                    alert('登录失败，请重试～' + json.code);
                 }
             })
             .catch((error) => {
@@ -107,7 +107,7 @@ export const getProjectNameByUser = (server,userid,callback) => {
     formData.append("userid",userid);
     formData.append("option","getProjectNameByUser");
     return (dispatch) => {
-        // 登陆中，做禁用登陆 Button 等操作
+        //从服务器得到项目名称
         fetch('http://'+server+'/ajaxService/admin.ashx', {
             method: 'POST',
             headers: {},
@@ -118,44 +118,17 @@ export const getProjectNameByUser = (server,userid,callback) => {
             })
             .then((json) => {
                 if (json) {
-                    storage.load({
-                            key: 'userid',
-                            id:userid,
-                            autoSync: false,//true, autoSync(默认为true)意味着在没有找到数据或数据过期时自动调用相应的sync方法
-                            syncInBackground: false,//true
-                        })
-                        .then(ret => {
-                            //比较工程队列是否需要更新
-                            if(ret.length!=json.length){
-                                storage.save({
+                    //得到了项目名称,保存起来
+                    storage.save({
                                     key: 'userid',  // 注意:请不要在key中使用_下划线符号!
                                     id:userid,
                                     rawData: json,
                                     expires: null,//1000 * 3600
                                 });
-                            }
-                            //this.setState({ user: ret });
-                        })
-                        .catch(err => {
-                            console.log(err.message);
-                            switch (err.name) {
-                                case 'NotFoundError':
-                                    storage.save({
-                                        key: 'userid',  // 注意:请不要在key中使用_下划线符号!
-                                        id:userid,
-                                        rawData: json,
-                                        expires: null,//1000 * 3600
-                                    });
-                                    break;
-                                case 'ExpiredError':
-                                    // TODO
-                                    alert('出错了');
-                                    break;
-                            }
-                        });
+                    //设置 projects = 项目名称;
                      dispatch({
                         type:'PLATFORM_DATA_USER_LOGIN_PRJS',
-                         projects:json
+                        projects:json
                      });
                     callback(json);
                 }
@@ -169,12 +142,12 @@ export const getProjectNameByUser = (server,userid,callback) => {
     }
 };
 
-//获得离线数据
-export const getOfflineData = (data)=>{
+//获得离线 工程名称
+export const getOfflineProjectName = (data)=>{
     return(dispatch)=>{
         dispatch({
             type:'PLATFORM_DATA_USER_LOGIN_PRJS',
-            projects:data
+            projects:data       //离线 工程名称
         });
     }
 };
@@ -197,7 +170,7 @@ export const getAllData = (server,userid,projectName,callback) => {
     formData.append("projectName",projectName);
     formData.append("option","getAllData");
     return (dispatch) => {
-        // 登陆中，做禁用登陆 Button 等操作
+        //
         console.log('http://'+server+'/ajaxService/admin.ashx');
         fetch('http://'+server+'/ajaxService/admin.ashx', {
             method: 'POST',
@@ -207,12 +180,21 @@ export const getAllData = (server,userid,projectName,callback) => {
             .then(toJSON)
             .then((json) => {
                 if (json) {
+                    //保存起来
+                    let projectid = userid+'-'+projectName;
+                    console.log('下载数据 ' + projectid);
+                    storage.save({
+                        key: 'projectid',  // 注意:请不要在key中使用_下划线符号!
+                        id: projectid,
+                        rawData: json,
+                        expires: null,//1000 * 3600
+                    });
+
                     dispatch({
                         type:'PLATFORM_DATA_USER_LOGIN_TABLES',
                         payload:json
                     });
                     callback(json);
-                    //console.log(json)
                 }
                 else {
                     console.log(json)

@@ -228,7 +228,9 @@ class DataView extends Component{
             if((ele["钻孔编号"]===this.pointInfo["钻孔编号"])||(!ele["钻孔编号"])){
                 //this.leftArray.push(ele["ID"]?ele["ID"]:i);
                 ele['check'] = i;
-                this.Array.push(ele);
+                this.Array.push(Object.assign({},ele));
+                console.log(ele);
+                ele = null;
             }
         });
         this.state ={

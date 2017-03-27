@@ -2,7 +2,7 @@
  * Created by wxk on 2016/5/25.
  */
 //import fetchURL from 'fetch';
-import env from '../../helpers/env';
+//import env from '../../helpers/env';
 import { toJSON, genAction, genFetchOptions } from '../../helpers/util';
 
 export function modalclose(){

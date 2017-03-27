@@ -15,6 +15,7 @@ import {
     Alert,
     Picker
 } from 'react-native';
+import CheckBox from 'react-native-checkbox';
 //const Item = Picker.Item;
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
@@ -52,12 +53,11 @@ class Grid extends Component{
             })//字段ID
         }
         //console.log(fieldNameMap,'------------------->fieldNameMap');//选择值//表_字段
-
+        this.optionList = {};
+        this.optionIndexList = {};
+        this.optionValueList = {};
+        this.fieldList = {};
         if(login.tables['选择值']){
-            this.optionList = {};
-            this.optionIndexList = {};
-            this.optionValueList = {};
-            this.fieldList = {};
             login.tables['选择值'].forEach((item,index)=>{
                 let field = item['字段ID'],
                     value = item['值'];
@@ -88,10 +88,10 @@ class Grid extends Component{
         data.forEach((ele,i)=>{
             if((ele["钻孔编号"]===pointInfo["钻孔编号"])||(!ele["钻孔编号"])){
                 //this.leftArray.push(ele["ID"]?ele["ID"]:i);
+                ele['check'] = false;
                 this.rightArray.push(ele);
             }
         });
-        this.props.callback(this.rightArray);
         this.nameList=[];
         this.nameArray.forEach((ele,i)=>{
             this.rowNum = i;
@@ -116,9 +116,10 @@ class Grid extends Component{
     }
 
     componentDidMount(){
-        this.setState({
-            loaded : true
-        });
+        /*this.setState({
+         loaded : true
+         });*/
+        this.state.loaded = true;
         //this.state.loaded = true;
     }
     onPressWelcome(){
@@ -171,8 +172,8 @@ class Grid extends Component{
      }*/
     componentWillUpdate(nextProps : object, nextState: object){
         console.log(nextState.rightdataSource,'------------------->nextState.rightdataSource');
-        let {pointInfo,data} = this.props;
-        if(nextProps.data!==data){
+        //let {pointInfo,data} = this.props;
+        /*if(nextProps.data!==data){
             this.rightArray = [];
             console.log(nextProps.data!==data,'nextProps.data!==data')
             nextProps.data.forEach((ele,i)=>{
@@ -180,21 +181,22 @@ class Grid extends Component{
                     //this.leftArray.push(ele["ID"]?ele["ID"]:i);
                     this.rightArray.push(ele);
                 }
-                this.setState({
-                    rightdataSource: this.ds.cloneWithRows(this.rightArray),
-                })
             });
+            this.setState({
+                rightdataSource: this.ds.cloneWithRows(this.rightArray),
+            })
         }
-        else {
+        else {*/
             if(this.changedRowIndex!=-1){
                 console.log(this.changedRowIndex,'------------------->this.changedRowIndex');
                 //this.getPicker(this.changedSelectName,this.rightArray[this.changedRowIndex],this.changedRowIndex);
-                this.setState({
-                    rightdataSource: this.ds.cloneWithRows(this.rightArray),
-                })
+                /*this.setState({
+
+                })*/
+                this.state.rightdataSource = this.ds.cloneWithRows(this.rightArray);
                 //this.forceUpdate();
             }
-        }
+        //}
     };
     getPicker = (ele,rowData,i)=>{
         if(!this.Picker){
@@ -219,7 +221,7 @@ class Grid extends Component{
                 onValueChange={(e)=>{
                             let value = this.optionValueList[e];
                             rowData[ele]=value;
-                            this.onTableChange(value);
+                            this.onTableChange(value,i);
                             this.changedRowIndex = i;
                             this.changedSelectName = ele;
                             //this.setState({});
@@ -260,10 +262,28 @@ class Grid extends Component{
                 }
             }
             else {
-                this.list.push(
-                    <View key = {`right${i}`}>
-                        <TextInput style = {styles.cellView} onChangeText ={(e)=>{rowData[ele]=e;this.onTableChange(e);}}>{rowData[ele]}</TextInput>
-                    </View>)
+                if(ele !== 'check'){
+                    this.list.push(
+                        <View key = {`right${i}`}>
+                            <TextInput style = {styles.cellView} onChangeText ={(e)=>{rowData[ele]=e;this.onTableChange(e);}}>{rowData[ele]}</TextInput>
+                        </View>)
+                }
+                else{
+                    this.list.push(
+                        <View key = {`right${i}`}>
+                            <CheckBox
+                                style = {styles.cellView}
+                                label=''
+                                checked={rowData[ele]}
+                                onChange={(e) => {
+                    console.log('I am checked', e)
+                    rowData[ele]=!e;
+                    this.changedRowIndex = i;
+                    this.onTableChange(e);
+                    }}
+                            />
+                        </View>)
+                }
             }
         });
         return this.list;

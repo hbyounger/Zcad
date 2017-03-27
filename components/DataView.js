@@ -17,6 +17,8 @@ import {
     Alert,
     Picker
 } from 'react-native';
+import CheckBox from 'react-native-checkbox';
+
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 import * as actions from '../redux/table';
@@ -35,7 +37,7 @@ class DataView extends Component{
         let {cell,login,table,project} = this.props;
         let tables = login.tables;
         this.List = tables[table.table];
-        //console.log(tables[table.table]);
+        console.log(tables[table.table]);
         this.Array=[];
         this.pointInfo = cell.pointData;
         this.projectid = login.userid+'-'+project.project;
@@ -46,6 +48,7 @@ class DataView extends Component{
         tables[table.table].forEach((ele,i)=>{
             if((ele["钻孔编号"]===this.pointInfo["钻孔编号"])||(!ele["钻孔编号"])){
                 //this.leftArray.push(ele["ID"]?ele["ID"]:i);
+                ele['check'] = i;
                 this.Array.push(ele);
             }
         });
@@ -85,7 +88,7 @@ class DataView extends Component{
         newItem['ID'] += 1;
         console.log(newItem,'----->newItem')
         let newArray = [];
-        newArray.push(newItem);
+        newArray.push(newItem); 
         this.state.List.map((item,index)=>{
             newArray.push(item);
         })
@@ -94,10 +97,33 @@ class DataView extends Component{
         })
     };
     onInsert = ()=>{
-
+        console.log(this.state.List.length,'----->this.state.List.length')
+        let newItem = Object.assign({},this.state.List[this.state.List.length-1]);
+        newItem['ID'] += 1;
+        console.log(newItem,'----->newItem')
+        let newArray = [];
+        newArray.push(newItem);
+        this.state.List.map((item,index)=>{
+            item.
+            newArray.push(item);
+        })
+        this.setState({
+            List:newArray,
+        })
     };
     onDelete = ()=>{
-
+        console.log(this.state.List.length,'----->this.state.List.length')
+        let newItem = Object.assign({},this.state.List[this.state.List.length-1]);
+        newItem['ID'] += 1;
+        console.log(newItem,'----->newItem')
+        let newArray = [];
+        newArray.push(newItem);
+        this.state.List.map((item,index)=>{
+            newArray.push(item);
+        })
+        this.setState({
+            List:newArray,
+        })
     };
     render(){
         let {login,table} = this.props;

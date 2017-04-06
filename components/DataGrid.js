@@ -82,17 +82,24 @@ class Grid extends Component{
         this.rightArray = [];
 
         for(let ele in data[0]){
-            console.log(ele);
+            //console.log(ele);
             this.nameArray.push(ele)
         }
         data.forEach((ele,i)=>{
             if((ele["钻孔编号"]===pointInfo["钻孔编号"])||(!ele["钻孔编号"])){
                 //this.leftArray.push(ele["ID"]?ele["ID"]:i);
                 ele['check'] = false;
-                //console.log(ele);
+                console.log(ele);
                 this.rightArray.push(ele);
             }
         });
+        /*<TouchableHighlight
+         key={`title${i}`}
+         onPress={this.onPressPicker}
+         underlayColor="transparent"
+         activeOpacity={0.5}>
+
+         </TouchableHighlight>*/
         this.nameList=[];
         this.nameArray.forEach((ele,i)=>{
             this.rowNum = i;
@@ -101,21 +108,15 @@ class Grid extends Component{
                     optionIndex = this.fieldList[ele];
                 if(this.optionList[optionIndex]){
                     this.nameList.push(//style={[styles.style_view_exit,{top : 0 ,left : 0}]}
-                        <TouchableHighlight
-                            key={`title${i}`}
-                            onPress={this.onPressPicker}
-                            underlayColor="transparent"
-                            activeOpacity={0.5}>
-                            <View  style={styles.darkTitleView}>
-                                <Text>{ele}</Text>
-                            </View>
-                        </TouchableHighlight>
+                        <View  key={`title${i}`} style={styles.darkTitleView}>
+                            <Text>{ele}</Text>
+                        </View>
                     )
                 }
                 else {
                     this.nameList.push(
                         <View key={`title${i}`} style={styles.titleView}>
-                            <Text>{ele}</Text>
+                            <Text>{ele!=='check'?ele:''}</Text>
                         </View>
                     )
                 }
@@ -123,11 +124,12 @@ class Grid extends Component{
             else {
                 this.nameList.push(
                     <View key={`title${i}`} style={styles.titleView}>
-                        <Text>{ele}</Text>
+                        <Text>{ele!=='check'?ele:''}</Text>
                     </View>
                 )
             }
         });
+        //this.nameList.reverse();
         this.state ={
             //leftDataSource: ds.cloneWithRows(this.leftArray),
             rightdataSource: ds1.cloneWithRows(this.rightArray),
@@ -292,7 +294,7 @@ class Grid extends Component{
                                 label=''
                                 checked={rowData[ele]}
                                 onChange={(e) => {
-                    console.log('I am checked', e)
+                    //console.log('I am checked', e)
                     rowData[ele]=!e;
                     this.changedRowIndex = i;
                     this.onTableChange(e);

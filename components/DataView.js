@@ -224,27 +224,40 @@ class DataView extends Component{
         //console.log(this.List);
         //console.log(cell.pointData);
         //cell.pointData
+        this.indexList = [];
         tables[table.table].forEach((ele,i)=>{
-            if((ele["钻孔编号"]===this.pointInfo["钻孔编号"])||(!ele["钻孔编号"])){
+            if(ele&&((ele["钻孔编号"]===this.pointInfo["钻孔编号"])||(!ele["钻孔编号"]))){
                 //this.leftArray.push(ele["ID"]?ele["ID"]:i);
                 ele['check'] = i;
-                this.Array.push(Object.assign({},ele));
+                ele = this.objKeySort(ele);
+                this.Array.push(ele);
                 console.log(ele);
-                ele = null;
+                this.indexList.push(i);
+                //tables[table.table][i] = ele;
+                //delete();// = null;
             }
         });
+
+
         this.state ={
             List:this.Array,
         }
     }
-
+    objKeySort = (obj)=> {//排序的函数
+        var newkey = Object.keys(obj).reverse();
+        //先用Object内置类的keys方法获取要排序对象的属性名，再利用Array原型上的sort方法对获取的属性名进行排序，newkey是一个数组
+        var newObj = {};//创建一个新的对象，用于存放排好序的键值对
+        newkey.map((item,index)=>{
+            newObj[item] = obj[item];//向新创建的对象中按照排好的顺序依次增加键值对
+        })
+        return newObj;//返回排好序的新对象
+    }
     //todo:保存---存在问题，还需要修改
     onSubmit = ()=>{
         let {login,table,loginactions} = this.props;
         let tables = login.tables;
         //tables[table.table] = this.List;
         console.log(tables[table.table]);
-        loginactions.getOfflineTables(tables);
         /*this.state.List.forEach((ele,i)=>{
          if((ele["钻孔编号"]===this.pointInfo["钻孔编号"])||(!ele["钻孔编号"])){
          //this.leftArray.push(ele["ID"]?ele["ID"]:i);
@@ -252,13 +265,21 @@ class DataView extends Component{
          this.Array.push(ele);
          }
          });*/
+        for(let i = this.indexList.length;i>0;i--){
+            tables[table.table].splice(this.indexList[i-1],1)
+        }
+        this.state.List.forEach((item,index)=>{
+            delete (item['check']);
+            tables[table.table].push(this.objKeySort(item));
+        })
+        loginactions.getOfflineTables(tables);
         storage.save({
             key: 'projectid',  // 注意:请不要在key中使用_下划线符号!
             id: this.projectid,
             rawData: tables,
             expires: null,//1000 * 3600
         });
-        //this.props.navigator.push({name: 'tablelist'});
+        this.props.navigator.push({name: 'tablelist'});
     };
 
     //上传
@@ -268,9 +289,17 @@ class DataView extends Component{
     }
 //navigator = {this.props.navigator}
 
-    onBack=()=>{
+    /*onBack=()=>{
+        let {login,table,loginactions} = this.props;
+        let tables = login.tables;
+        console.log(tables[table.table]);
+        loginactions.getOfflineTables(tables);
+        this.state.List.forEach((item,index)=>{
+            delete (item['check']);
+            tables[table.table].push(this.objKeySort(item));
+        })
         this.props.navigator.pop({name: 'tablelist'});
-    };
+    };*/
     onAdd = ()=>{
         console.log(this.state.List.length,'----->this.state.List.length')
         let newItem = Object.assign({},this.state.List[this.state.List.length-1]);
@@ -333,23 +362,12 @@ class DataView extends Component{
                 <View style={{flex: 1, flexDirection: 'row'}}>
                     <TouchableHighlight
                         style={[styles.style_view_commit,{flex: 1,top : 0 ,left : 0}]}
-                        onPress={this.onBack}
-                        underlayColor="transparent"
-                        activeOpacity={0.5}>
-                        <View >
-                            <Text style={{color:'#fff'}} >
-                                {'返回'}
-                            </Text>
-                        </View>
-                    </TouchableHighlight>
-                    <TouchableHighlight
-                        style={[styles.style_view_commit,{flex: 1,top : 0 ,left : 0}]}
                         onPress={this.onSubmit}
                         underlayColor="transparent"
                         activeOpacity={0.5}>
                         <View >
                             <Text style={{color:'#fff'}} >
-                                {'保存'}
+                                {'保存并返回'}
                             </Text>
                         </View>
                     </TouchableHighlight>

@@ -350,6 +350,7 @@ class DataView extends Component{
     render(){
         let {login,table} = this.props;
         let tables = login.tables;
+        console.log(login.tables['表_字段'],'------------------->login.tables[表_字段]');//选择值//表_字段
 
         return (
             <View >
@@ -366,7 +367,7 @@ class DataView extends Component{
                         underlayColor="transparent"
                         activeOpacity={0.5}>
                         <View >
-                            <Text style={{color:'#fff'}} >
+                                <Text style={{color:'#fff'}} >
                                 {'保存并返回'}
                             </Text>
                         </View>

@@ -37,7 +37,6 @@ class Grid extends Component{
         let {pointInfo,data,table,login} = this.props;
         //console.log("pointInfo : " + pointInfo);
         //console.log("data : " + data);
-        //console.log(login.tables['表_字段'],'------------------->login.tables[表_字段]');//选择值//表_字段
         let fields = [],
             fieldNameMap = {};
         if(login.tables['表_字段']){
@@ -108,7 +107,7 @@ class Grid extends Component{
                     optionIndex = this.fieldList[ele];
                 if(this.optionList[optionIndex]){
                     this.nameList.push(//style={[styles.style_view_exit,{top : 0 ,left : 0}]}
-                        <View  key={`title${i}`} style={styles.darkTitleView}>
+                        <View  key={`title${i}`} style={styles.titleView}>
                             <Text>{ele}</Text>
                         </View>
                     )

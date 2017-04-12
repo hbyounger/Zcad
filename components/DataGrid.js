@@ -66,7 +66,7 @@ class Grid extends Component{
                 if(-1!==fields.indexOf(field)){
                     if(!this.optionList[field]){
                         this.optionList[field]=[];
-                        this.optionList[field].push(<Item key = {-1} label={''} value={`${-1}`} />);
+                        //this.optionList[field].push(<Item key = {-1} label={''} value={`${-1}`} />);
                     }
                     this.optionList[field].push(<Item key = {index} label={value} value={`${index}`} />);
                     //this.optionValueArrayList[field].push(value);
@@ -121,11 +121,20 @@ class Grid extends Component{
                 }
             }
             else {
-                this.nameList.push(
-                    <View key={`title${i}`} style={styles.titleView}>
-                        <Text>{ele!=='check'?ele:''}</Text>
-                    </View>
-                )
+                if(ele !== 'check'){
+                    /*this.nameList.push(
+                        <View key={`title${i}`} style={styles.titleView}>
+                            <Text>{ele!=='check'?ele:''}</Text>
+                        </View>
+                    )*/
+                }
+                else{
+                    this.nameList.push(
+                        <View key={`title${i}`} style={styles.titleView}>
+                            <Text>{''}</Text>
+                        </View>
+                    )
+                }
             }
         });
         //this.nameList.reverse();
@@ -142,7 +151,58 @@ class Grid extends Component{
         };
         this.changedRowIndex = -1;
     }
+    getList = (rowData)=>{
+        this.list=[];
+        let {table,login} = this.props;
+        //console.log(rowData,'------------------->rowData');
+        this.nameArray.forEach((ele,i)=>{
+            //console.log(ele,'------------------->ele');
+            if(this.fieldList[ele]){
+                let optioList = [],
+                    optionIndex = this.fieldList[ele];
+                if(this.optionList[optionIndex]){
+                    //
+                    //console.log(this.optionIndexList,'------------------->this.optionIndexList');
+                    //console.log(this.optionIndexList[rowData[ele]],'------------------->this.optionIndexList[rowData[ele]]');
+                    this.list.push(this.getPicker(ele,rowData,i));
+                    /*()=>{
+                     console.log(this.optionIndexList[rowData[ele]],'------------------->this.optionIndexList[rowData[ele]]');
+                     return this.optionIndexList[rowData[ele]]}*/
+                }
+                else {
+                    this.list.push(
+                        <View key = {`right${i}`}>
+                            <TextInput style = {styles.cellView} onChangeText ={(e)=>{rowData[ele]=e;this.onTableChange(e);}}>{rowData[ele]}</TextInput>
+                        </View>)
+                }
+            }
+            else {
 
+                if(ele !== 'check'){
+                    /*this.list.push(
+                        <View style = {styles.cellView} key = {`right${i}`}>
+                            <TextInput style={styles.cellView} onChangeText ={(e)=>{rowData[ele]=e;this.onTableChange(e);}}>{rowData[ele]}</TextInput>
+                        </View>)*/
+                }
+                else{
+                    this.list.push(
+                        <View style = {styles.cellView} key = {`right${i}`}>
+                            <CheckBox
+                                label=''
+                                checked={rowData[ele]}
+                                onChange={(e) => {
+                    //console.log('I am checked', e)
+                    rowData[ele]=!e;
+                    this.changedRowIndex = i;
+                    this.onTableChange(e);
+                    }}
+                            />
+                        </View>)
+                }
+            }
+        });
+        return this.list;
+    }
     componentDidMount(){
         /*this.setState({
          loaded : true
@@ -253,58 +313,7 @@ class Grid extends Component{
         this.changedRowIndex = -1
         return this.Picker[ele][i];
     }
-    getList = (rowData)=>{
-        this.list=[];
-        let {table,login} = this.props;
-        //console.log(rowData,'------------------->rowData');
-        this.nameArray.forEach((ele,i)=>{
-            //console.log(ele,'------------------->ele');
-            if(this.fieldList[ele]){
-                let optioList = [],
-                    optionIndex = this.fieldList[ele];
-                if(this.optionList[optionIndex]){
-                    //
-                    //console.log(this.optionIndexList,'------------------->this.optionIndexList');
-                    //console.log(this.optionIndexList[rowData[ele]],'------------------->this.optionIndexList[rowData[ele]]');
-                    this.list.push(this.getPicker(ele,rowData,i));
-                    /*()=>{
-                     console.log(this.optionIndexList[rowData[ele]],'------------------->this.optionIndexList[rowData[ele]]');
-                     return this.optionIndexList[rowData[ele]]}*/
-                }
-                else {
-                    this.list.push(
-                        <View key = {`right${i}`}>
-                            <TextInput style = {styles.cellView} onChangeText ={(e)=>{rowData[ele]=e;this.onTableChange(e);}}>{rowData[ele]}</TextInput>
-                        </View>)
-                }
-            }
-            else {
 
-                if(ele !== 'check'){
-                    this.list.push(
-                        <View style = {styles.cellView} key = {`right${i}`}>
-                            <TextInput style={styles.cellView} onChangeText ={(e)=>{rowData[ele]=e;this.onTableChange(e);}}>{rowData[ele]}</TextInput>
-                        </View>)
-                }
-                else{
-                    this.list.push(
-                        <View style = {styles.cellView} key = {`right${i}`}>
-                            <CheckBox
-                                label=''
-                                checked={rowData[ele]}
-                                onChange={(e) => {
-                    //console.log('I am checked', e)
-                    rowData[ele]=!e;
-                    this.changedRowIndex = i;
-                    this.onTableChange(e);
-                    }}
-                            />
-                        </View>)
-                }
-            }
-        });
-        return this.list;
-    }
     _rightRenderRow = (rowData: object, sectionID: number, rowID: number)=>{
         //() => Alert.alert('Alert Title',alertMessage,[{text: 'OK', onPress: () => console.log('OK Pressed!')},])  <TextInput>{rowData.name}</TextInput>
         return (

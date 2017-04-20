@@ -13,7 +13,7 @@ import {
 } from 'react-native';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
-import * as actions from '../redux/project';
+import * as actions from '../actions/project/project';
 import Cell from './Cell'
 
 class MapView extends Component {

@@ -38,6 +38,8 @@ import TableListView from './components/TableListView'
 import Callback from './components/Callback';
 import Promise from './components/Promise';
 import Storage from 'react-native-storage';
+//import configureStore from './configureStore'
+
 
 var storage = new Storage({
     size: 10000,//1000,

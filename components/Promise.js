@@ -37,7 +37,7 @@ var database_displayname = "SQLite Test Database";
 var database_size = 200000;
 var db;
 
-import * as projectActions from '../redux/project';
+import * as projectActions from '../actions/project/project';
 
 class SQLiteDemo extends Component{
     constructor(props){

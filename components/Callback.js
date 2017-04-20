@@ -25,7 +25,7 @@ import { Provider } from 'react-redux'
 import { connect } from 'react-redux'
 import { bindActionCreators } from 'redux'
 
-import * as projectActions from '../redux/project';
+import * as projectActions from '../actions/project/project';
 
 
 

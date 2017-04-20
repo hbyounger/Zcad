@@ -19,7 +19,7 @@ import CheckBox from 'react-native-checkbox';
 //const Item = Picker.Item;
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
-import * as actions from '../redux/table';
+import * as actions from '../actions/table/table';
 //import Cell from './Cell'//SvgExample
 //import SvgExample from './main'
 //import Example from './Map'
@@ -122,11 +122,11 @@ class Grid extends Component{
             }
             else {
                 if(ele !== 'check'){
-                    /*this.nameList.push(
+                    this.nameList.push(
                         <View key={`title${i}`} style={styles.titleView}>
                             <Text>{ele!=='check'?ele:''}</Text>
                         </View>
-                    )*/
+                    )
                 }
                 else{
                     this.nameList.push(
@@ -179,10 +179,10 @@ class Grid extends Component{
             else {
 
                 if(ele !== 'check'){
-                    /*this.list.push(
+                    this.list.push(
                         <View style = {styles.cellView} key = {`right${i}`}>
                             <TextInput style={styles.cellView} onChangeText ={(e)=>{rowData[ele]=e;this.onTableChange(e);}}>{rowData[ele]}</TextInput>
-                        </View>)*/
+                        </View>)
                 }
                 else{
                     this.list.push(

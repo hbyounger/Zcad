@@ -1,6 +1,6 @@
 import { compose, createStore, applyMiddleware } from 'redux'
 import thunk from 'redux-thunk'
-import rootReducer from '../reducers'
+import rootReducer from '../actions'
 
 let devtool ;
 if (process.env.NODE_ENV === 'development') {

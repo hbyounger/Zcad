@@ -15,7 +15,7 @@ import {
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 //import * as actions from '../actions/cell';
-import * as projectActions from '../redux/project';
+import * as projectActions from '../actions/project/project';
 import * as loginActions from '../actions/login';
 import Cell from './Cell';
 

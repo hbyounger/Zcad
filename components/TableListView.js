@@ -11,7 +11,7 @@ import {
 } from 'react-native';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
-import * as actions from '../redux/table';
+import * as actions from '../actions/table/table';
 
 var tableList = [];
 class TableListView extends Component {

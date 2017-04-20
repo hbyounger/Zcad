@@ -21,7 +21,7 @@ import CheckBox from 'react-native-checkbox';
 
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
-import * as actions from '../redux/table';
+import * as actions from '../actions/table/table';
 import Cell from './Cell'//SvgExample
 //import SvgExample from './main'
 //import Example from './Map'

@@ -25,21 +25,12 @@ import { bindActionCreators } from 'redux'
 import * as actions from './actions/login'
 import BackAndroid from 'BackAndroid'
 
-import FeedView from './components/FeedView'//DefaultView
+import LoginView from './components/Login'
 import WelcomeView from './components/WelcomeView'
-import DefaultView from './components/DefaultView'
-import PointData from  './components/PointData'
 import MapView from './components/MapView'
 import DataView from './components/DataView'
-import LoginView from './components/Login'
-import PickerExample from './components/Picker'
-import ProjectView from './components/Project'
 import TableListView from './components/TableListView'
-import Callback from './components/Callback';
-import Promise from './components/Promise';
 import Storage from 'react-native-storage';
-//import configureStore from './configureStore'
-
 
 var storage = new Storage({
     size: 10000,//1000,
@@ -83,55 +74,38 @@ class Zcad extends Component {
      *  - Navigator.SceneConfigs.HorizontalSwipeJumpFromRight
      *  - Navigator.SceneConfigs.VerticalUpSwipeJump
      *  - Navigator.SceneConfigs.VerticalDownSwipeJump*/
-    configureScene = (route)=>{
+    configureScene = (route) => {
         return Navigator.SceneConfigs.PushFromRight;
     }
 
-    renderScene = (router, navigator)=>{
+    renderScene = (router, navigator) => {
         let Component = null;
         this._navigator = navigator;
-        switch(router.name){
-            case "welcome":
-                Component = <WelcomeView navigator = {navigator} />;
+        switch (router.name) {
+            case "login"://登录页
+                Component = <LoginView navigator={navigator} />;
                 break;
-            case "feed":
-                Component = <FeedView navigator = {navigator} />;
+            case "welcome"://选择工程
+                Component = <WelcomeView navigator={navigator} />;
                 break;
-            case "map":
-                Component = <MapView navigator = {navigator} />;
+            case "map"://选择钻孔
+                Component = <MapView navigator={navigator} />;
                 break;
-            case "point":
-                Component = <PointData navigator = {navigator} />;
+            case "tablelist"://选择操作的表
+                Component = <TableListView navigator={navigator} />;
                 break;
-            case "data":
-                Component = <DataView navigator = {navigator} />;
+            case "data"://数据表填写
+                Component = <DataView navigator={navigator} />;
                 break;
-            case "login":
-                Component = <LoginView navigator = {navigator} />;
+            default:
+                //Component = <LoginView navigator={navigator} />;
                 break;
-            case "picker":
-                Component = <PickerExample navigator = {navigator}/>;
-                break;
-            case "project":
-                Component = <ProjectView navigator = {navigator}/>;
-                break;
-            case "tablelist":
-                Component = <TableListView navigator = {navigator}/>;
-                break;
-            case 'callback':
-                Component = <Callback navigator = {navigator}/>;
-                break;
-            case 'promise':
-                Component = <Promise navigator = {navigator}/>;
-                break;
-            default: //default view PickerExample
-                Component = <DefaultView navigator = {navigator} />;
         }
         return Component;
     }
     componentDidMount() {
         let navigator = this._navigator;
-        BackAndroid.addEventListener('hardwareBackPress', function() {
+        BackAndroid.addEventListener('hardwareBackPress', function () {
             if (navigator && navigator.getCurrentRoutes().length > 1) {
                 navigator.pop();
                 return true;
@@ -148,9 +122,9 @@ class Zcad extends Component {
         return (
             <Provider store={store}>
                 <Navigator
-                    initialRoute={{name: 'login'}}//callback//login//promise
-                    configureScene={ this.configureScene }
-                    renderScene={ this.renderScene }
+                    initialRoute={{ name: 'login' }}//callback//login//promise
+                    configureScene={this.configureScene}
+                    renderScene={this.renderScene}
                 />
             </Provider>
         );

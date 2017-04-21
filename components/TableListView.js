@@ -1,7 +1,9 @@
 /**
  * Created by younger on 2016/8/14.
  */
-import React,{ Component } from 'react';
+'use strict';
+//选择操作的表
+import React, { Component } from 'react';
 import {
     Navigator,
     StyleSheet,
@@ -17,31 +19,31 @@ var tableList = [];
 class TableListView extends Component {
     constructor(props) {
         super(props);
-        let {login} = this.props;
+        let { login } = this.props;
         let table = login.tables;
         let List = table["项目_表"];//表名
-        List.forEach(ele=>{
+        List.forEach(ele => {
             //console.log(ele["表名"]);
             this.tableList.push(ele["表名"]);
         })
     }
     tableList = [];
     onPressTable(value){
-        let {actions} = this.props;
-        this.props.navigator.push({name: 'data'});
+        let { actions } = this.props;
+        this.props.navigator.push({ name: 'data' });
         actions.SetTable(value);
     }
-    componentWillMount(){
-        this.tableArray = [];//.bind(this,ele)
-        this.tableList.forEach((ele,i)=>{
+    componentWillMount() {
+        this.tableArray = [];
+        this.tableList.forEach((ele, i) => {
             this.tableArray.push(
                 <TouchableHighlight
-                    key = {i}
+                    key={i}
                     onPress={this.onPressTable.bind(this,ele)}
                     underlayColor="transparent"
                     activeOpacity={0.5}>
                     <View style={styles3.style_view_commit}>
-                        <Text style={{color:'#fff'}} >
+                        <Text style={{ color: '#fff' }} >
                             {ele}
                         </Text>
                     </View>
@@ -50,27 +52,27 @@ class TableListView extends Component {
         });
     }
 
-    onBack(){
-        this.props.navigator.pop({name: 'map'});
+    onBack = () => {
+        this.props.navigator.pop({ name: 'map' });
     }
-    
+
     render() {
-        //let tableArray = [];
-        let {cell} = this.props;
+
+        let { cell } = this.props;
 
         return (
             <View >
                 <Text style={styles3.welcome} >
-                    {'钻孔编号'+cell.pointData["钻孔编号"]+'-选择数据表'}
+                    {'钻孔编号' + cell.pointData["钻孔编号"] + '-选择数据表'}
                 </Text>
                 {this.tableArray}
                 <TouchableHighlight
-                    style={[styles3.style_view_exit,{top : 0 ,left : 0}]}
-                    onPress={this.onBack.bind(this)}
+                    style={[styles3.style_view_exit, { top: 0, left: 0 }]}
+                    onPress={this.onBack}
                     underlayColor="transparent"
                     activeOpacity={0.5}>
                     <View >
-                        <Text style={{color:'#fff'}} >
+                        <Text style={{ color: '#fff' }} >
                             {'回到钻孔图'}
                         </Text>
                     </View>
@@ -88,19 +90,19 @@ const styles3 = StyleSheet.create({
         alignItems: 'center',
         backgroundColor: '#F5FCFF',
     },
-    style_view_exit:{
-        marginTop:25,
-        marginLeft:10,
-        marginRight:10,
-        backgroundColor:'#72d0eb',
-        height:35,
+    style_view_exit: {
+        marginTop: 25,
+        marginLeft: 10,
+        marginRight: 10,
+        backgroundColor: '#72d0eb',
+        height: 35,
         //width:60,
         //borderRadius:5,
         justifyContent: 'center',
         alignItems: 'center',
     },
     welcome: {
-        color:'#63B8FF',
+        color: '#63B8FF',
         fontSize: 16,
         textAlign: 'center',
         margin: 10,
@@ -136,32 +138,32 @@ const styles3 = StyleSheet.create({
     cellTextO: {
         color: '#b9dc2f',
     },
-    style_view_commit:{
-        marginTop:15,
-        marginLeft:10,
-        marginRight:10,
-        backgroundColor:'#63B8FF',
-        height:35,
-        borderRadius:5,
+    style_view_commit: {
+        marginTop: 15,
+        marginLeft: 10,
+        marginRight: 10,
+        backgroundColor: '#63B8FF',
+        height: 35,
+        borderRadius: 5,
         justifyContent: 'center',
         alignItems: 'center',
     },
 });
 
-function mapStateToProps(state){
+function mapStateToProps(state) {
     return {
-        cell : state.cell.toJS(),
-        login : state.login.toJS(),
+        cell: state.cell.toJS(),
+        login: state.login.toJS(),
     }
 }
 
-function mapDispatchToProps(dispatch){
+function mapDispatchToProps(dispatch) {
     return {
-        actions : bindActionCreators( actions , dispatch )
+        actions: bindActionCreators(actions, dispatch)
     }
 }
 //export default
 export default connect(
-    mapStateToProps ,
+    mapStateToProps,
     mapDispatchToProps
 )(TableListView);

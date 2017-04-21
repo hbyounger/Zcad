@@ -1,6 +1,7 @@
 /**
  * Created by wxk on 2016/7/18.
  */
+'use strict';
 import React,{ Component } from 'react';
 import {
     Navigator,
@@ -19,7 +20,7 @@ import * as projectActions from '../actions/project/project';
 import * as loginActions from '../actions/login';
 import Cell from './Cell';
 
-
+//选择哪个项目
 class WelcomeView extends Component {
     constructor(props){
         super(props);
@@ -88,10 +89,10 @@ class WelcomeView extends Component {
                         break;
                 }
             });
-    }
+    };
 
     //退到登录界面
-    onPressBack = ()=>{
+    onPressBack = () => {
         this.props.navigator.pop({name: 'login'});
     };
 
@@ -102,7 +103,7 @@ class WelcomeView extends Component {
         });
         
         Alert.alert('成功',"下载数据成功",[{text: '确定', onPress: () => console.log('下载数据成功')},]);
-    }
+    };
 
 
     render() {
@@ -173,7 +174,7 @@ class WelcomeView extends Component {
             </ScrollView>
         );
 
-    }
+    };
 }
 
 const styles = StyleSheet.create({

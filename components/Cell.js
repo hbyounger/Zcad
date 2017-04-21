@@ -11,10 +11,10 @@ import {
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 import * as actions from '../actions/cell';
-import PointData from './PointData'
 
 //钻孔
 class Cell extends Component{
+
     cellStyle(isWorking) {
         switch (1) {
             case 0:
@@ -38,39 +38,24 @@ class Cell extends Component{
     }
 
     textContents() {
-        /*    switch (this.props.num) {
-         case 1:
-         return 'X';
-         case 2:
-         return 'O';
-         default:
-         return '';
-         }*/
         let { cell } = this.props;
         return cell.value;
     }
+
     onPress(data){
-        //console.log('tablelist');
+        console.log('点击了 钻孔 ' + this.props.num + '    ' + data);
         let { actions } = this.props;
         this.props.navigator.push({name: 'tablelist'});//callback//tablelist
         actions.SetPosition({
             num:this.props.num,
             data:data
         });
-        //actions.test(this.props.num);
+
     }
 
 
-    /*  position(top,left){
-     return({position: 'absolute', top: {top}, left: {left}})
-     }
-     ,this.position(this.props.ptop,this.props.pleft)
-     */
     render() {
-        //{{top: 200, left: 300,}}
-        /*if(this.props.Point){
 
-        }*/
         let top = this.props.Point.top||this.props.Point.y,
             left = this.props.Point.left||this.props.Point.x;//.bind(this)
         return (

@@ -18,18 +18,17 @@ import {
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 import * as loginActions from '../actions/login';
-//import userLogin from '../reducers/login';
+
 
 class Login extends Component {
     constructor(props){
         super(props);
-        // Initialize a Realm with Car and Person models
+
         this.state = {
-            userName : '',
-            passWord : '',
-            urlServer: ''
+            userName : '',//用户名称
+            passWord : '',//密码
+            urlServer: ''//服务器地址
         };
-        //this.serverList = [];
 
         console.log('storage.load');
         //读取服务器地址
@@ -61,7 +60,7 @@ class Login extends Component {
             .catch(err => {
                 console.log("storage.load user " + err);
             });      
-    }
+    };
 
     //点击登录
     onPress = ()=>{
@@ -90,7 +89,7 @@ class Login extends Component {
 
             this.props.navigator.push({name: 'welcome'});
         });
-    }
+    };
 
     //登录离线登录
     onOfflinePress = () => {
@@ -161,7 +160,7 @@ class Login extends Component {
                     autoFocus={true}
                     underlineColorAndroid={'transparent'}
                     textAlign='center'
-                    onChangeText ={this.handleUserChange.bind(this)}
+                    onChangeText ={this.handleUserChange}
                     value={this.state.userName}
                 />
                 <View
@@ -201,7 +200,7 @@ class Login extends Component {
                 </View>
             </View>
         );
-    }
+    };
 }
 const styles =StyleSheet.create({
     style_image:{

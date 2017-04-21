@@ -1,6 +1,7 @@
 /**
  * Created by wxk on 2016/7/18.
  */
+'use strict';
 import React,{ Component } from 'react';
 import {
     Navigator,
@@ -14,8 +15,9 @@ import {
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 import * as actions from '../actions/project/project';
-import Cell from './Cell'
+import Cell from './Cell';//点组建
 
+//选择钻孔
 class MapView extends Component {
 
     //勘探点数据表
@@ -61,8 +63,8 @@ class MapView extends Component {
             let earthHole = ele["钻孔编号"];
             //在土层表中找有没有数据
             let isFindData = 0;
-            for (let index = 0; index < tableEarth.length; index++) {
-                let eleEarth = tableEarth[index];
+            for (let i = 0; i < tableEarth.length; i++) {
+                let eleEarth = tableEarth[i];
                  if (earthHole === eleEarth["钻孔编号"]){
                     isFindData = 1;
                     break;
@@ -76,18 +78,15 @@ class MapView extends Component {
                 data:ele,
             })
         });
-        /*array.forEach((ele)=>{
-            console.log(ele);
-        });*/
         this.dotList = array;
     }
-    onBack(){
+    onBack = ()=>{
         this.props.navigator.pop({name: 'welcome'});
     }
     render() {
         let PList = [],
-            {project} = this.props,
-            index = 0 ;
+            {project} = this.props;
+   
         if(this.dotList) {
             this.dotList.forEach((ele,i)=> {
                 PList.push(<Cell
@@ -105,7 +104,7 @@ class MapView extends Component {
                 <Text style = {styles2.welcome}>{project.project+' 选取钻孔'}</Text>
                 <TouchableHighlight
                     style={[styles2.style_view_commit,{top : 0 ,left : 0}]}
-                    onPress={this.onBack.bind(this)}
+                    onPress={this.onBack}
                     underlayColor="transparent"
                     activeOpacity={0.5}>
                     <View >

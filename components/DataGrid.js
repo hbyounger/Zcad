@@ -16,13 +16,10 @@ import {
     Picker
 } from 'react-native';
 import CheckBox from 'react-native-checkbox';
-//const Item = Picker.Item;
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 import * as actions from '../actions/table/table';
-//import Cell from './Cell'//SvgExample
-//import SvgExample from './main'
-//import Example from './Map'
+
 const RIGHT_LISTVIEW = 'right_listView';
 const LEFT_LISTVIEW = 'left_listView';
 const window = Dimensions.get('window');

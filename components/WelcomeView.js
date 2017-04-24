@@ -15,10 +15,9 @@ import {
 } from 'react-native';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
-//import * as actions from '../actions/cell';
 import * as projectActions from '../actions/project/project';
 import * as loginActions from '../actions/login';
-import Cell from './Cell';
+
 
 //选择哪个项目
 class WelcomeView extends Component {
@@ -61,7 +60,7 @@ class WelcomeView extends Component {
 
 
     //点击工程
-    onPressMap(projectName){
+    onPressProject(projectName){
         let {loginactions,login,projectActions} = this.props;
         let projectid = login.userid+'-'+projectName;
         
@@ -82,18 +81,13 @@ class WelcomeView extends Component {
                 console.log(err.message);
                 switch (err.name) {
                     case 'NotFoundError':
-                        alert("onPressMap:" + projectName + " 没有数据!");
+                        alert(projectName + " 没有数据!");
                         break;
                     default:
-                        alert('onPressMap:' + err.name + err.message);
+                        alert(err.name + err.message);
                         break;
                 }
             });
-    };
-
-    //退到登录界面
-    onPressBack = () => {
-        this.props.navigator.pop({name: 'login'});
     };
 
     //下载数据
@@ -119,7 +113,7 @@ class WelcomeView extends Component {
                 <TouchableHighlight
                 style={{flex: 6}}
                     key = {`prjn${i}`}
-                    onPress={this.onPressMap.bind(this,ele.PRIVILEGENAME)}
+                    onPress={this.onPressProject.bind(this,ele.PRIVILEGENAME)}
                     underlayColor="transparent"
                     activeOpacity={0.5}>
                     <View style={{marginTop:15,marginLeft:10,marginRight:10,backgroundColor:'#63B8FF',height:35,borderRadius:5, justifyContent: 'center', alignItems: 'center'}}>
@@ -161,7 +155,7 @@ class WelcomeView extends Component {
 
                 <TouchableHighlight
                     style={[styles.style_view_exit,{top : 0 ,left : 0}]}
-                    onPress={this.onPressBack}
+                    onPress={() => {this.props.navigator.pop({name: 'login'});}}
                     underlayColor="transparent"
                     activeOpacity={0.5}>
                     <View >
@@ -189,87 +183,17 @@ const styles = StyleSheet.create({
         justifyContent: 'center',
         alignItems: 'center',
     },
-    container: {
-        flex: 1,
-        justifyContent: 'center',
-        alignItems: 'center',
-        backgroundColor: '#F5FCFF',
-    },
     welcome: {
         color:'#63B8FF',
-        fontSize: 32,
+        fontSize: 18,
         fontWeight: 'bold',
         textAlign: 'center',
         margin: 10,
-    },
-    instructions: {
-        textAlign: 'center',
-        color: '#333333',
-        marginBottom: 5,
-    },
-    cell: {
-        width: 16,
-        height: 16,
-        borderRadius: 3,
-        backgroundColor: '#7b8994',
-        margin: 2,
-        flex: 1,
-        justifyContent: 'center',
-        alignItems: 'center',
-    },
-    cellX: {
-        backgroundColor: '#72d0eb',
-    },
-    cellO: {
-        backgroundColor: '#7ebd26',
-    },
-    cellText: {
-        fontSize: 50,
-        fontFamily: 'AvenirNext-Bold',
-    },
-    cellTextX: {
-        color: '#19a9e5',
-    },
-    cellTextO: {
-        color: '#b9dc2f',
-    },
-    style_view_commit:{
-        marginTop:15,
-        marginLeft:10,
-        marginRight:10,
-        backgroundColor:'#63B8FF',
-        height:35,
-        borderRadius:5,
-        justifyContent: 'center',
-        alignItems: 'center',
-    },
-    style_view_Left:{
-        flex: 1,
-        marginTop:15,
-        marginLeft:10,
-        marginRight:10,
-        backgroundColor:'#63B8FF',
-        height:35,
-        width:150,
-        borderRadius:5,
-        justifyContent: 'center',
-        alignItems: 'center',
-    },
-    style_view_Right:{
-        marginTop:15,
-        marginLeft:10,
-        marginRight:10,
-        backgroundColor:'#63B8FF',
-        height:35,
-        borderRadius:5,
-        justifyContent: 'center',
-        alignItems: 'center',
     }
 });
 
 function mapStateToProps(state){
     return {
-        cell : state.cell.toJS(),
         login : state.login.toJS()
     }
 }

@@ -2,7 +2,7 @@
  * Created by wxk on 2016/7/18.
  */
 'use strict';
-import React,{ Component } from 'react';
+import React, { Component } from 'react';
 import {
     Navigator,
     StyleSheet,
@@ -15,13 +15,13 @@ import {
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 import * as actions from '../actions/project/project';
-import Cell from './Cell';//点组建
+import Cell from './Cell';//点组件,钻孔
 
 //选择钻孔
 class MapView extends Component {
 
     //勘探点数据表
-    constructor(props){
+    constructor(props) {
         super(props);
         let { login } = this.props,//project
             table = login.tables,
@@ -30,93 +30,88 @@ class MapView extends Component {
             minX = 9999999,//list[0]["坐标X"],
             minY = 9999999,//list[0]["坐标Y"],
             maxX = -9999999,//list[0]["坐标X"],
-            maxY = -9999999,//list[0]["坐标Y"],
-            array=[];
-        list.forEach((ele)=>{
+            maxY = -9999999;//list[0]["坐标Y"],
+        this.dotList = [];
+        list.forEach((ele) => {
             let x = ele["坐标X"],
                 y = ele["坐标Y"];
-            if(minX>x){
+            if (minX > x) {
                 minX = x
             }
             else {
-                if(maxX<x){
+                if (maxX < x) {
                     maxX = x
                 }
             }
-            if(minY>y){
+            if (minY > y) {
                 minY = y
             }
             else {
-                if(maxY<y){
+                if (maxY < y) {
                     maxY = y
                 }
             }
         });
-        let xScale = (maxX-minX)/(Dimensions.get('window').width-20),
-            yScale = (maxY-minY)/(Dimensions.get('window').height-110),
-            Scale = xScale>yScale?xScale:yScale;
+        let xScale = (maxX - minX) / (Dimensions.get('window').width - 20);
+        let yScale = (maxY - minY) / (Dimensions.get('window').height - 110);
+        let Scale = xScale > yScale ? xScale : yScale;
         /*console.log(xScale);
         console.log(yScale);
         console.log(Scale);*/
-        list.forEach((ele)=>{
+        list.forEach((ele) => {
 
             let earthHole = ele["钻孔编号"];
             //在土层表中找有没有数据
             let isFindData = 0;
             for (let i = 0; i < tableEarth.length; i++) {
                 let eleEarth = tableEarth[i];
-                 if (earthHole === eleEarth["钻孔编号"]){
+                if (earthHole === eleEarth["钻孔编号"]) {
                     isFindData = 1;
                     break;
                 }
             }
-      
-            array.push({
-                x:10+(ele["坐标X"]-minX)/Scale,
-                y:10+(ele["坐标Y"]-minY)/Scale,
-                isWorking:isFindData,   //是否已经开始工作
-                data:ele,
+
+            this.dotList.push({
+                x: 10 + (ele["坐标X"] - minX) / Scale,
+                y: 10 + (ele["坐标Y"] - minY) / Scale,
+                isWorking: isFindData,   //是否已经开始工作
+                data: ele,
             })
         });
-        this.dotList = array;
     }
-    onBack = ()=>{
-        this.props.navigator.pop({name: 'welcome'});
-    }
+
     render() {
-        let PList = [],
-            {project} = this.props;
-   
-        if(this.dotList) {
-            this.dotList.forEach((ele,i)=> {
-                PList.push(<Cell
-                    key = {`point${i}`}
-                    Point = {ele}
-                    num = {i}
-                    isWorking = {ele.isWorking}
-                    navigator = {this.props.navigator}
+        let CellArray = [];
+        let { project } = this.props;
+
+        if (this.dotList) {
+            this.dotList.forEach((ele, i) => {
+                CellArray.push(<Cell
+                    key={`point${i}`}
+                    Point={ele}
+                    navigator={this.props.navigator}
                 />)//<TicTacToeApp/>
             })
         }
 
         return (
             <ScrollView >
-                <Text style = {styles2.welcome}>{project.project+' 选取钻孔'}</Text>
+                <Text style={styles2.welcome}>{project.project + ' 选取钻孔'}</Text>
                 <TouchableHighlight
-                    style={[styles2.style_view_commit,{top : 0 ,left : 0}]}
-                    onPress={this.onBack}
+                    style={[styles2.style_view_commit, { top: 0, left: 0 }]}
+                    onPress={() => {this.props.navigator.pop({ name: 'welcome' });}}
                     underlayColor="transparent"
                     activeOpacity={0.5}>
                     <View >
-                        <Text style={{color:'#fff'}} >
+                        <Text style={{ color: '#fff' }} >
                             {'返回项目列表'}
                         </Text>
                     </View>
                 </TouchableHighlight>
                 <ScrollView
-                    horizontal = {true}>
-                    <View style = {[styles2.container,{width: 500,height: 900,}]}>
-                        { PList }
+                    horizontal={true}>
+                    <View style={[styles2.container, { width: 500, height: 900, }]}>
+                        {CellArray}
                     </View>
                 </ScrollView>
 
@@ -126,12 +121,12 @@ class MapView extends Component {
 }
 
 const styles2 = StyleSheet.create({
-    style_view_commit:{
-        marginTop:0,
+    style_view_commit: {
+        marginTop: 0,
         //marginLeft:10,
         //marginRight:10,
-        backgroundColor:'#63B8FF',
-        height:35,
+        backgroundColor: '#63B8FF',
+        height: 35,
         //width:60,
         //borderRadius:5,
         justifyContent: 'center',
@@ -148,56 +143,25 @@ const styles2 = StyleSheet.create({
         fontSize: 18,
         textAlign: 'center',
         margin: 10,
-    },
-    instructions: {
-        textAlign: 'center',
-        color: '#333333',
-        marginBottom: 5,
-    },
-    cell: {
-        width: 16,
-        height: 16,
-        borderRadius: 3,
-        backgroundColor: '#7b8994',
-        margin: 2,
-        flex: 1,
-        justifyContent: 'center',
-        alignItems: 'center',
-    },
-    cellX: {
-        backgroundColor: '#72d0eb',
-    },
-    cellO: {
-        backgroundColor: '#7ebd26',
-    },
-    cellText: {
-        fontSize: 50,
-        fontFamily: 'AvenirNext-Bold',
-    },
-    cellTextX: {
-        color: '#19a9e5',
-    },
-    cellTextO: {
-        color: '#b9dc2f',
-    },
+    }
 });
 
-function mapStateToProps(state){
+function mapStateToProps(state) {
     return {
-        cell : state.cell.toJS(),
-        project : state.project.toJS(),
-        login : state.login.toJS(),
+        cell: state.cell.toJS(),
+        project: state.project.toJS(),
+        login: state.login.toJS(),
     }
 }
 
-function mapDispatchToProps(dispatch){
+function mapDispatchToProps(dispatch) {
     return {
-        actions : bindActionCreators( actions , dispatch )
+        actions: bindActionCreators(actions, dispatch)
     }
 }
 //export default
 export default connect(
-    mapStateToProps ,
+    mapStateToProps,
     mapDispatchToProps
 )(MapView);
 

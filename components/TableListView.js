@@ -52,9 +52,6 @@ class TableListView extends Component {
         });
     }
 
-    onBack = () => {
-        this.props.navigator.pop({ name: 'map' });
-    }
 
     render() {
 
@@ -68,11 +65,11 @@ class TableListView extends Component {
                 {this.tableArray}
                 <TouchableHighlight
                     style={[styles3.style_view_exit, { top: 0, left: 0 }]}
-                    onPress={this.onBack}
+                    onPress={() => {this.props.navigator.pop({ name: 'map' });}}
                     underlayColor="transparent"
                     activeOpacity={0.5}>
                     <View >
-                        <Text style={{ color: '#fff' }} >
+                        <Text style={{ color: '#ffffff' }} >
                             {'回到钻孔图'}
                         </Text>
                     </View>
@@ -103,7 +100,7 @@ const styles3 = StyleSheet.create({
     },
     welcome: {
         color: '#63B8FF',
-        fontSize: 16,
+        fontSize: 18,
         textAlign: 'center',
         margin: 10,
     },

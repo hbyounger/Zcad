@@ -25,7 +25,8 @@ import * as actions from '../actions/table/table';
 import Cell from './Cell';
 import * as loginActions from '../actions/login';
 
-import Grid from './DataGrid';
+import DataGrid from './DataGrid';
+
 const window = Dimensions.get('window');
 
 class DataView extends Component {
@@ -34,12 +35,17 @@ class DataView extends Component {
         let { cell, login, table, project } = this.props;
         let tables = login.tables;
         this.List = tables[table.table];
-        console.log(tables[table.table]);
+        console.log("this.List :"  + this.List);
         this.Array = [];
         this.pointInfo = cell.pointData;
         this.projectid = login.userid + '-' + project.project;
         this.login = login;
         this.table = table;
+
+        this.isEnableAdd = true;//是否允许 添加 插入 删除 行为
+        if (table.table == "勘探点数据表") {
+            this.isEnableAdd = false;
+        }
 
         this.indexList = [];
         tables[table.table].forEach((ele, i) => {
@@ -70,10 +76,7 @@ class DataView extends Component {
         return newObj;//返回排好序的新对象
     }
 
-    //返回
-    onBack = () => {
-        this.props.navigator.push({ name: 'tablelist' });
-    }
+
     //保存---存在问题，还需要修改
     onSubmit = () => {
         let { login, table, loginactions } = this.props;
@@ -173,7 +176,7 @@ class DataView extends Component {
                 <View style={{ flex: 1, flexDirection: 'row' }}>
                     <TouchableHighlight
                         style={[styles.style_view_commit, { flex: 1, top: 0, left: 0 }]}
-                        onPress={this.onBack}
+                        onPress={()=>{ this.props.navigator.pop({ name: 'tablelist' });}}
                         underlayColor="transparent"
                         activeOpacity={0.5}>
                         <View >
@@ -210,43 +213,55 @@ class DataView extends Component {
                             </TouchableHighlight>
                         )
                     }
-                    <TouchableHighlight
-                        style={[styles.style_view_commit, { flex: 1, top: 0, left: 0 }]}
-                        onPress={this.onAdd}
-                        underlayColor="transparent"
-                        activeOpacity={0.5}>
-                        <View >
-                            <Text style={{ color: '#fff' }} >
-                                {'新增'}
-                            </Text>
-                        </View>
-                    </TouchableHighlight>
-                    <TouchableHighlight
-                        style={[styles.style_view_commit, { flex: 1, top: 0, left: 0 }]}
-                        onPress={this.onInsert}
-                        underlayColor="transparent"
-                        activeOpacity={0.5}>
-                        <View >
-                            <Text style={{ color: '#fff' }} >
-                                {'插入'}
-                            </Text>
-                        </View>
-                    </TouchableHighlight>
-                    <TouchableHighlight
-                        style={[styles.style_view_commit, { flex: 1, top: 0, left: 0 }]}
-                        onPress={this.onDelete}
-                        underlayColor="transparent"
-                        activeOpacity={0.5}>
-                        <View >
-                            <Text style={{ color: '#fff' }} >
-                                {'删除'}
-                            </Text>
-                        </View>
-                    </TouchableHighlight>
+                    {
+                        (true == this.isEnableAdd) && (
+
+                            <TouchableHighlight
+                                style={[styles.style_view_commit, { flex: 1, top: 0, left: 0 }]}
+                                onPress={this.onAdd}
+                                underlayColor="transparent"
+                                activeOpacity={0.5}>
+                                <View >
+                                    <Text style={{ color: '#fff' }} >
+                                        {'新增'}
+                                    </Text>
+                                </View>
+                            </TouchableHighlight>)
+                    }
+                    {
+                        (true == this.isEnableAdd) && (
+                            <TouchableHighlight
+                                style={[styles.style_view_commit, { flex: 1, top: 0, left: 0 }]}
+                                onPress={this.onInsert}
+                                underlayColor="transparent"
+                                activeOpacity={0.5}>
+                                <View >
+                                    <Text style={{ color: '#fff' }} >
+                                        {'插入'}
+                                    </Text>
+                                </View>
+                            </TouchableHighlight>
+                        )
+                    }
+                    {
+                        (true == this.isEnableAdd) && (
+                            <TouchableHighlight
+                                style={[styles.style_view_commit, { flex: 1, top: 0, left: 0 }]}
+                                onPress={this.onDelete}
+                                underlayColor="transparent"
+                                activeOpacity={0.5}>
+                                <View >
+                                    <Text style={{ color: '#fff' }} >
+                                        {'删除'}
+                                    </Text>
+                                </View>
+                            </TouchableHighlight>)
+                    }
+
                 </View>
                 <View style={{ top: 10 }}>
                     <ScrollView >
-                        <Grid
+                        <DataGrid
                             callback={(list) => {
                                 this.Array = list;
                                 this.setState({
@@ -256,8 +271,7 @@ class DataView extends Component {
                             login={this.login}
                             table={this.table}
                             pointInfo={this.pointInfo}
-                            data={this.state.List}
-                            navigator={this.props.navigator} />
+                            data={this.state.List} />
                     </ScrollView>
                 </View>
             </View>

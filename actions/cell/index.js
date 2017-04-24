@@ -10,21 +10,11 @@ export default function cell( $$state = $$initialState , action ){
     switch(action.type){
         case 'MAP_SET_POSITION' :
             return $$state.merge({
-                position : action.value,
                 pointData: action.pointData,
             });
             break;
         default :
             return $$state;
-    }
-}
-export function test(value){
-    return function(dispatch){
-        //console.log('SETACCOUNT'+value);
-        dispatch({
-            type : 'TEST',
-            value : value
-        })
     }
 }
 
@@ -33,8 +23,7 @@ export function SetPosition(value){
         //console.log(value);
         dispatch({
             type : 'MAP_SET_POSITION',
-            value : value.num,
-            pointData:value.data
+            pointData:value.pointData
         })
     }
 }

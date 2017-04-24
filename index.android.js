@@ -30,6 +30,8 @@ import WelcomeView from './components/WelcomeView'
 import MapView from './components/MapView'
 import DataView from './components/DataView'
 import TableListView from './components/TableListView'
+import SelectValue from './components/SelectValue'
+
 import Storage from 'react-native-storage';
 
 var storage = new Storage({
@@ -97,6 +99,10 @@ class Zcad extends Component {
             case "data"://数据表填写
                 Component = <DataView navigator={navigator} />;
                 break;
+            case "SelectValue"://选择值
+                Component = <SelectValue navigator={navigator} />;
+                break;
+                
             default:
                 //Component = <LoginView navigator={navigator} />;
                 break;

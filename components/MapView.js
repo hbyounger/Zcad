@@ -75,8 +75,8 @@ class MapView extends Component {
                 x: 10 + (ele["坐标X"] - minX) / Scale,
                 y: 10 + (ele["坐标Y"] - minY) / Scale,
                 isWorking: isFindData,   //是否已经开始工作
-                data: ele,
-            })
+                data: ele
+            });
         });
     }
 

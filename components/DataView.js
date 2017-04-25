@@ -33,12 +33,13 @@ class DataView extends Component {
     constructor(props) {
         super(props);
         let { cell, login, table, project } = this.props;
+
+        this.holeNo = cell.holeNo;  //孔号
+        this.tableName = table.table;//表名
+
         let tables = login.tables;
-        this.List = tables[table.table];
-        console.log("this.List :"  + this.List);
-        this.Array = [];
-        this.pointInfo = cell.pointData;
-        this.projectid = login.userid + '-' + project.project;
+
+        this.projectid = login.userid + '-' + project.project;//工程ID
         this.login = login;
         this.table = table;
 
@@ -47,12 +48,13 @@ class DataView extends Component {
             this.isEnableAdd = false;
         }
 
+        this.Array = [];
         this.indexList = [];
-        tables[table.table].forEach((ele, i) => {
-            if (ele && ((ele["钻孔编号"] === this.pointInfo["钻孔编号"]) || (!ele["钻孔编号"]))) {
+        tables[this.tableName].forEach((ele, i) => {
+            if (ele && ((ele["钻孔编号"] === this.holeNo) || (!ele["钻孔编号"]))) {
                 //this.leftArray.push(ele["ID"]?ele["ID"]:i);
-                ele['check'] = i;
-                ele = this.objKeySort(ele);
+                //ele['check'] = i;
+                //ele = this.objKeySort(ele);
                 this.Array.push(ele);
                 console.log(ele);
                 this.indexList.push(i);
@@ -66,6 +68,7 @@ class DataView extends Component {
             List: this.Array,
         }
     }
+
     objKeySort = (obj) => {//排序的函数
         var newkey = Object.keys(obj).reverse();
         //先用Object内置类的keys方法获取要排序对象的属性名，再利用Array原型上的sort方法对获取的属性名进行排序，newkey是一个数组
@@ -103,7 +106,7 @@ class DataView extends Component {
     //上传
     onUpload = (data) => {
         let { loginactions, login, table, project } = this.props;
-        loginactions.updateData(login.server, login.userid, project.project, this.pointInfo["钻孔编号"], this.state.List, table.table);
+        loginactions.updateData(login.server, login.userid, project.project, this.holeNo, this.state.List, table.table);
     }
 
     //添加一行
@@ -169,14 +172,14 @@ class DataView extends Component {
             <View >
                 <View >
                     <Text style={styles.welcome} >
-                        {table.table}
+                        {this.tableName}
                     </Text>
                 </View>
 
                 <View style={{ flex: 1, flexDirection: 'row' }}>
                     <TouchableHighlight
                         style={[styles.style_view_commit, { flex: 1, top: 0, left: 0 }]}
-                        onPress={()=>{ this.props.navigator.pop({ name: 'tablelist' });}}
+                        onPress={() => { this.props.navigator.pop({ name: 'tablelist' }); }}
                         underlayColor="transparent"
                         activeOpacity={0.5}>
                         <View >
@@ -270,8 +273,10 @@ class DataView extends Component {
                             }}
                             login={this.login}
                             table={this.table}
-                            pointInfo={this.pointInfo}
-                            data={this.state.List} />
+                            holeNo={this.holeNo}
+                            data={this.state.List}
+                            navigator={this.props.navigator}
+                        />
                     </ScrollView>
                 </View>
             </View>

@@ -15,24 +15,26 @@ import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 import * as actions from '../actions/table/table';
 
-var tableList = [];
+
 class TableListView extends Component {
     constructor(props) {
         super(props);
         let { login } = this.props;
         let table = login.tables;
         let List = table["项目_表"];//表名
+        this.tableList = [];
         List.forEach(ele => {
             //console.log(ele["表名"]);
             this.tableList.push(ele["表名"]);
         })
     }
-    tableList = [];
+  
     onPressTable(value){
         let { actions } = this.props;
         this.props.navigator.push({ name: 'data' });
         actions.SetTable(value);
     }
+
     componentWillMount() {
         this.tableArray = [];
         this.tableList.forEach((ele, i) => {
@@ -60,7 +62,7 @@ class TableListView extends Component {
         return (
             <View >
                 <Text style={styles3.welcome} >
-                    {'钻孔编号' + cell.pointData["钻孔编号"] + '-选择数据表'}
+                    {'钻孔编号' + cell.holeNo + '-选择数据表'}
                 </Text>
                 {this.tableArray}
                 <TouchableHighlight

@@ -100,7 +100,7 @@ class Zcad extends Component {
                 Component = <DataView navigator={navigator} />;
                 break;
             case "SelectValue"://选择值
-                Component = <SelectValue navigator={navigator} />;
+                Component = <SelectValue navigator={navigator} router={router}/>;
                 break;
                 
             default:

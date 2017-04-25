@@ -26,12 +26,13 @@ class Cell extends Component {
         }
     }
 
-    onPress(data) {
-        console.log('点击了 钻孔 ' + this.props.Point.data["钻孔编号"]);
+    onPress(holeNo) {
+        //alert(holeNo);
+        console.log('点击了 钻孔 ' + holeNo);
         let { actions } = this.props;
         this.props.navigator.push({ name: 'tablelist' });//callback//tablelist
-        actions.SetPosition({
-            pointData : data
+        actions.SetHoleNo({
+            holeNo : holeNo
         });
     }
 
@@ -39,15 +40,17 @@ class Cell extends Component {
     render() {
         let Y = this.props.Point.y;
         let X = this.props.Point.x;
+        let holeNo = this.props.Point.data["钻孔编号"];
+        let isWorking = this.props.Point.isWorking;
         return (
             <View style={{ position: 'absolute', top: Y, left: X }}>
                 <TouchableHighlight
-                    onPress={this.onPress.bind(this, this.props.Point.data)}
+                    onPress={this.onPress.bind(this, holeNo)}
                     underlayColor="transparent"
                     activeOpacity={0.5}>
-                    <View style={[styles.cell, this.cellStyle(this.props.Point.isWorking)]}>
+                    <View style={[styles.cell, this.cellStyle(isWorking)]}>
                         <Text style={styles.cellText}>
-                            {this.props.Point.data["钻孔编号"]}
+                            {holeNo}
                         </Text>
                     </View>
                 </TouchableHighlight>

@@ -8,9 +8,9 @@ const $$initialState = Immutable.fromJS({});
 export default function cell( $$state = $$initialState , action ){
 
     switch(action.type){
-        case 'MAP_SET_POSITION' :
+        case 'MAP_SET_HOLENO' :
             return $$state.merge({
-                pointData: action.pointData,
+                holeNo: action.holeNo.holeNo,
             });
             break;
         default :
@@ -18,12 +18,12 @@ export default function cell( $$state = $$initialState , action ){
     }
 }
 
-export function SetPosition(value){
+export function SetHoleNo(holeNo){
     return function(dispatch){
         //console.log(value);
         dispatch({
-            type : 'MAP_SET_POSITION',
-            pointData:value.pointData
+            type : 'MAP_SET_HOLENO',
+            holeNo:holeNo
         })
     }
 }

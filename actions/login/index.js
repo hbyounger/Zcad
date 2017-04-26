@@ -310,91 +310,91 @@ export const getAllData = (server,userid,projectName,callback) => {
                     //保存起来
                     let projectid = userid+'-'+projectName;
                     console.log('下载数据 ' + projectid);
-                    console.log('json ');
-                    console.log(json);
-                    let data = {},
-                        tableItemList = {},
-                        itemList = json['表_字段'];
-                    if(itemList){
-                        itemList.map((item,index)=>{
-                            console.log(item);
-                            if(item['表名']){
-                                if(!tableItemList[item['表名']]){
-                                    tableItemList[item['表名']] = {};
-                                }
-                                tableItemList[item['表名']][item['字段名']] = item['类型'];
-                            }
-                        })
-                    }
-                    else {
-                        alert('可用字段数据为空，请联系数据管理员！')
-                    }
-                    console.log(tableItemList,'---tableItemList');
-                    let tables = json['项目_表'],
-                        tableList = {};
-                    if(tables){
-                        tables.map((item,index)=>{
-                            console.log(item);
-                            if(item['表名']){
-                                tableList[item['表名']] = item['顺序'];
-                            }
-                        })
-                    }
-                    else {
-                        alert('可用表数据为空，请联系数据管理员！')
-                    }
+                    // console.log('json ');
+                    // console.log(json);
+                    // let data = {},
+                    //     tableItemList = {},
+                    //     itemList = json['表_字段'];
+                    // if(itemList){
+                    //     itemList.map((item,index)=>{
+                    //         console.log(item);
+                    //         if(item['表名']){
+                    //             if(!tableItemList[item['表名']]){
+                    //                 tableItemList[item['表名']] = {};
+                    //             }
+                    //             tableItemList[item['表名']][item['字段名']] = item['类型'];
+                    //         }
+                    //     })
+                    // }
+                    // else {
+                    //     alert('可用字段数据为空，请联系数据管理员！')
+                    // }
+                    // console.log(tableItemList,'---tableItemList');
+                    // let tables = json['项目_表'],
+                    //     tableList = {};
+                    // if(tables){
+                    //     tables.map((item,index)=>{
+                    //         console.log(item);
+                    //         if(item['表名']){
+                    //             tableList[item['表名']] = item['顺序'];
+                    //         }
+                    //     })
+                    // }
+                    // else {
+                    //     alert('可用表数据为空，请联系数据管理员！')
+                    // }
 
-                    console.log(tableList,'-----tableList');
-                    for(let tName in json){
-                        console.log(tName,'-----tName');
-                        if(tableList[tName]){
-                            data[tName] =[];
+                    // console.log(tableList,'-----tableList');
+                    // for(let tName in json){
+                    //     console.log(tName,'-----tName');
+                    //     if(tableList[tName]){
+                    //         data[tName] =[];
 
-                            if(json[tName].length!==0){
-                                json[tName].map((item,index)=>{
-                                    let tempItem = {};
-                                    for(let iName in item){
-                                        if(tableItemList[tName][iName]||iName === '钻孔编号'){
-                                            tempItem[iName] = item[iName];
-                                        }
-                                    }
-                                    data[tName].push(tempItem);
-                                })
-                            }
-                            else {
-                                let tempItem = {};
-                                for(let itName in tableItemList[tName]){
-                                    tempItem[itName] = '';
-                                }
-                                if(!tableItemList[tName]['钻孔编号']){
-                                    tempItem['钻孔编号'] = '';
-                                }
-                                data[tName].push(tempItem);
-                            }
-                        }
-                    }
-                    data['表_字段'] = json['表_字段'];
-                    data['选择值'] = json['选择值'];
-                    data['项目_表'] = json['项目_表'];
-                    data['勘探点数据表'] = json['勘探点数据表'];
-                    data['土层表'] = json['土层表'];
-                    console.log(data,'------data');
+                    //         if(json[tName].length!==0){
+                    //             json[tName].map((item,index)=>{
+                    //                 let tempItem = {};
+                    //                 for(let iName in item){
+                    //                     if(tableItemList[tName][iName]||iName === '钻孔编号'){
+                    //                         tempItem[iName] = item[iName];
+                    //                     }
+                    //                 }
+                    //                 data[tName].push(tempItem);
+                    //             })
+                    //         }
+                    //         else {
+                    //             let tempItem = {};
+                    //             for(let itName in tableItemList[tName]){
+                    //                 tempItem[itName] = '';
+                    //             }
+                    //             if(!tableItemList[tName]['钻孔编号']){
+                    //                 tempItem['钻孔编号'] = '';
+                    //             }
+                    //             data[tName].push(tempItem);
+                    //         }
+                    //     }
+                    // }
+                    // data['表_字段'] = json['表_字段'];
+                    // data['选择值'] = json['选择值'];
+                    // data['项目_表'] = json['项目_表'];
+                    // data['勘探点数据表'] = json['勘探点数据表'];
+                    // data['土层表'] = json['土层表'];
+                    // console.log(data,'------data');
                     storage.save({
                         key: 'projectid',  // 注意:请不要在key中使用_下划线符号!
                         id: projectid,
-                        rawData: data,//json
+                        rawData: json,
                         expires: null,//1000 * 3600
                     });
 
                     dispatch({
                         type:'PLATFORM_DATA_USER_LOGIN_TABLES',
-                        payload:data
+                        payload:json
                     });
-                    callback(data);
+                    callback(json);
                 }
                 else {
-                    console.log(json)
-                    alert('服务器打了小瞌睡，请重试～')
+                    console.log(json);
+                    alert('服务器打了小瞌睡，请重试～');
                 }
             })
             .catch((error) => {

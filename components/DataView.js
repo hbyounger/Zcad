@@ -15,23 +15,36 @@ import {
     TextInput,
     ScrollView,
     Alert,
-    Picker
+    DeviceEventEmitter
 } from 'react-native';
-import CheckBox from 'react-native-checkbox';
 
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 import * as actions from '../actions/table/table';
-import Cell from './Cell';
 import * as loginActions from '../actions/login';
 
-import DataGrid from './DataGrid';
+const RIGHT_LISTVIEW = 'right_listView';
 
 const window = Dimensions.get('window');
 
 class DataView extends Component {
     constructor(props) {
         super(props);
+
+        this.ds = new ListView.DataSource({
+            rowHasChanged: (r1, r2)=> {
+                if (r1 !== r2) {
+                    console.log("不相等=");
+                    console.log(r1);
+                } else {
+                    console.log("相等=");
+                    console.log(r1);
+                    console.log(r2);
+                }
+                return r1 !== r2;
+            }
+        });
+
         let { cell, login, table, project } = this.props;
 
         this.holeNo = cell.holeNo;  //孔号
@@ -41,33 +54,85 @@ class DataView extends Component {
 
         this.projectid = login.userid + '-' + project.project;//工程ID
         this.login = login;
-        this.table = table;
 
         this.isEnableAdd = true;//是否允许 添加 插入 删除 行为
-        if (table.table == "勘探点数据表") {
+        if (this.tableName == "勘探点数据表") {
             this.isEnableAdd = false;
         }
 
-        this.Array = [];
-        this.indexList = [];
+        this.ItemArray = [];//符合条件的数据
         tables[this.tableName].forEach((ele, i) => {
-            if (ele && ((ele["钻孔编号"] === this.holeNo) || (!ele["钻孔编号"]))) {
-                //this.leftArray.push(ele["ID"]?ele["ID"]:i);
-                //ele['check'] = i;
-                //ele = this.objKeySort(ele);
-                this.Array.push(ele);
-                console.log(ele);
-                this.indexList.push(i);
-                //tables[table.table][i] = ele;
-                //delete();// = null;
+            if (null == ele["ID"]) {
+                alert(this.tableName + ' 错误! 没有 ID 列!!!');
+            }
+            if (!ele["钻孔编号"]) {//没有 钻孔编号
+                this.ItemArray.push(ele);
+            }
+            else if (ele["钻孔编号"] === this.holeNo) {//有 钻孔编号
+                this.ItemArray.push(ele);
             }
         });
 
-
         this.state = {
-            List: this.Array,
+            dataSource: this.ds.cloneWithRows(this.ItemArray),
+            SelectedID: -1,     //当前选择行的ID
+            SelectedFieldName: ""  //当前选择行字段名称
+        }
+
+        this.FieldList = [];            //显示的数据字段
+        this.renderFieldList = [];      //渲染时显示的字段
+        this.MapFieldName_Type = {};    //Map  字段名 : 字段类型 
+        this.MapFieldName_ID = {};      //Map  字段名 : 字段ID
+        if (login.tables['表_字段']) {
+            login.tables['表_字段'].forEach((item, i) => {
+                if (item['表名'] === this.tableName) {
+
+                    let FieldName = item['字段名'];
+                    this.FieldList.push(FieldName);
+                    this.MapFieldName_Type[FieldName] = item['类型'];
+                    this.MapFieldName_ID[FieldName] = item['ID'];
+
+                    this.renderFieldList.push(
+                        <View key={`title${i}`} style={styles.titleView}>
+                            <Text>{FieldName}</Text>
+                        </View>
+                    )
+                }
+            })
         }
     }
+
+    componentWillUnmount() {
+        this.subscription.remove();
+    };
+
+    componentDidMount() {
+        this.subscription = DeviceEventEmitter.addListener('changeValue', (newValue) => {//监听变量改变
+           //alert("newValue = " + newValue);
+            if (this.state.SelectedID <= 0 || this.state.SelectedFieldName === "") {
+                //alert("this.state.SelectedFieldName = " + this.state.SelectedFieldName);
+                //alert("this.state.SelectedID = " + this.state.SelectedID);
+                return;
+            }
+
+            this.NewItemArray = this.ItemArray.slice(0);
+            this.NewItemArray.forEach((ele) => {
+                if (ele["ID"] === this.state.SelectedID) {
+                    ele[this.SelectedFieldName] = newValue;
+                    //alert("found ID!");
+                }
+            });
+            this.ItemArray = this.NewItemArray.slice(0);
+
+            this.setState({
+                dataSource: this.ds.cloneWithRows(this.ItemArray)
+            });
+            //this.forceUpdate();//setState 不触发render ??
+            //alert("changeValue OK!");
+        }
+        );
+    };
+
 
     objKeySort = (obj) => {//排序的函数
         var newkey = Object.keys(obj).reverse();
@@ -82,31 +147,31 @@ class DataView extends Component {
 
     //保存---存在问题，还需要修改
     onSubmit = () => {
-        let { login, table, loginactions } = this.props;
-        let tables = login.tables;
-        console.log(tables[table.table]);
+        // let { login, table, loginactions } = this.props;
+        // let tables = login.tables;
+        // console.log(tables[this.tableName]);
 
-        for (let i = this.indexList.length; i > 0; i--) {
-            tables[table.table].splice(this.indexList[i - 1], 1)
-        }
-        this.state.List.forEach((item, index) => {
-            delete (item['check']);
-            tables[table.table].push(this.objKeySort(item));
-        })
-        loginactions.getOfflineTables(tables);
-        storage.save({
-            key: 'projectid',  // 注意:请不要在key中使用_下划线符号!
-            id: this.projectid,
-            rawData: tables,
-            expires: null,//1000 * 3600
-        });
-        alert("保存成功");
+        // for (let i = this.indexList.length; i > 0; i--) {
+        //     tables[this.tableName].splice(this.indexList[i - 1], 1)
+        // }
+        // this.state.List.forEach((item, index) => {
+        //     delete (item['check']);
+        //     tables[this.tableName].push(this.objKeySort(item));
+        // })
+        // loginactions.getOfflineTables(tables);
+        // storage.save({
+        //     key: 'projectid',  // 注意:请不要在key中使用_下划线符号!
+        //     id: this.projectid,
+        //     rawData: tables,
+        //     expires: null,//1000 * 3600
+        // });
+        // alert("保存成功");
     };
 
     //上传
     onUpload = (data) => {
         let { loginactions, login, table, project } = this.props;
-        loginactions.updateData(login.server, login.userid, project.project, this.holeNo, this.state.List, table.table);
+        loginactions.updateData(login.server, login.userid, project.project, this.holeNo, this.state.List, this.tableName);
     }
 
     //添加一行
@@ -163,11 +228,83 @@ class DataView extends Component {
     };
 
 
-    render() {
-        let { login, table } = this.props;
-        let tables = login.tables;
-        console.log(login.tables['表_字段'], '------------------->login.tables[表_字段]');//选择值//表_字段
+    //选择改变 行高亮
+    onSelChangeRow(ID, FieldName) {
+        if (ID !== this.state.SelectedID) {
+            this.setState({
+                SelectedID: ID,
+                SelectedFieldName: FieldName,
+                dataSource: this.ds.cloneWithRows(this.ItemArray)//不写这句,选择状态不出来,郁闷
+            });
+            //alert("onSelChangeRow");
+            //this.forceUpdate();//setState 不触发render ??
+        }
+    }
 
+    //点击选择值
+    onPressSelectValue(fieldID, value) {
+        let { actions } = this.props;
+        this.props.navigator.push({ name: 'SelectValue' });
+        actions.SetSelectValue({
+            fieldID: fieldID,
+            curvalue: value
+        });
+    }
+
+    //render 每行数据
+    _rightRenderRow = (rowData, sectionID, rowID, highlightRow) => {
+        this.renderRowList = [];
+        this.FieldList.forEach((FieldName, i) => {
+
+            let FieldType = this.MapFieldName_Type[FieldName];//字段类型
+            let value = rowData[FieldName];
+            let ID = rowData["ID"];
+
+            if (FieldType === "选择") {//选择项
+                let fieldID = this.MapFieldName_ID[FieldName];//字段的ID
+                this.renderRowList.push(
+                    <View key={`right${rowID}${i}`}>
+                        <TextInput style={this.state.SelectedID == ID ? styles.cellViewSelect : styles.cellView}
+                            onFocus={() => { this.onSelChangeRow(ID, FieldName); this.onPressSelectValue(fieldID, value); }}
+                        >
+                            {value}
+                        </TextInput>
+                    </View>
+                );
+            }
+            else if (FieldType === "只读") {
+                this.renderRowList.push(
+                    <View key={`right${rowID}${i}`}>
+                        <TextInput style={this.state.SelectedID == ID ? styles.cellViewSelect : styles.cellView}
+                            editable={false}
+                            onFocus={() => { this.onSelChangeRow(ID, FieldName); }}
+                        >
+                            {value}
+                        </TextInput>
+                    </View>)
+            }
+            else {//一般编写项目
+                this.renderRowList.push(
+                    <View key={`right${rowID}${i}`}>
+                        <TextInput style={this.state.SelectedID == ID ? styles.cellViewSelect : styles.cellView}
+                            onChangeText={(e) => { rowData[FieldName] = e; }}
+                            keyboardType={this.MapFieldName_Type[FieldName] == '数字' ? "numeric" : "default"}
+                            onFocus={() => { this.onSelChangeRow(ID, FieldName); }}
+                        >
+                            {value}
+                        </TextInput>
+                    </View>)
+            }
+        });
+        return (
+            <View style={styles.rightListRow}>
+                {this.renderRowList}
+            </View>
+        );
+    }
+
+
+    render() {
         return (
             <View >
                 <View >
@@ -202,7 +339,7 @@ class DataView extends Component {
                     </TouchableHighlight>
 
                     {
-                        (!login.offline) && (
+                        (!this.login.offline) && (
                             <TouchableHighlight
                                 style={[styles.style_view_commit, { flex: 1, top: 0, left: 0, }]}
                                 onPress={this.onUpload}
@@ -263,20 +400,27 @@ class DataView extends Component {
 
                 </View>
                 <View style={{ top: 10 }}>
-                    <ScrollView >
-                        <DataGrid
-                            callback={(list) => {
-                                this.Array = list;
-                                this.setState({
-                                    List: list,
-                                })
-                            }}
-                            login={this.login}
-                            table={this.table}
-                            holeNo={this.holeNo}
-                            data={this.state.List}
-                            navigator={this.props.navigator}
-                        />
+                    <ScrollView horizontal={true} style={styles.container}>
+                        <View style={styles.right}>
+                            <ScrollView
+                                style={styles.scrollView}
+                                horizontal={true}
+                            >
+                                <View style={styles.contentView}>
+                                    <View style={{ width: 100 * this.rowNum + 100, height: 40, flexDirection: 'row' }}>
+                                        {this.renderFieldList}
+                                    </View>
+                                    <ListView
+                                        ref={RIGHT_LISTVIEW}
+                                        //scrollEventThrottle={500}
+                                        style={styles.rightListView}
+                                        dataSource={this.state.dataSource}
+                                        //onScroll={this.onScroll}
+                                        renderRow={this._rightRenderRow}
+                                    />
+                                </View>
+                            </ScrollView>
+                        </View>
                     </ScrollView>
                 </View>
             </View>
@@ -414,6 +558,16 @@ const styles = StyleSheet.create({
         height: 40,
         // backgroundColor:'#db384c',
         borderColor: '#DCD7CD',
+        borderRightWidth: 1,
+        borderBottomWidth: 1,
+        alignItems: 'center',      // 水平局中
+        justifyContent: 'center',  // 垂直居中
+    },
+    cellViewSelect: {
+        width: 100,
+        height: 40,
+        backgroundColor: '#db384c',
+        borderColor: '#7CD7CD',
         borderRightWidth: 1,
         borderBottomWidth: 1,
         alignItems: 'center',      // 水平局中

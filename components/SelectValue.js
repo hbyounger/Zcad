@@ -9,6 +9,7 @@ import {
     TextInput,
     TouchableHighlight,
     View,
+    DeviceEventEmitter
 } from 'react-native';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
@@ -67,8 +68,8 @@ class SelectValue extends Component {
     }
 
     onPressOK(newValue) {
-        alert(this.state.CustomValue);
-        this.props.router.callBack(this.state.CustomValue);
+        //alert(this.state.CustomValue);
+        DeviceEventEmitter.emit('changeValue',this.state.CustomValue);
         this.props.navigator.pop({ name: 'data' }); 
     }
 

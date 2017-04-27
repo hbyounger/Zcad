@@ -32,7 +32,7 @@ class DataView extends Component {
         super(props);
 
         this.ds = new ListView.DataSource({
-            rowHasChanged: (r1, r2)=> {
+            rowHasChanged: (r1, r2) => {
                 if (r1 !== r2) {
                     console.log("不相等=");
                     console.log(r1);
@@ -50,7 +50,7 @@ class DataView extends Component {
         this.holeNo = cell.holeNo;  //孔号
         this.tableName = table.table;//表名
 
-        let tables = login.tables;
+        this.table = login.tables[this.tableName];
 
         this.projectid = login.userid + '-' + project.project;//工程ID
         this.login = login;
@@ -60,11 +60,16 @@ class DataView extends Component {
             this.isEnableAdd = false;
         }
 
-        this.ItemArray = [];//符合条件的数据
-        tables[this.tableName].forEach((ele, i) => {
+        this.MaxID = -1;        //最大的ID
+        this.ItemArray = [];    //符合条件的数据,增删改,修改这个
+        this.table.forEach((ele, i) => {
             if (null == ele["ID"]) {
                 alert(this.tableName + ' 错误! 没有 ID 列!!!');
             }
+            if (ele["ID"] > this.MaxID) {
+                this.MaxID = ele["ID"];
+            }
+
             if (!ele["钻孔编号"]) {//没有 钻孔编号
                 this.ItemArray.push(ele);
             }
@@ -108,14 +113,14 @@ class DataView extends Component {
 
     componentDidMount() {
         this.subscription = DeviceEventEmitter.addListener('changeValue', (newValue) => {//监听变量改变
-           //alert("newValue = " + newValue);
+            //alert("newValue = " + newValue);
             if (this.state.SelectedID <= 0 || this.state.SelectedFieldName === "") {
                 //alert("this.state.SelectedFieldName = " + this.state.SelectedFieldName);
                 //alert("this.state.SelectedID = " + this.state.SelectedID);
                 return;
             }
 
-            this.NewItemArray = this.ItemArray.slice(0);
+            this.NewItemArray = this.ItemArray.slice(0);//深拷贝
             this.NewItemArray.forEach((ele) => {
                 if (ele["ID"] === this.state.SelectedID) {
                     ele[this.SelectedFieldName] = newValue;
@@ -134,38 +139,40 @@ class DataView extends Component {
     };
 
 
-    objKeySort = (obj) => {//排序的函数
-        var newkey = Object.keys(obj).reverse();
-        //先用Object内置类的keys方法获取要排序对象的属性名，再利用Array原型上的sort方法对获取的属性名进行排序，newkey是一个数组
-        var newObj = {};//创建一个新的对象，用于存放排好序的键值对
-        newkey.map((item, index) => {
-            newObj[item] = obj[item];//向新创建的对象中按照排好的顺序依次增加键值对
-        })
-        return newObj;//返回排好序的新对象
-    }
-
 
     //保存---存在问题，还需要修改
     onSubmit = () => {
-        // let { login, table, loginactions } = this.props;
-        // let tables = login.tables;
-        // console.log(tables[this.tableName]);
+        let { login ,loginactions} = this.props;
+        let tables = login.tables;
 
-        // for (let i = this.indexList.length; i > 0; i--) {
-        //     tables[this.tableName].splice(this.indexList[i - 1], 1)
-        // }
-        // this.state.List.forEach((item, index) => {
-        //     delete (item['check']);
-        //     tables[this.tableName].push(this.objKeySort(item));
-        // })
-        // loginactions.getOfflineTables(tables);
-        // storage.save({
-        //     key: 'projectid',  // 注意:请不要在key中使用_下划线符号!
-        //     id: this.projectid,
-        //     rawData: tables,
-        //     expires: null,//1000 * 3600
-        // });
-        // alert("保存成功");
+        //删除原来的数据
+        for (let i = this.table.length - 1; i >= 0; i--) {
+            let ele = this.table[i];
+            if (!ele["钻孔编号"]) {//没有 钻孔编号
+                this.table.splice(i, 1);
+            }
+            else if (ele["钻孔编号"] === this.holeNo) {//有 钻孔编号
+                this.table.splice(i, 1);
+            }
+        }
+
+        //添加现有的数据
+        this.ItemArray.forEach((item) => {
+            this.table.push(item);
+        });
+
+        //保存
+        storage.save({
+            key: 'projectid',  // 注意:请不要在key中使用_下划线符号!
+            id: this.projectid,
+            rawData: tables,        //浅拷贝 this.table 改变了 tables也改变了
+            expires: null,//1000 * 3600
+        });
+
+
+        loginactions.SetStateTables(tables);//工程的所有表格 放到state 的 tables
+
+        alert("保存成功");
     };
 
     //上传
@@ -176,54 +183,69 @@ class DataView extends Component {
 
     //添加一行
     onAdd = () => {
-        console.log(this.state.List.length, '----->this.state.List.length')
-        let newItem = Object.assign({}, this.state.List[this.state.List.length - 1]);
-        newItem['ID'] += 1;
-        console.log(newItem, '----->newItem')
-        let newArray = [];
-        newArray.push(newItem);
-        this.state.List.map((item, index) => {
-            newArray.push(item);
-            item.check = false;
+        //新建一条记录
+        let newItem = [];
+        this.FieldList.forEach((FieldName) => {
+            let item = {};
+            item[FieldName] = "";
+            newItem.push(item);
         })
+
+        newItem['ID'] = ++this.MaxID;
+
+        //新的记录数组
+        let newArray = [];
+        this.ItemArray.forEach((item) => {
+            newArray.push(item);
+        })
+        newArray.push(newItem);
+
+        this.ItemArray = newArray.slice();
+        //改变State
         this.setState({
-            List: newArray,
+            dataSource: this.ds.cloneWithRows(this.ItemArray)
         })
     };
 
     //插入一行
     onInsert = () => {
-        console.log(this.state.List.length, '----->this.state.List.length')
+        //新建一条记录
+        let newItem = [];
+        this.FieldList.forEach((FieldName) => {
+            newItem.push({ FieldName: "" });
+        })
+        newItem['ID'] = ++this.MaxID;
+
+        //新的记录数组
         let newArray = [];
-        this.state.List.map((item, index) => {
-            if (item.check) {
-                let newItem = Object.assign({}, this.state.List[this.state.List.length - 1]);
-                newItem['ID'] += 1;
-                console.log(newItem, '----->newItem')
+        this.ItemArray.forEach((item) => {
+            if (item["ID"] === this.state.SelectedID) {
                 newArray.push(newItem);
-                item.check = false;
             }
             newArray.push(item);
         })
+
+        this.ItemArray = newArray.slice();
+        //改变State
         this.setState({
-            List: newArray,
+            dataSource: this.ds.cloneWithRows(this.ItemArray)
         })
     };
 
     //删除一行
     onDelete = () => {
-        console.log(this.state.List.length, '----->this.state.List.length')
+        //新的记录数组
         let newArray = [];
-        this.state.List.map((item, index) => {
-            if (!item.check) {
+        this.ItemArray.forEach((item) => {
+            if (item["ID"] !== this.state.SelectedID) {
                 newArray.push(item);
             }
-            else {
-                item.check = false;
-            }
         })
+
+        this.ItemArray = newArray.slice();
+        //改变State
         this.setState({
-            List: newArray,
+            dataSource: this.ds.cloneWithRows(this.ItemArray)
         })
     };
 
@@ -244,7 +266,7 @@ class DataView extends Component {
     //点击选择值
     onPressSelectValue(fieldID, value) {
         let { actions } = this.props;
-        this.props.navigator.push({ name: 'SelectValue' });
+        this.props.navigator.push({ name: 'SelectValue' });//弹出选择值界面
         actions.SetSelectValue({
             fieldID: fieldID,
             curvalue: value

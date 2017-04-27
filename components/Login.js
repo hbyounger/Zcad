@@ -3,7 +3,7 @@
  */
 'use strict';
 
-import React,{Component} from 'react';
+import React, { Component } from 'react';
 import {
     AppRegistry,
     StyleSheet,
@@ -21,23 +21,23 @@ import * as loginActions from '../actions/login';
 
 
 class Login extends Component {
-    constructor(props){
+    constructor(props) {
         super(props);
 
         this.state = {
-            userName : '',//用户名称
-            passWord : '',//密码
+            userName: '',//用户名称
+            passWord: '',//密码
             urlServer: ''//服务器地址
         };
 
         console.log('storage.load');
         //读取服务器地址
         storage.load({
-                key:'server',
-                id:'login',
-                autoSync: false,//true,
-                syncInBackground: false,//true
-            })
+            key: 'server',
+            id: 'login',
+            autoSync: false,//true,
+            syncInBackground: false,//true
+        })
             .then(ret => {
                 console.log("load:" + ret);
                 this.setState({ urlServer: ret });
@@ -48,62 +48,62 @@ class Login extends Component {
 
         //读取用户名称
         storage.load({
-                key: 'user',
-                id:'last',
-                autoSync: false,//true,
-                syncInBackground: false,//true
-            })
+            key: 'user',
+            id: 'last',
+            autoSync: false,//true,
+            syncInBackground: false,//true
+        })
             .then(ret => {
                 console.log("load:" + ret);
                 this.setState({ userName: ret });
             })
             .catch(err => {
                 console.log("storage.load user " + err);
-            });      
+            });
     };
 
     //点击登录
-    onPress = ()=>{
-        let {actions} = this.props;
+    onPress = () => {
+        let { actions } = this.props;
         //得到userid
-        actions.userLogin(this.state.urlServer,this.state.userName,this.state.passWord,(userid)=>{
+        actions.userLogin(this.state.urlServer, this.state.userName, this.state.passWord, (userid) => {
             storage.save({
                 key: 'user',  // 注意:请不要在key中使用_下划线符号!
-                id:'last',
+                id: 'last',
                 rawData: this.state.userName,
                 expires: null,//1000 * 3600 // 如果不指定过期时间，则会使用defaultExpires参数 // 如果设为null，则永不过期
             });
-           storage.save({
+            storage.save({
                 key: 'userid',  // 注意:请不要在key中使用_下划线符号!
-                id:'last',
+                id: 'last',
                 rawData: userid,
                 expires: null,//1000 * 3600
             });
 
             storage.save({
                 key: 'server',  // 注意:请不要在key中使用_下划线符号!
-                id:'login',
+                id: 'login',
                 rawData: this.state.urlServer,
                 expires: null,//1000 * 3600
             });
 
-            this.props.navigator.push({name: 'welcome'});
+            this.props.navigator.push({ name: 'welcome' });
         });
     };
 
     //登录离线登录
     onOfflinePress = () => {
-        let {actions} = this.props;
+        let { actions } = this.props;
         storage.load({
-                key: 'userid',
-                id: 'last',
-                autoSync: false, //true,
-                syncInBackground: false, //true
-            })
+            key: 'userid',
+            id: 'last',
+            autoSync: false, //true,
+            syncInBackground: false, //true
+        })
             .then(ret => {
                 console.log("load userid " + ret);
                 actions.userOfflineLogin(ret);
-                this.props.navigator.push({ name: 'welcome'});
+                this.props.navigator.push({ name: 'welcome' });
             })
             .catch(err => {
                 console.warn(err.message);
@@ -112,25 +112,25 @@ class Login extends Component {
                         alert('onOfflinePress:未找到之前登录数据');
                         break;
                     default:
-                        alert('onOfflinePress:' + err.name);
+                        alert('onOfflinePress:' + err.name + " " + err.message);
                         break;
                 }
             });
     };
 
-    handleServerChange = (e)=>{
+    handleServerChange = (e) => {
         this.setState({
             urlServer: e,
         });
     };
-    
-    handleUserChange =(e)=>{
+
+    handleUserChange = (e) => {
         this.setState({
             userName: e,
         });
     };
 
-    handlePasswordChange = (e)=>{
+    handlePasswordChange = (e) => {
         this.setState({
             passWord: e,
         });
@@ -139,17 +139,17 @@ class Login extends Component {
     render() {
         //autoFocus={true}
         return (
-            <View style={{backgroundColor:'#f4f4f4',flex:1}}>
+            <View style={{ backgroundColor: '#f4f4f4', flex: 1 }}>
                 <Image
                     style={styles.style_image}
-                    source={require('../img/app_icon.png')}/>
+                    source={require('../img/app_icon.png')} />
                 <TextInput
                     style={styles.style_user_input}
                     placeholder='服务器地址'
                     numberOfLines={1}
                     underlineColorAndroid={'transparent'}
                     textAlign='center'
-                    onChangeText ={this.handleServerChange}
+                    onChangeText={this.handleServerChange}
                     //ref = {'server'}
                     value={this.state.urlServer}
                 />
@@ -159,11 +159,11 @@ class Login extends Component {
                     numberOfLines={1}
                     underlineColorAndroid={'transparent'}
                     textAlign='center'
-                    onChangeText ={this.handleUserChange}
+                    onChangeText={this.handleUserChange}
                     value={this.state.userName}
                 />
                 <View
-                    style={{height:1,backgroundColor:'#f4f4f4'}}
+                    style={{ height: 1, backgroundColor: '#f4f4f4' }}
                 />
                 <TextInput
                     style={styles.style_pwd_input}
@@ -173,14 +173,14 @@ class Login extends Component {
                     underlineColorAndroid={'transparent'}
                     secureTextEntry={true}
                     textAlign='center'
-                    onChangeText ={this.handlePasswordChange}
+                    onChangeText={this.handlePasswordChange}
                 />
                 <TouchableHighlight
                     onPress={this.onPress}
                     underlayColor="transparent"
                     activeOpacity={0.5}>
-                    <View  style={styles.style_view_commit} >
-                        <Text style={{color:'#fff'}} >
+                    <View style={styles.style_view_commit} >
+                        <Text style={{ color: '#fff' }} >
                             登录
                         </Text>
                     </View>
@@ -189,75 +189,75 @@ class Login extends Component {
                     onPress={this.onOfflinePress}
                     underlayColor="transparent"
                     activeOpacity={0.5}>
-                    <View  style={styles.style_view_commit} >
-                        <Text  style={{color:'#fff'}} >
+                    <View style={styles.style_view_commit} >
+                        <Text style={{ color: '#fff' }} >
                             离线登录
                         </Text>
                     </View>
                 </TouchableHighlight>
-                <View style={{flex:1,flexDirection:'row',alignItems: 'flex-end',bottom:10}}>
+                <View style={{ flex: 1, flexDirection: 'row', alignItems: 'flex-end', bottom: 10 }}>
 
                 </View>
             </View>
         );
     };
 }
-const styles =StyleSheet.create({
-    style_image:{
-        borderRadius:35,
-        height:70,
-        width:70,
-        marginTop:40,
-        alignSelf:'center',
+const styles = StyleSheet.create({
+    style_image: {
+        borderRadius: 35,
+        height: 70,
+        width: 70,
+        marginTop: 40,
+        alignSelf: 'center',
     },
-    style_user_input:{
-        backgroundColor:'#fff',
-        marginTop:10,
-        height:40,
+    style_user_input: {
+        backgroundColor: '#fff',
+        marginTop: 10,
+        height: 40,
     },
-    style_pwd_input:{
-        backgroundColor:'#fff',
-        height:40,
+    style_pwd_input: {
+        backgroundColor: '#fff',
+        height: 40,
     },
-    style_view_commit:{
-        marginTop:15,
-        marginLeft:10,
-        marginRight:10,
-        backgroundColor:'#63B8FF',
-        height:35,
-        borderRadius:5,
+    style_view_commit: {
+        marginTop: 15,
+        marginLeft: 10,
+        marginRight: 10,
+        backgroundColor: '#63B8FF',
+        height: 35,
+        borderRadius: 5,
         justifyContent: 'center',
         alignItems: 'center',
     },
-    style_view_unlogin:{
-        fontSize:12,
-        color:'#63B8FF',
-        marginLeft:10,
+    style_view_unlogin: {
+        fontSize: 12,
+        color: '#63B8FF',
+        marginLeft: 10,
     },
-    style_view_register:{
-        fontSize:12,
-        color:'#63B8FF',
-        marginRight:10,
-        alignItems:'flex-end',
-        flex:1,
-        flexDirection:'row',
-        textAlign:'right',
+    style_view_register: {
+        fontSize: 12,
+        color: '#63B8FF',
+        marginRight: 10,
+        alignItems: 'flex-end',
+        flex: 1,
+        flexDirection: 'row',
+        textAlign: 'right',
     }
 });
 
-function mapStateToProps(state){
+function mapStateToProps(state) {
     return {
-        login : state.login.toJS()
+        login: state.login.toJS()
     }
 }
 
-function mapDispatchToProps(dispatch){
+function mapDispatchToProps(dispatch) {
     return {
-        actions : bindActionCreators( loginActions , dispatch )
+        actions: bindActionCreators(loginActions, dispatch)
     }
 }
 
 export default connect(
-    mapStateToProps ,
+    mapStateToProps,
     mapDispatchToProps
 )(Login);

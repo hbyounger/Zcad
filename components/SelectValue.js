@@ -9,6 +9,7 @@ import {
     TextInput,
     TouchableHighlight,
     View,
+    ScrollView,
     DeviceEventEmitter
 } from 'react-native';
 import { connect } from 'react-redux';
@@ -50,7 +51,7 @@ class SelectValue extends Component {
                     onPress={this.onPressValueItem.bind(this, ele)}
                     underlayColor="transparent"
                     activeOpacity={0.5}>
-                    <View style={[styles3.style_select]}>
+                    <View style={[styles.style_select]}>
                         <Text style={{ color: '#ffffff' }} >
                             {ele}
                         </Text>
@@ -69,8 +70,8 @@ class SelectValue extends Component {
 
     onPressOK(newValue) {
         //alert(this.state.CustomValue);
-        DeviceEventEmitter.emit('changeValue',this.state.CustomValue);
-        this.props.navigator.pop({ name: 'data' }); 
+        DeviceEventEmitter.emit('changeValue', this.state.CustomValue);
+        this.props.navigator.pop({ name: 'data' });
     }
 
     //改变自定义的值
@@ -83,7 +84,7 @@ class SelectValue extends Component {
     render() {
         return (
             <View >
-                <Text style={styles3.Title} >
+                <Text style={styles.Title} >
                     {'请选择参数' + this.state.FieldName + '的值'}
                 </Text>
 
@@ -93,14 +94,14 @@ class SelectValue extends Component {
                             onPress={() => { this.props.navigator.pop({ name: 'data' }); }}
                             underlayColor="transparent"
                             activeOpacity={0.5}>
-                            <View style={[styles3.style_view_commit, { flex: 1 }]} >
+                            <View style={[styles.style_view_commit, { flex: 1 }]} >
                                 <Text style={{ color: '#ffffff' }} >
                                     返回
                         </Text>
                             </View>
                         </TouchableHighlight>
                         <TextInput
-                            style={[styles3.style_user_input, { flex: 3 }]}
+                            style={[styles.style_user_input, { flex: 3 }]}
                             placeholder='输入值'
                             numberOfLines={1}
                             underlineColorAndroid={'transparent'}
@@ -114,7 +115,7 @@ class SelectValue extends Component {
                             onPress={this.onPressOK.bind(this)}
                             underlayColor="transparent"
                             activeOpacity={0.5}>
-                            <View style={[styles3.style_view_commit, { flex: 1 }]} >
+                            <View style={[styles.style_view_commit, { flex: 1 }]} >
                                 <Text style={{ color: '#ffffff' }} >
                                     确定
                         </Text>
@@ -123,18 +124,21 @@ class SelectValue extends Component {
 
                     </View>
                 </View>
-
-                <View style={{ flex: 1, flexWrap: 'wrap',  flexDirection: 'row',alignItems:'flex-start' }}>
-                    {this.ValueItemDomArray}
-                </View>
-
+                <ScrollView
+                    style={styles.scrollView}
+                    horizontal={true}
+                >
+                    <View style={{ flex: 1, flexWrap: 'wrap', flexDirection: 'row', alignItems: 'flex-start' }}>
+                        {this.ValueItemDomArray}
+                    </View>
+                </ScrollView>
             </View>
 
         );
     }
 }
 
-const styles3 = StyleSheet.create({
+const styles = StyleSheet.create({
     style_user_input: {
         backgroundColor: '#ffffff',
         marginTop: 10,
@@ -159,6 +163,17 @@ const styles3 = StyleSheet.create({
         borderRadius: 5,
         justifyContent: 'center',
         alignItems: 'center',
+    },
+    scrollView: {
+        //flex: 1,
+        marginRight: 1,
+        marginLeft: 1,
+        marginTop: 0,
+        marginBottom: 1,
+        // backgroundColor: 'red',
+        flexDirection: 'column',
+        //height:Dimensions.get('window').height-110,
+        //height: window.height -50,
     },
     Title: {
         color: '#63B8FF',

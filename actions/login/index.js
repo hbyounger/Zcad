@@ -222,7 +222,7 @@ export const updateData = (server, userid, projectName, holeNo, Data, DbTableNam
     formData.append("projectName", projectName);
     formData.append("holeNo", holeNo);
     formData.append("option", "updateData");
-    formData.append("Data", Data);
+    formData.append("Data", JSON.stringify(Data));
     formData.append("DbTableName", DbTableName);
     return (dispatch) => {
         console.log('http://' + server + '/ajaxService/admin.ashx');
@@ -235,6 +235,7 @@ export const updateData = (server, userid, projectName, holeNo, Data, DbTableNam
             .then((json) => {
                 if (json) {
                     console.log(json)
+                    alert('上传成功!')
                 }
                 else {
                     console.log(json)

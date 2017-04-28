@@ -60,6 +60,7 @@ class DataView extends Component {
             this.isEnableAdd = false;
         }
 
+        this.hasHoleNo = true;   //是否有钻孔编号
         this.MaxID = -1;        //最大的ID
         this.ItemArray = [];    //符合条件的数据,增删改,修改这个
         this.table.forEach((ele, i) => {
@@ -72,6 +73,7 @@ class DataView extends Component {
 
             if (!ele["钻孔编号"]) {//没有 钻孔编号
                 this.ItemArray.push(ele);
+                this.hasHoleNo = false;
             }
             else if (ele["钻孔编号"] === this.holeNo) {//有 钻孔编号
                 this.ItemArray.push(ele);
@@ -123,7 +125,7 @@ class DataView extends Component {
             this.NewItemArray = this.ItemArray.slice(0);//深拷贝
             this.NewItemArray.forEach((ele) => {
                 if (ele["ID"] === this.state.SelectedID) {
-                    ele[this.SelectedFieldName] = newValue;
+                    ele[this.state.SelectedFieldName] = newValue;
                     //alert("found ID!");
                 }
             });
@@ -140,9 +142,9 @@ class DataView extends Component {
 
 
 
-    //保存---存在问题，还需要修改
+    //保存
     onSubmit = () => {
-        let { login ,loginactions} = this.props;
+        let { login, loginactions } = this.props;
         let tables = login.tables;
 
         //删除原来的数据
@@ -177,20 +179,20 @@ class DataView extends Component {
 
     //上传
     onUpload = (data) => {
-        let { loginactions, login, table, project } = this.props;
-        loginactions.updateData(login.server, login.userid, project.project, this.holeNo, this.state.List, this.tableName);
+        let { loginactions, login, project } = this.props;
+        loginactions.updateData(login.server, login.userid, project.project, this.holeNo, this.ItemArray, this.tableName);
     }
 
     //添加一行
     onAdd = () => {
         //新建一条记录
-        let newItem = [];
+        let newItem = {};
         this.FieldList.forEach((FieldName) => {
-            let item = {};
-            item[FieldName] = "";
-            newItem.push(item);
+            newItem[FieldName] = "";
         })
-
+        if (this.hasHoleNo) {
+            newItem['钻孔编号'] = this.holeNo;
+        }
         newItem['ID'] = ++this.MaxID;
 
         //新的记录数组
@@ -210,10 +212,13 @@ class DataView extends Component {
     //插入一行
     onInsert = () => {
         //新建一条记录
-        let newItem = [];
+        let newItem = {};
         this.FieldList.forEach((FieldName) => {
-            newItem.push({ FieldName: "" });
+            newItem[FieldName] = "";
         })
+        if (this.hasHoleNo) {
+            newItem['钻孔编号'] = this.holeNo;
+        }
         newItem['ID'] = ++this.MaxID;
 
         //新的记录数组
